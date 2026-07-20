@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RentFlow — LINE OA Mockup Viewer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --line: #06c755;
+      --line-dark: #05b34c;
+      --blue: #1A56DB;
+      --red: #E51D53;
+      --bg: #0f172a;
+      --bg2: #1e293b;
+      --border: #334155;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+    }
+
+    body {
+      font-family: 'Sarabun', 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── Top Bar ─── */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(15,23,42,0.85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .topbar-logo { display: flex; align-items: center; gap: 10px; }
+    .topbar-logo .icon {
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, #1A56DB, #0EA5E9);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; font-weight: 900;
+    }
+    .topbar-logo .name { font-weight: 900; font-size: 15px; color: #f1f5f9; }
+    .topbar-logo .name span { color: #38bdf8; }
+    .topbar-badge {
+      background: rgba(6,199,85,0.15); border: 1px solid rgba(6,199,85,0.3);
+      color: var(--line); font-size: 10px; font-weight: 800;
+      padding: 3px 10px; border-radius: 99px; letter-spacing: .05em; text-transform: uppercase;
+    }
+
+    /* ─── Toggle ─── */
+    .toggle-wrap {
+      display: flex; align-items: center; gap: 6px;
+      background: #1e293b; border: 1px solid var(--border);
+      border-radius: 12px; padding: 4px;
+    }
+    .toggle-btn {
+      padding: 7px 18px; border-radius: 9px; border: none; cursor: pointer;
+      font-family: inherit; font-size: 12px; font-weight: 800;
+      display: flex; align-items: center; gap: 6px;
+      transition: all 0.25s ease;
+      color: var(--muted); background: transparent;
+    }
+    .toggle-btn.active {
+      background: white; color: #1e293b;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+
+    /* ─── Stage ─── */
+    .stage {
+      min-height: 100vh; padding: 90px 16px 60px;
+      display: flex; align-items: flex-start; justify-content: center;
+    }
+
+    /* ─── Mockup Wrapper ─── */
+    .mockup-wrapper {
+      transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+      opacity: 1; transform: scale(1);
+    }
+    .mockup-wrapper.fade-out {
+      opacity: 0; transform: scale(0.96);
+    }
+
+    /* ────────────────── MOBILE FRAME ────────────────── */
+    .mobile-outer {
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .role-bar {
+      width: 393px; background: #1e293b;
+      border: 1px solid var(--border); border-bottom: none;
+      border-radius: 20px 20px 0 0;
+      display: flex; gap: 4px; padding: 8px;
+    }
+    .role-btn {
+      flex: 1; padding: 8px; border-radius: 10px; border: none;
+      font-family: inherit; font-size: 11px; font-weight: 900;
+      cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+      color: #64748b; background: transparent;
+    }
+    .role-btn.active { background: var(--line); color: white; }
+
+    .phone-frame {
+      width: 393px; height: 780px;
+      background: #8cabd9;
+      border: 10px solid #1e293b;
+      border-top: none;
+      border-radius: 0 0 38px 38px;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+      position: relative;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+    }
+    .dynamic-island {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 120px; height: 33px; background: black;
+      border-radius: 0 0 18px 18px; z-index: 20;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .di-cam { width: 10px; height: 10px; background: #1a1a2e; border: 1px solid #333; border-radius: 50%; }
+    .di-sensor { width: 20px; height: 6px; background: #222; border-radius: 4px; }
+
+    .status-bar {
+      background: white; padding: 36px 20px 8px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 11px; font-weight: 800; color: #374151;
+      border-bottom: 1px solid #f1f5f9; flex-shrink: 0;
+    }
+    .battery {
+      width: 18px; height: 11px; border: 1.5px solid #9ca3af; border-radius: 2px;
+      position: relative; display: flex; align-items: center; padding: 1.5px;
+    }
+    .battery::after {
+      content: ''; position: absolute; right: -4px; top: 50%; transform: translateY(-50%);
+      width: 2px; height: 6px; background: #9ca3af; border-radius: 0 1px 1px 0;
+    }
+    .battery-fill { height: 100%; background: #374151; border-radius: 1px; width: 75%; }
+
+    .line-header {
+      background: var(--line); padding: 10px 14px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .line-header-left { display: flex; align-items: center; gap: 8px; }
+    .line-header-avatar {
+      width: 36px; height: 36px; background: white; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 900; color: var(--line);
+    }
+    .line-header-name { font-size: 13px; font-weight: 900; color: white; }
+    .line-header-sub { font-size: 9px; color: rgba(255,255,255,0.8); font-weight: 700; display: flex; align-items: center; gap: 4px; }
+    .ping { width: 6px; height: 6px; background: #a7f3d0; border-radius: 50%; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    .chat-area {
+      flex: 1; background: #8cabd9; overflow-y: auto; padding: 12px 10px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .chat-msg { display: flex; gap: 8px; }
+    .chat-msg.user { flex-direction: row-reverse; }
+    .chat-avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 900; flex-shrink: 0;
+    }
+    .chat-avatar.bot { background: white; color: var(--line); }
+    .chat-avatar.user { background: var(--line); color: white; }
+    .chat-bubble {
+      max-width: 75%; padding: 9px 12px; border-radius: 16px;
+      font-size: 11px; font-weight: 600; line-height: 1.5; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .chat-bubble.bot { background: white; color: #374151; border-radius: 2px 16px 16px 16px; }
+    .chat-bubble.user { background: #7beb59; color: #1a2e0a; border-radius: 16px 2px 16px 16px; }
+
+    .flex-card {
+      background: white; border-radius: 16px; overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.12); max-width: 230px;
+    }
+    .flex-card-header {
+      padding: 10px 12px; font-size: 11px; font-weight: 900; color: white;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .flex-card-body { padding: 10px 12px; }
+    .flex-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 10px; }
+    .flex-label { color: #9ca3af; font-weight: 700; }
+    .flex-val { color: #111827; font-weight: 900; }
+    .flex-amount { color: #059669; font-size: 14px; font-weight: 900; }
+    .flex-btn {
+      width: 100%; padding: 7px; border: none; border-radius: 8px;
+      font-family: inherit; font-size: 10px; font-weight: 900; cursor: pointer;
+      margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 4px;
+    }
+
+    .chat-input-row {
+      background: white; padding: 8px 10px;
+      display: flex; gap: 6px; align-items: center; flex-shrink: 0;
+      border-top: 1px solid #f1f5f9;
+    }
+    .chat-input {
+      flex: 1; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 99px;
+      padding: 7px 14px; font-family: inherit; font-size: 11px; font-weight: 700;
+      color: #374151; outline: none;
+    }
+    .send-btn {
+      width: 34px; height: 34px; border: none; border-radius: 50%;
+      background: var(--line); color: white; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+
+    .rich-menu {
+      background: white; border-top: 1px solid #f1f5f9;
+      display: grid; grid-template-columns: repeat(5,1fr);
+      flex-shrink: 0;
+    }
+    .rich-tab {
+      padding: 8px 4px; display: flex; flex-direction: column;
+      align-items: center; gap: 3px; cursor: pointer;
+      font-size: 8px; font-weight: 800; color: #6b7280;
+      border: none; background: transparent; font-family: inherit;
+      transition: background 0.15s;
+    }
+    .rich-tab:hover { background: #f9fafb; }
+    .rich-tab.active { color: var(--line); }
+    .rich-tab .icon { font-size: 16px; }
+
+    /* ─── e-Slip Card ─── */
+    .eslip {
+      background: #f8fafb; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 10px; font-size: 9.5px;
+    }
+    .eslip-header {
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #e5e7eb; padding-bottom: 7px; margin-bottom: 7px;
+    }
+    .eslip-logo {
+      width: 18px; height: 18px; background: #00A950; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 900; color: white;
+    }
+    .eslip-ok { background: #f0fdf4; color: #16a34a; padding: 2px 6px; border-radius: 4px; font-weight: 800; font-size: 8.5px; }
+
+    /* ────────────────── DESKTOP FRAME ────────────────── */
+    .laptop-outer {
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .laptop-screen {
+      width: 960px;
+      background: white;
+      border-radius: 14px 14px 0 0;
+      border: 3px solid #1e293b;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+      display: flex; flex-direction: column;
+    }
+    .browser-chrome {
+      background: #f1f3f5; border-bottom: 1px solid #dee2e6;
+      padding: 10px 14px; display: flex; align-items: center; gap: 10px;
+    }
+    .browser-dots { display: flex; gap: 5px; }
+    .browser-dot {
+      width: 11px; height: 11px; border-radius: 50%;
+    }
+    .browser-urlbar {
+      flex: 1; background: white; border: 1px solid #dee2e6;
+      border-radius: 8px; padding: 5px 12px;
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px; color: #495057; font-weight: 700;
+    }
+    .url-secure { color: #2da44e; font-size: 10px; }
+    .url-liff { background: #d1fae5; color: #059669; font-size: 9px; font-weight: 900; padding: 1px 6px; border-radius: 4px; margin-left: auto; }
+
+    /* Desktop LIFF Header */
+    .dt-liff-bar {
+      background: #f8f9fa; border-bottom: 1px solid #e9ecef;
+      padding: 7px 18px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .dt-liff-badge {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 10px; font-weight: 900; color: #374151; letter-spacing: .04em; text-transform: uppercase;
+    }
+    .dt-liff-dot { width: 7px; height: 7px; background: var(--line); border-radius: 50%; animation: pulse 1.5s infinite; }
+    .dt-tip { font-size: 10px; color: var(--line); font-weight: 700; display: flex; align-items: center; gap: 4px; }
+
+    /* Desktop Navbar */
+    .dt-navbar {
+      background: white; border-bottom: 1px solid #e9ecef;
+      padding: 10px 28px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .dt-logo { font-weight: 900; font-size: 16px; color: #111; display: flex; align-items: center; gap: 6px; }
+    .dt-logo .icon { width: 30px; height: 30px; border-radius: 8px; background: linear-gradient(135deg,#1A56DB,#0EA5E9); display: flex; align-items: center; justify-content: center; color: white; font-size: 15px; font-weight: 900; }
+    .dt-logo .bl { color: #1A56DB; }
+    .dt-searchbar {
+      flex: 1; background: #f9fafb; border: 1px solid #e5e7eb;
+      border-radius: 12px; padding: 8px 16px;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 12px; font-weight: 700; color: #9ca3af;
+    }
+    .dt-nav-icons { display: flex; align-items: center; gap: 10px; }
+    .dt-nav-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: #f1f5f9; font-size: 15px; cursor: pointer; }
+    .dt-avatar { width: 34px; height: 34px; border-radius: 8px; background: var(--blue); color: white; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900; }
+
+    /* Desktop Category Tabs */
+    .dt-cats {
+      background: white; padding: 10px 28px;
+      display: flex; gap: 6px; border-bottom: 1px solid #f1f5f9;
+    }
+    .dt-cat {
+      padding: 5px 14px; border-radius: 99px; border: 1px solid #e5e7eb;
+      font-size: 11px; font-weight: 800; cursor: pointer;
+      background: transparent; color: #6b7280; font-family: inherit;
+      transition: all 0.15s;
+    }
+    .dt-cat.active { background: var(--blue); color: white; border-color: var(--blue); }
+
+    /* Desktop Filter Bar */
+    .dt-filterbar {
+      background: white; padding: 12px 28px;
+      display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #f1f5f9;
+    }
+    .dt-filter-result { font-size: 18px; font-weight: 900; color: #111; }
+    .dt-filter-result span { font-size: 11px; color: #6b7280; font-weight: 700; margin-left: 4px; }
+    .dt-filter-group { display: flex; gap: 6px; margin-left: auto; }
+    .dt-filter-btn {
+      padding: 7px 14px; border-radius: 10px; border: 1px solid #e5e7eb;
+      font-size: 11px; font-weight: 800; cursor: pointer; font-family: inherit;
+      background: white; color: #374151; display: flex; align-items: center; gap: 5px;
+      transition: background 0.15s;
+    }
+    .dt-filter-btn:hover { background: #f9fafb; }
+    .dt-filter-btn.primary { background: var(--blue); color: white; border-color: var(--blue); }
+
+    /* Desktop Listing Grid */
+    .dt-content {
+      background: #f8fafc; padding: 20px 28px;
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 16px; overflow-y: auto; max-height: 430px;
+    }
+    .dt-card {
+      background: white; border-radius: 14px; overflow: hidden;
+      border: 1px solid #e9ecef; transition: box-shadow 0.2s, transform 0.2s;
+      cursor: pointer;
+    }
+    .dt-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.1); transform: translateY(-2px); }
+    .dt-card-img {
+      height: 130px; position: relative; overflow: hidden;
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      display: flex; align-items: center; justify-content: center; font-size: 36px;
+    }
+    .dt-card-badge {
+      position: absolute; top: 8px; left: 8px;
+      background: white; border-radius: 6px; padding: 3px 8px;
+      font-size: 9px; font-weight: 900; color: #374151;
+    }
+    .dt-card-fav {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(255,255,255,0.9); border-radius: 50%;
+      width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; font-size: 13px;
+    }
+    .dt-card-body { padding: 12px; }
+    .dt-card-name { font-size: 12px; font-weight: 900; color: #111; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dt-card-loc { font-size: 10px; color: #6b7280; font-weight: 700; margin-bottom: 8px; }
+    .dt-card-meta { display: flex; gap: 8px; font-size: 9.5px; color: #9ca3af; font-weight: 700; margin-bottom: 8px; }
+    .dt-card-foot { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #f1f5f9; padding-top: 8px; }
+    .dt-card-price { font-size: 14px; font-weight: 900; color: var(--blue); }
+    .dt-card-price span { font-size: 9.5px; font-weight: 700; color: #9ca3af; }
+    .dt-card-book { padding: 5px 12px; background: var(--blue); color: white; border: none; border-radius: 7px; font-family: inherit; font-size: 10px; font-weight: 900; cursor: pointer; }
+
+    .laptop-base {
+      width: 1040px; height: 22px;
+      background: linear-gradient(to bottom, #374151, #1f2937);
+      border-radius: 0 0 4px 4px;
+      position: relative;
+    }
+    .laptop-base::after {
+      content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 200px; height: 8px; background: #111827; border-radius: 0 0 4px 4px;
+    }
+    .laptop-base::before {
+      content: ''; position: absolute; top: 7px; left: 50%; transform: translateX(-50%);
+      width: 40px; height: 4px; background: #4b5563; border-radius: 2px;
+    }
+
+    /* ─── Floating Dev Button ─── */
+    .float-btn {
+      position: fixed; bottom: 20px; right: 20px; z-index: 200;
+      background: #f0fdf4; color: #16a34a;
+      border: 1px solid #bbf7d0; border-radius: 99px;
+      padding: 10px 18px; font-family: inherit; font-size: 12px; font-weight: 900;
+      cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      display: flex; align-items: center; gap: 6px; transition: all 0.2s;
+    }
+    .float-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+
+    /* ─── Scrollbar ─── */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 99px; }
+    .chat-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); }
+
+    /* ─── Responsive hint ─── */
+    @media (max-width: 980px) {
+      .laptop-outer { display: none; }
+      .toggle-btn[data-view="desktop"]::after { content: ' (จอใหญ่เท่านั้น)'; font-size: 9px; color: #ef4444; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<header class="topbar">
+  <div class="topbar-logo">
+    <div class="icon">🏠</div>
+    <div class="name">Prime<span>Rent</span> — LINE OA Mockup</div>
+    <div class="topbar-badge">LIFF Simulator</div>
+  </div>
+  <div class="toggle-wrap">
+    <button class="toggle-btn active" data-view="mobile" id="btnMobile" onclick="switchView('mobile')">
+      📱 มือถือ
+    </button>
+    <button class="toggle-btn" data-view="desktop" id="btnDesktop" onclick="switchView('desktop')">
+      💻 แลปท็อป
+    </button>
+  </div>
+</header>
+
+<!-- Stage -->
+<div class="stage" id="stage">
+
+  <!-- ══════════════ MOBILE MOCKUP ══════════════ -->
+  <div class="mockup-wrapper" id="mobileView">
+    <div class="mobile-outer">
+
+      <!-- Role Switcher -->
+      <div class="role-bar">
+        <button class="role-btn active" id="rb-tenant" onclick="switchRole('tenant')">👤 มุมผู้เช่า</button>
+        <button class="role-btn" id="rb-owner" onclick="switchRole('owner')">🛡️ มุมเจ้าของ</button>
+        <button class="role-btn" id="rb-agent" onclick="switchRole('agent')">✨ มุมเอเจนต์</button>
+      </div>
+
+      <!-- Phone Frame -->
+      <div class="phone-frame">
+        <div class="dynamic-island">
+          <div class="di-cam"></div>
+          <div class="di-sensor"></div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+          <span>9:41</span>
+          <div style="display:flex;align-items:center;gap:5px;">
+            <span style="font-size:10px;">5G</span>
+            <div class="battery"><div class="battery-fill"></div></div>
+          </div>
+        </div>
+
+        <!-- LINE Header -->
+        <div class="line-header">
+          <div class="line-header-left">
+            <button style="background:none;border:none;color:white;cursor:pointer;padding:4px;">←</button>
+            <div class="line-header-avatar">RF</div>
+            <div>
+              <div class="line-header-name">RentFlow OA ✓</div>
+              <div class="line-header-sub"><div class="ping"></div> จำลองระบบ LINE Official</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:4px;">
+            <div style="background:rgba(255,255,255,.15);border-radius:8px;padding:5px;font-size:13px;cursor:pointer;" title="แจ้งเตือนนัด">📅</div>
+            <div style="background:rgba(255,255,255,.15);border-radius:8px;padding:5px;font-size:13px;cursor:pointer;" title="เซ็นสัญญา">✨</div>
+            <div style="background:rgba(255,255,255,.15);border-radius:8px;padding:5px;font-size:13px;cursor:pointer;" title="แจ้งหมดสัญญา">⚠️</div>
+          </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="chat-area" id="mobileChat">
+          <!-- Bot greeting -->
+          <div class="chat-msg">
+            <div class="chat-avatar bot">RF</div>
+            <div>
+              <div class="chat-bubble bot">สวัสดีค่ะ 👋 ยินดีต้อนรับสู่ RentFlow OA เลือกเมนูด้านล่างเพื่อดำเนินการได้เลยค่ะ</div>
+            </div>
+          </div>
+
+          <!-- Flex Bill Card -->
+          <div class="chat-msg">
+            <div class="chat-avatar bot">RF</div>
+            <div class="flex-card">
+              <div class="flex-card-header" style="background:linear-gradient(135deg,#059669,#06c755);">
+                💳 หลักฐานการชำระเงิน
+              </div>
+              <div class="flex-card-body">
+                <div class="flex-row">
+                  <span class="flex-label">จำนวนโอน</span>
+                  <span class="flex-amount">฿13,800</span>
+                </div>
+                <div class="eslip">
+                  <div class="eslip-header">
+                    <div style="display:flex;align-items:center;gap:5px;">
+                      <div class="eslip-logo">K</div>
+                      <span style="font-weight:900;font-size:9.5px;">K-Plus e-Slip</span>
+                    </div>
+                    <span class="eslip-ok">โอนสำเร็จ</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+                    <span style="color:#9ca3af;">จาก:</span><span style="font-weight:900;">คุณผู้เช่า</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+                    <span style="color:#9ca3af;">ไปยัง:</span><span style="font-weight:900;">โครงการ RentFlow</span>
+                  </div>
+                  <div style="border-top:1px dashed #e5e7eb;padding-top:5px;margin-top:5px;display:flex;justify-content:space-between;">
+                    <span style="color:#9ca3af;">ยอดเงิน:</span><span style="font-weight:900;color:#00A950;">฿13,800.00</span>
+                  </div>
+                </div>
+                <button class="flex-btn" style="background:#fef3c7;color:#b45309;" id="approveSlipBtn" onclick="approveSlip()">🔔 รอการตรวจสอบและอนุมัติ</button>
+                <div id="ownerApprove" style="display:none">
+                  <button class="flex-btn" style="background:#06c755;color:white;" onclick="approveSlipDone()">✅ อนุมัติยอดชำระ</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- QR Payment Card -->
+          <div class="chat-msg">
+            <div class="chat-avatar bot">RF</div>
+            <div class="flex-card">
+              <div class="flex-card-header" style="background:linear-gradient(135deg,#1e3a5f,#1A56DB);">
+                📱 ชำระผ่าน PromptPay
+              </div>
+              <div class="flex-card-body">
+                <div style="background:#0a1e3f;color:white;padding:5px 10px;border-radius:6px;font-size:8.5px;font-weight:900;letter-spacing:.06em;display:flex;justify-content:space-between;margin-bottom:8px;">
+                  <span>PROMPT PAY</span><span style="opacity:.6;">Thai QR Payment</span>
+                </div>
+                <div style="display:flex;justify-content:center;margin-bottom:6px;">
+                  <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://rentflow.app/pay/13800" alt="QR" style="width:100px;height:100px;border-radius:6px;border:1px solid #e5e7eb;" />
+                </div>
+                <div style="text-align:center;font-size:8.5px;color:#9ca3af;font-weight:800;margin-bottom:6px;">สแกนเพื่อชำระเงิน</div>
+                <div class="flex-row">
+                  <span class="flex-label">ยอดเงิน:</span>
+                  <span style="color:#06c755;font-weight:900;">฿13,800</span>
+                </div>
+                <button class="flex-btn" style="background:#f1f5f9;color:#374151;">Confirm Payment (Webhook)</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- User reply -->
+          <div class="chat-msg user">
+            <div class="chat-avatar user">U</div>
+            <div class="chat-bubble user">ขอดู QR โอนเงินค่าเช่าเดือนนี้ด้วยครับ</div>
+          </div>
+
+        </div>
+
+        <!-- Chat Input -->
+        <div class="chat-input-row">
+          <input class="chat-input" type="text" placeholder="พิมพ์ข้อความส่งเข้า LINE OA..." />
+          <button class="send-btn">▶</button>
+        </div>
+
+        <!-- Rich Menu -->
+        <div class="rich-menu">
+          <button class="rich-tab active" onclick="showWebview('billing')">
+            <span class="icon">💳</span>ชำระเงิน
+          </button>
+          <button class="rich-tab" onclick="showWebview('search')">
+            <span class="icon">🔍</span>ค้นหาห้อง
+          </button>
+          <button class="rich-tab" onclick="showWebview('appointment')">
+            <span class="icon">📅</span>นัดดูห้อง
+          </button>
+          <button class="rich-tab" onclick="showWebview('contract')">
+            <span class="icon">📄</span>สัญญา
+          </button>
+          <button class="rich-tab" onclick="showWebview('agent')">
+            <span class="icon">✨</span>Agent
+          </button>
+        </div>
+
+        <!-- LIFF WebView Overlay (Search) -->
+        <div id="webviewOverlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:30;display:none;flex-direction:column;justify-content:flex-end;">
+          <div style="background:white;border-radius:24px 24px 0 0;height:82%;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 -8px 40px rgba(0,0,0,.2);">
+            <!-- Webview Header -->
+            <div style="background:#f8f9fa;padding:8px 12px;border-bottom:1px solid #e9ecef;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+              <div style="display:flex;align-items:center;gap:5px;min-width:0;">
+                <div style="width:6px;height:6px;background:#06c755;border-radius:50%;flex-shrink:0;animation:pulse 1.5s infinite;"></div>
+                <span id="webviewTitle" style="font-size:8.5px;font-weight:900;color:#374151;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">LIFF WEBVIEW — ค้นหาห้องพัก</span>
+              </div>
+              <button onclick="closeWebview()" style="background:none;border:none;cursor:pointer;font-size:18px;color:#6b7280;flex-shrink:0;line-height:1;padding:0 0 0 8px;">✕</button>
+            </div>
+            <!-- URL Bar -->
+            <div style="background:#f1f3f5;padding:6px 10px;border-bottom:1px solid #dee2e6;display:flex;align-items:center;gap:6px;flex-shrink:0;">
+              <span style="font-size:10px;color:#2da44e;">🔒</span>
+              <span style="font-size:10px;font-weight:700;color:#495057;flex:1;" id="webviewUrl">rentflow.app/listings</span>
+              <span style="background:#d1fae5;color:#059669;font-size:8.5px;font-weight:900;padding:2px 7px;border-radius:4px;">LIFF</span>
+              <span style="font-size:12px;cursor:pointer;color:#6b7280;">↺</span>
+              <span style="font-size:12px;cursor:pointer;color:#6b7280;">⤢</span>
+            </div>
+            <!-- Webview Content — flex column so inner layout can use height:100% -->
+            <div id="webviewContent" style="flex:1;overflow:hidden;display:flex;flex-direction:column;"></div>
+          </div>
+        </div>
+
+      </div><!-- end phone-frame -->
+    </div><!-- end mobile-outer -->
+  </div><!-- end mobileView -->
+
+
+  <!-- ══════════════ DESKTOP MOCKUP ══════════════ -->
+  <div class="mockup-wrapper" id="desktopView" style="display:none;">
+    <div class="laptop-outer">
+      <div class="laptop-screen">
+
+        <!-- Browser Chrome -->
+        <div class="browser-chrome">
+          <div class="browser-dots">
+            <div class="browser-dot" style="background:#ff5f57;"></div>
+            <div class="browser-dot" style="background:#febc2e;"></div>
+            <div class="browser-dot" style="background:#28c840;"></div>
+          </div>
+          <div class="browser-urlbar">
+            <span class="url-secure">🔒</span>
+            <span>rentflow.app/listings</span>
+            <span class="url-liff">LIFF</span>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <span style="font-size:14px;cursor:pointer;color:#6b7280;">↺</span>
+            <span style="font-size:14px;cursor:pointer;color:#6b7280;">⤢</span>
+          </div>
+        </div>
+
+        <!-- LIFF Status Bar -->
+        <div class="dt-liff-bar">
+          <div class="dt-liff-badge">
+            <div class="dt-liff-dot"></div>
+            LIFF WEBVIEW — ค้นหาห้องพัก
+          </div>
+          <div class="dt-tip">🔗 เว็บไซต์ค้นหาห้องพักเชื่อมตรงกับ LINE OA ของคุณ</div>
+        </div>
+
+        <!-- Desktop Navbar -->
+        <div class="dt-navbar">
+          <div class="dt-logo">
+            <div class="icon">🏠</div>
+            Prime<span class="bl">Rent</span>
+          </div>
+          <div class="dt-searchbar">
+            🔍&nbsp; ค้นหาพื้นที่ ชื่ออาคาร หรือสถานที่...
+          </div>
+          <div class="dt-nav-icons">
+            <div class="dt-nav-icon">🔔</div>
+            <div class="dt-nav-icon">🇹🇭</div>
+            <div class="dt-nav-icon" style="font-size:11px;font-weight:900;color:#6b7280;">THB</div>
+            <div class="dt-avatar">J</div>
+            <div class="dt-nav-icon">≡</div>
+          </div>
+        </div>
+
+        <!-- Category Tabs -->
+        <div class="dt-cats">
+          <button class="dt-cat active">ทั้งหมด</button>
+          <button class="dt-cat">คอนโด</button>
+          <button class="dt-cat">บ้าน</button>
+          <button class="dt-cat">อพาร์ตเมนต์</button>
+          <button class="dt-cat">สตูดิโอ</button>
+          <button class="dt-cat">ทาวน์โฮม</button>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="dt-filterbar">
+          <div class="dt-filter-result">พบที่พัก 20 แห่ง <span>· ประกาศทั้งหมด</span></div>
+          <div class="dt-filter-group">
+            <button class="dt-filter-btn">⬆⬇ เรียงตาม: ล่าสุด</button>
+            <button class="dt-filter-btn primary">⚙️ กรองผลลัพธ์</button>
+          </div>
+        </div>
+
+        <!-- Listing Grid (3 columns) -->
+        <div class="dt-content">
+
+          <div class="dt-card">
+            <div class="dt-card-img" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe);">🏙️
+              <div class="dt-card-badge">คอนโด</div>
+              <div class="dt-card-fav">🤍</div>
+            </div>
+            <div class="dt-card-body">
+              <div class="dt-card-name">The Bright Sukhumvit 21</div>
+              <div class="dt-card-loc">📍 สุขุมวิท ซ.21 · ห่าง BTS อโศก 150 ม.</div>
+              <div class="dt-card-meta"><span>🛏 2 ห้องนอน</span><span>🚿 2 ห้องน้ำ</span><span>📐 55 ตร.ม.</span></div>
+              <div class="dt-card-foot">
+                <div class="dt-card-price">฿28,000 <span>/เดือน</span></div>
+                <button class="dt-card-book">นัดชม</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="dt-card">
+            <div class="dt-card-img" style="background:linear-gradient(135deg,#d1fae5,#a7f3d0);">🌿
+              <div class="dt-card-badge">อพาร์ตเมนต์</div>
+              <div class="dt-card-fav">❤️</div>
+            </div>
+            <div class="dt-card-body">
+              <div class="dt-card-name">Green Garden Ladprao</div>
+              <div class="dt-card-loc">📍 ลาดพร้าว ซ.48 · ใกล้เซ็นทรัล</div>
+              <div class="dt-card-meta"><span>🛏 1 ห้องนอน</span><span>🚿 1 ห้องน้ำ</span><span>📐 35 ตร.ม.</span></div>
+              <div class="dt-card-foot">
+                <div class="dt-card-price">฿12,000 <span>/เดือน</span></div>
+                <button class="dt-card-book">นัดชม</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="dt-card">
+            <div class="dt-card-img" style="background:linear-gradient(135deg,#fef3c7,#fde68a);">🌆
+              <div class="dt-card-badge">สตูดิโอ</div>
+              <div class="dt-card-fav">🤍</div>
+            </div>
+            <div class="dt-card-body">
+              <div class="dt-card-name">City Center Studio Silom</div>
+              <div class="dt-card-loc">📍 สีลม ซ.7 · ห่าง BTS 300 ม.</div>
+              <div class="dt-card-meta"><span>🛏 Studio</span><span>🚿 1 ห้องน้ำ</span><span>📐 28 ตร.ม.</span></div>
+              <div class="dt-card-foot">
+                <div class="dt-card-price">฿9,500 <span>/เดือน</span></div>
+                <button class="dt-card-book">นัดชม</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="dt-card">
+            <div class="dt-card-img" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);">🌸
+              <div class="dt-card-badge">บ้าน</div>
+              <div class="dt-card-fav">🤍</div>
+            </div>
+            <div class="dt-card-body">
+              <div class="dt-card-name">Casa Pinklao Family Home</div>
+              <div class="dt-card-loc">📍 ปิ่นเกล้า · ทางด่วน 5 นาที</div>
+              <div class="dt-card-meta"><span>🛏 3 ห้องนอน</span><span>🚿 2 ห้องน้ำ</span><span>📐 120 ตร.ม.</span></div>
+              <div class="dt-card-foot">
+                <div class="dt-card-price">฿35,000 <span>/เดือน</span></div>
+                <button class="dt-card-book">นัดชม</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="dt-card">
+            <div class="dt-card-img" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe);">🎯
+              <div class="dt-card-badge">คอนโด</div>
+              <div class="dt-card-fav">🤍</div>
+            </div>
+            <div class="dt-card-body">
+              <div class="dt-card-name">Midtown Asoke Premium</div>
+              <div class="dt-card-loc">📍 อโศก · MRT สุขุมวิท 50 ม.</div>
+              <div class="dt-card-meta"><span>🛏 2 ห้องนอน</span><span>🚿 2 ห้องน้ำ</span><span>📐 65 ตร.ม.</span></div>
+              <div class="dt-card-foot">
+                <div class="dt-card-price">฿42,000 <span>/เดือน</span></div>
+                <button class="dt-card-book">นัดชม</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="dt-card">
+            <div class="dt-card-img" style="background:linear-gradient(135deg,#cffafe,#a5f3fc);">🌊
+              <div class="dt-card-badge">ทาวน์โฮม</div>
+              <div class="dt-card-fav">🤍</div>
+            </div>
+            <div class="dt-card-body">
+              <div class="dt-card-name">Riverside Townhome Rama3</div>
+              <div class="dt-card-loc">📍 พระราม 3 · ริมแม่น้ำ</div>
+              <div class="dt-card-meta"><span>🛏 3 ห้องนอน</span><span>🚿 3 ห้องน้ำ</span><span>📐 160 ตร.ม.</span></div>
+              <div class="dt-card-foot">
+                <div class="dt-card-price">฿55,000 <span>/เดือน</span></div>
+                <button class="dt-card-book">นัดชม</button>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- end dt-content -->
+      </div><!-- end laptop-screen -->
+
+      <div class="laptop-base"></div>
+    </div><!-- end laptop-outer -->
+  </div><!-- end desktopView -->
+
+</div><!-- end stage -->
+
+<!-- Floating Dev Btn (shown only in desktop view) -->
+<button class="float-btn" id="globalFloatBtn" style="display:none;">💰 ทดสอบมัดจำ</button>
+
+<script>
+  let currentView = 'mobile';
+
+  function switchView(view) {
+    if (view === currentView) return;
+    currentView = view;
+
+    const mobile = document.getElementById('mobileView');
+    const desktop = document.getElementById('desktopView');
+    const btnM = document.getElementById('btnMobile');
+    const btnD = document.getElementById('btnDesktop');
+
+    // fade out current
+    const current = view === 'mobile' ? desktop : mobile;
+    current.classList.add('fade-out');
+
+    setTimeout(() => {
+      const floatBtn = document.getElementById('globalFloatBtn');
+      if (view === 'mobile') {
+        mobile.style.display = 'block';
+        desktop.style.display = 'none';
+        btnM.classList.add('active');
+        btnD.classList.remove('active');
+        if (floatBtn) floatBtn.style.display = 'none';
+      } else {
+        desktop.style.display = 'block';
+        mobile.style.display = 'none';
+        btnD.classList.add('active');
+        btnM.classList.remove('active');
+        if (floatBtn) floatBtn.style.display = 'flex';
+      }
+      const next = view === 'mobile' ? mobile : desktop;
+      next.classList.remove('fade-out');
+      // force fade-in
+      next.style.opacity = '0'; next.style.transform = 'scale(0.96)';
+      requestAnimationFrame(() => {
+        next.style.transition = 'all 0.35s ease';
+        next.style.opacity = '1'; next.style.transform = 'scale(1)';
+      });
+    }, 200);
+  }
+
+  function switchRole(role) {
+    ['tenant','owner','agent'].forEach(r => {
+      document.getElementById('rb-'+r).classList.remove('active');
+    });
+    document.getElementById('rb-'+role).classList.add('active');
+
+    const ownerApprove = document.getElementById('ownerApprove');
+    const approveBtn = document.getElementById('approveSlipBtn');
+    if (role === 'owner' || role === 'agent') {
+      ownerApprove.style.display = 'block';
+      approveBtn.style.display = 'none';
+    } else {
+      ownerApprove.style.display = 'none';
+      approveBtn.style.display = 'flex';
+    }
+  }
+
+  const WEBVIEWS = {
+    billing: {
+      title: 'LIFF WEBVIEW — สถานะชำระเงิน',
+      url: 'rentflow.app/billing',
+      html: `<div style="padding:14px;">
+        <div style="background:linear-gradient(135deg,#059669,#06c755);border-radius:12px;padding:14px;color:white;margin-bottom:12px;">
+          <div style="font-weight:900;font-size:13px;">💳 สถานะชำระเงิน</div>
+          <div style="font-size:10px;opacity:.8;margin-top:2px;">ประจำเดือน กรกฎาคม 2026</div>
+        </div>
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px;margin-bottom:10px;">
+          <div style="font-size:11px;font-weight:900;color:#065f46;margin-bottom:8px;">รายการค่าใช้จ่าย</div>
+          ${['ค่าเช่าห้องรายเดือน — ฿12,000','ค่าน้ำประปา — ฿350','ค่าไฟฟ้า — ฿1,450'].map(i=>`<div style="display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:#374151;padding:5px 0;border-bottom:1px solid #d1fae5;">${i.split('—')[0]}<span style="font-weight:900;">฿${i.split('฿')[1]}</span></div>`).join('')}
+          <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:900;color:#059669;padding:8px 0 0;"><span>ยอดรวม:</span><span>฿13,800</span></div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button style="flex:1;padding:9px;background:#1A56DB;color:white;border:none;border-radius:10px;font-family:inherit;font-size:11px;font-weight:900;cursor:pointer;">📱 ขอ QR Code</button>
+          <button style="flex:1;padding:9px;background:#f1f5f9;color:#374151;border:none;border-radius:10px;font-family:inherit;font-size:11px;font-weight:900;cursor:pointer;">📤 อัปโหลดสลิป</button>
+        </div>
+      </div>`
+    },
+    search: {
+      title: 'LIFF WEBVIEW — ค้นหาห้องพัก',
+      url: 'rentflow.app/listings',
+      html: `<div style="padding:12px;">
+        <div style="font-size:11px;font-weight:900;color:#374151;margin-bottom:10px;">พบที่พัก 20 แห่ง</div>
+        ${[
+          ['🏙️','The Bright Sukhumvit 21','BTS อโศก 150ม.','฿28,000','2 นอน · 55 ตร.ม.','#dbeafe'],
+          ['🌿','Green Garden Ladprao','ใกล้เซ็นทรัล','฿12,000','1 นอน · 35 ตร.ม.','#d1fae5'],
+          ['🌆','City Center Studio Silom','BTS 300 ม.','฿9,500','Studio · 28 ตร.ม.','#fef3c7'],
+        ].map(([e,n,l,p,m,c])=>`
+          <div style="background:white;border-radius:12px;border:1px solid #e9ecef;overflow:hidden;margin-bottom:10px;display:flex;gap:0;">
+            <div style="width:80px;background:linear-gradient(135deg,${c},${c}cc);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">${e}</div>
+            <div style="padding:10px;flex:1;">
+              <div style="font-size:11px;font-weight:900;color:#111;">${n}</div>
+              <div style="font-size:9.5px;color:#6b7280;font-weight:700;margin:2px 0 4px;">📍 ${l}</div>
+              <div style="font-size:9px;color:#9ca3af;font-weight:700;margin-bottom:6px;">${m}</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-size:13px;font-weight:900;color:#1A56DB;">${p}</span>
+                <button style="padding:4px 10px;background:#1A56DB;color:white;border:none;border-radius:7px;font-size:9.5px;font-weight:900;cursor:pointer;font-family:inherit;">นัดชม</button>
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>`
+    },
+
+    appointment: {
+      title: 'LIFF WEBVIEW — นัดดูห้อง',
+      url: 'rentflow.app/appointments',
+      html: `<div style="padding:14px;">
+        <div style="background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:12px;padding:12px;color:white;margin-bottom:12px;">
+          <div style="font-weight:900;font-size:12px;">📅 การนัดดูห้องของฉัน</div>
+        </div>
+        ${[
+          ['คอนโดหรู BTS อโศก','10/07/2026','10:00','confirmed'],
+          ['สตูดิโอ ลาดพร้าว','12/07/2026','09:00','pending'],
+        ].map(([r,d,t,s])=>`
+          <div style="background:white;border-radius:12px;border:1px solid #e9ecef;padding:12px;margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px;">
+              <div style="font-size:11px;font-weight:900;color:#111;">${r}</div>
+              <span style="font-size:9px;font-weight:900;padding:2px 8px;border-radius:6px;${s==='confirmed'?'background:#eff6ff;color:#2563eb;':'background:#fefce8;color:#b45309;'}">${s==='confirmed'?'ยืนยันแล้ว':'รอยืนยัน'}</span>
+            </div>
+            <div style="font-size:10px;font-weight:700;color:#6b7280;">📅 ${d} &nbsp; 🕐 ${t} น.</div>
+          </div>
+        `).join('')}
+      </div>`
+    },
+    contract: {
+      title: 'LIFF WEBVIEW — สัญญาดิจิทัล',
+      url: 'rentflow.app/contracts',
+      html: `<div style="padding:14px;">
+        <div style="background:linear-gradient(135deg,#4f46e5,#6366f1);border-radius:12px;padding:12px;color:white;margin-bottom:12px;">
+          <div style="font-weight:900;font-size:12px;">📄 สัญญาเช่า E-Sign</div>
+        </div>
+        <div style="background:white;border-radius:12px;border:1px solid #e9ecef;padding:12px;">
+          <div style="font-size:11px;font-weight:900;margin-bottom:4px;">Sukhumvit Condo ห้อง A-1204</div>
+          <div style="font-size:10px;color:#6b7280;font-weight:700;">สัญญาเช่า 12 เดือน · ลงนาม 3 ฝ่าย</div>
+          <div style="display:flex;gap:4px;margin:8px 0;">
+            ${['ผู้เช่า ✅','เจ้าของ ✅','เอเจนต์ ⏳'].map(s=>`<span style="font-size:9px;font-weight:900;padding:3px 8px;background:#f1f5f9;border-radius:6px;color:#374151;">${s}</span>`).join('')}
+          </div>
+          <div style="font-size:9.5px;color:#d97706;background:#fef3c7;border-radius:6px;padding:6px 8px;font-weight:700;margin-bottom:8px;">⚠️ หมดอายุ 31/08/2026 (เหลือ 52 วัน)</div>
+          <button style="width:100%;padding:8px;background:#4f46e5;color:white;border:none;border-radius:8px;font-family:inherit;font-size:11px;font-weight:900;cursor:pointer;">✍️ กดเซ็นสัญญา e-Sign</button>
+        </div>
+      </div>`
+    },
+    agent: {
+      title: 'LIFF WEBVIEW — ติดต่อ Agent',
+      url: 'rentflow.app/agent',
+      html: `<div style="padding:14px;">
+        <div style="background:linear-gradient(135deg,#0284c7,#1A56DB);border-radius:12px;padding:12px;color:white;margin-bottom:12px;">
+          <div style="font-weight:900;font-size:12px;">✨ ติดต่อ Agent</div>
+        </div>
+        ${[
+          ['คุณแสนดี นายหน้า','🏢 RentFlow Premium','⭐ 4.9 · 248 ดีล'],
+          ['คุณสมใจ จัดให้','🏠 Elite Realty','⭐ 4.7 · 186 ดีล'],
+        ].map(([n,c,s])=>`
+          <div style="background:white;border-radius:12px;border:1px solid #e9ecef;padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;">
+            <div style="width:40px;height:40px;background:linear-gradient(135deg,#1A56DB,#0EA5E9);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">👤</div>
+            <div style="flex:1;">
+              <div style="font-size:11px;font-weight:900;">${n}</div>
+              <div style="font-size:9.5px;color:#6b7280;font-weight:700;">${c}</div>
+              <div style="font-size:9px;color:#f59e0b;font-weight:800;">${s}</div>
+            </div>
+            <button style="padding:5px 12px;background:#06c755;color:white;border:none;border-radius:8px;font-size:10px;font-weight:900;cursor:pointer;font-family:inherit;">LINE</button>
+          </div>
+        `).join('')}
+      </div>`
+    }
+  };
+
+  let webviewOpen = false;
+  function showWebview(type) {
+    const overlay = document.getElementById('webviewOverlay');
+    const title = document.getElementById('webviewTitle');
+    const url = document.getElementById('webviewUrl');
+    const content = document.getElementById('webviewContent');
+    const data = WEBVIEWS[type];
+    if (!data) return;
+    title.textContent = data.title;
+    url.textContent = data.url;
+    content.innerHTML = data.html;
+    overlay.style.display = 'flex';
+    webviewOpen = true;
+  }
+  function closeWebview() {
+    document.getElementById('webviewOverlay').style.display = 'none';
+    webviewOpen = false;
+  }
+
+  function approveSlip() { /* already waiting */ }
+  function approveSlipDone() {
+    const btn = document.getElementById('approveSlipBtn');
+    const ownerDiv = document.getElementById('ownerApprove');
+    if (ownerDiv) ownerDiv.innerHTML = '<div style="background:#d1fae5;border-radius:8px;padding:7px;text-align:center;font-size:10px;font-weight:900;color:#065f46;">🎉 อนุมัติเรียบร้อยแล้ว!</div>';
+  }
+
+  // Category tab click in desktop
+  document.querySelectorAll('.dt-cat').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.dt-cat').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // Auto-open search webview on load to showcase new mobile layout
+  document.addEventListener('DOMContentLoaded', () => {
+    showWebview('search');
+  });
+</script>
+</body>
+</html>

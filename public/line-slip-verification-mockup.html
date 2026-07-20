@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LINE OA - ตรวจสอบสลิปโอนเงิน</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Sarabun', sans-serif; }
+    .line-chat-bubble {
+      background: #ECEFF1;
+      border-radius: 0 12px 12px 12px;
+    }
+    .line-chat-bubble-sent {
+      background: #06C755;
+      color: white;
+ border-radius: 12px 0 12px 12px;
+    }
+    .step-indicator {
+      transition: all 0.3s ease;
+    }
+    .step-active {
+      background: #06C755;
+      color: white;
+    }
+    .step-completed {
+      background: #10B981;
+      color: white;
+    }
+    .ocr-highlight {
+      background: #FEF3C7;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    .typing-indicator span {
+      animation: typing 1.4s infinite;
+      display: inline-block;
+    }
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-5px); }
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <div class="max-w-md mx-auto bg-white min-h-screen shadow-2xl flex flex-col">
+    
+    <!-- LINE Header -->
+    <div class="bg-[#06C755] p-4 sticky top-0 z-50">
+      <div class="flex items-center gap-3">
+        <button class="text-white p-2 hover:bg-white/10 rounded-lg">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <div class="flex items-center gap-3 flex-1">
+          <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+            <span class="text-[#06C755] font-bold text-sm">RF</span>
+          </div>
+          <div>
+            <div class="text-white font-semibold text-sm">RentFlow Official</div>
+            <div class="text-white/70 text-xs">ตรวจสอบสลิปโอนเงิน</div>
+          </div>
+        </div>
+        <div class="text-white text-xl">⋮</div>
+      </div>
+    </div>
+
+    <!-- Process Steps -->
+    <div class="bg-gray-50 p-3 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-1">
+          <div class="step-indicator step-completed w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">✓</div>
+          <span class="text-xs text-gray-600">แจ้งชำระ</span>
+        </div>
+        <div class="h-0.5 w-8 bg-[#10B981]"></div>
+        <div class="flex items-center gap-1">
+          <div class="step-indicator step-active w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">2</div>
+          <span class="text-xs text-gray-600 font-semibold">อัปโหลดสลิป</span>
+        </div>
+        <div class="h-0.5 w-8 bg-gray-300"></div>
+        <div class="flex items-center gap-1">
+          <div class="step-indicator w-6 h-6 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-xs font-bold">3</div>
+          <span class="text-xs text-gray-400">ตรวจสอบ</span>
+        </div>
+        <div class="h-0.5 w-8 bg-gray-300"></div>
+        <div class="flex items-center gap-1">
+          <div class="step-indicator w-6 h-6 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-xs font-bold">4</div>
+          <span class="text-xs text-gray-400">เสร็จสิ้น</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Area -->
+    <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-100">
+      
+      <!-- Step 1: Payment Notification -->
+      <div class="flex justify-start">
+        <div class="line-chat-bubble p-3 max-w-[85%]">
+          <div class="text-sm font-semibold text-gray-800 mb-1">💰 แจ้งชำระเงินค่าเช่า</div>
+          <div class="text-xs text-gray-600 mb-3">
+            เรียนคุณ สมชาย<br>
+            ค่าเช่าเดือนกรกฎาคม 2026<br>
+            <span class="font-bold text-[#06C755]">฿15,000</span>
+          </div>
+          
+          <!-- Invoice Card -->
+          <div class="bg-white rounded-lg overflow-hidden shadow-sm mb-2">
+            <div class="p-3 border-b border-gray-100">
+              <div class="flex justify-between items-center">
+                <span class="text-xs text-gray-500">เลขที่ใบแจ้ง</span>
+                <span class="text-xs font-semibold text-gray-800">INV-2026-001</span>
+              </div>
+              <div class="flex justify-between items-center mt-1">
+                <span class="text-xs text-gray-500">วันครบกำหนด</span>
+                <span class="text-xs font-semibold text-red-500">15 ก.ค. 2026</span>
+              </div>
+            </div>
+            <div class="p-3 bg-gradient-to-r from-blue-50 to-blue-100">
+              <div class="text-xs text-gray-600 mb-1">ที่พัก</div>
+              <div class="text-sm font-semibold text-gray-800">คอนโดหรู ใกล้ BTS อโศก</div>
+              <div class="text-xs text-gray-500 mt-1">ห้อง A-1202, ตึก A</div>
+            </div>
+            <div class="p-3">
+              <div class="flex justify-between items-center">
+                <span class="text-sm font-semibold text-gray-800">ยอดชำระ</span>
+                <span class="text-lg font-bold text-[#06C755]">฿15,000</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- QR Code -->
+          <div class="bg-white rounded-lg p-3 text-center mb-2">
+            <div class="text-xs text-gray-600 mb-2">สแกน QR Code เพื่อชำระเงิน</div>
+            <div class="w-32 h-32 mx-auto bg-gray-100 rounded-lg flex items-center justify-center mb-2">
+              <div class="text-4xl">📱</div>
+            </div>
+            <div class="text-xs text-gray-500">หรือโอนเงินผ่านบัญชีธนาคาร</div>
+          </div>
+          
+          <!-- Bank Account Info -->
+          <div class="bg-white rounded-lg p-3 mb-2">
+            <div class="text-xs text-gray-600 mb-2">บัญชีธนาคาร</div>
+            <div class="space-y-1">
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-gray-500">ธนาคาร</span>
+                <span class="font-semibold text-gray-800">🏦 กรุงเทพ</span>
+              </div>
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-gray-500">เลขบัญชี</span>
+                <span class="font-semibold text-gray-800">123-4-56789-0</span>
+              </div>
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-gray-500">ชื่อบัญชี</span>
+                <span class="font-semibold text-gray-800">บจก. เรนท์โฟลว์</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="space-y-2">
+            <button class="w-full bg-[#06C755] text-white py-2 rounded-lg text-xs font-semibold cursor-pointer hover:bg-[#00A040] transition-colors" onclick="alert('✅ อัปโหลดสลิป')">
+              ✅ โอนเงินเรียบร้อยแล้ว
+            </button>
+            <button class="w-full bg-gray-200 text-gray-700 py-2 rounded-lg text-xs font-semibold cursor-pointer hover:bg-gray-300 transition-colors" onclick="alert('📞 ติดต่อเจ้าของ')">
+              📞 ติดต่อเจ้าของ
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: User Uploads Slip -->
+      <div class="flex justify-end">
+        <div class="line-chat-bubble-sent p-3 max-w-[85%]">
+          <div class="text-sm font-semibold mb-1">✅ โอนเงินเรียบร้อยแล้ว</div>
+          <div class="text-xs mb-2">อัปโหลดสลิปโอนเงิน</div>
+          
+          <!-- Slip Image -->
+          <div class="bg-white rounded-lg overflow-hidden mb-2">
+            <div class="h-32 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+              <div class="text-center">
+                <div class="text-3xl mb-1">📄</div>
+                <div class="text-xs text-gray-500">สลิปโอนเงิน.jpg</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="text-xs text-white/70">12:35</div>
+        </div>
+      </div>
+
+      <!-- Step 3: OCR Processing -->
+      <div class="flex justify-start">
+        <div class="line-chat-bubble p-3 max-w-[85%]">
+          <div class="typing-indicator flex gap-1 mb-2">
+            <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
+            <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
+            <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
+          </div>
+          <div class="text-xs text-gray-500">กำลังตรวจสอบสลิป...</div>
+        </div>
+      </div>
+
+      <!-- Step 4: OCR Result -->
+      <div class="flex justify-start">
+        <div class="line-chat-bubble p-3 max-w-[85%]">
+          <div class="text-sm font-semibold text-gray-800 mb-2">🔍 ผลการตรวจสอบสลิป</div>
+          
+          <!-- OCR Data -->
+          <div class="bg-white rounded-lg p-3 mb-2 space-y-2">
+            <div class="flex justify-between items-center text-xs">
+              <span class="text-gray-500">วันที่โอน</span>
+              <span class="font-semibold text-gray-800 ocr-highlight">10 ก.ค. 2026</span>
+            </div>
+            <div class="flex justify-between items-center text-xs">
+              <span class="text-gray-500">เวลา</span>
+              <span class="font-semibold text-gray-800 ocr-highlight">12:33:45</span>
+            </div>
+            <div class="flex justify-between items-center text-xs">
+              <span class="text-gray-500">จากบัญชี</span>
+              <span class="font-semibold text-gray-800 ocr-highlight">xxx-x-56789-0</span>
+            </div>
+            <div class="flex justify-between items-center text-xs">
+              <span class="text-gray-500">ไปยังบัญชี</span>
+              <span class="font-semibold text-gray-800 ocr-highlight">123-4-56789-0</span>
+            </div>
+            <div class="flex justify-between items-center text-xs border-t border-gray-200 pt-2">
+              <span class="text-gray-500">ยอดโอน</span>
+              <span class="font-bold text-[#06C755] text-sm ocr-highlight">฿15,000.00</span>
+            </div>
+          </div>
+          
+          <!-- Verification Status -->
+          <div class="bg-green-50 rounded-lg p-3 mb-2 border border-green-200">
+            <div class="flex items-center gap-2">
+              <span class="text-green-600 text-xl">✓</span>
+              <div>
+                <div class="text-sm font-semibold text-green-800">ข้อมูลถูกต้อง</div>
+                <div class="text-xs text-green-600">ยอดเงินตรงกับใบแจ้ง</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Confirmation -->
+          <div class="text-xs text-gray-600 mb-2">
+            กรุณายืนยันข้อมูลที่อ่านได้ถูกต้อง
+          </div>
+          
+          <div class="space-y-2">
+            <button class="w-full bg-[#06C755] text-white py-2 rounded-lg text-xs font-semibold cursor-pointer hover:bg-[#00A040] transition-colors" onclick="alert('✅ ยืนยันข้อมูลถูกต้อง - ระบบกำลังบันทึก')">
+              ✓ ยืนยันข้อมูลถูกต้อง
+            </button>
+            <button class="w-full bg-gray-200 text-gray-700 py-2 rounded-lg text-xs font-semibold cursor-pointer hover:bg-gray-300 transition-colors" onclick="alert('❌ กรุณาอัปโหลดสลิปใหม่')">
+              ✕ ข้อมูลไม่ถูกต้อง
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5: Processing -->
+      <div class="flex justify-start">
+        <div class="line-chat-bubble p-3 max-w-[85%]">
+          <div class="typing-indicator flex gap-1 mb-2">
+            <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
+            <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
+            <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
+          </div>
+          <div class="text-xs text-gray-500">กำลังบันทึกข้อมูล...</div>
+        </div>
+      </div>
+
+      <!-- Step 6: Success -->
+      <div class="flex justify-start">
+        <div class="line-chat-bubble p-3 max-w-[85%]">
+          <div class="text-sm font-semibold text-gray-800 mb-2">🎉 ชำระเงินสำเร็จ!</div>
+          
+          <!-- Success Card -->
+          <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-3 mb-2 border border-green-200">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-10 h-10 bg-[#06C755] rounded-full flex items-center justify-center text-white text-xl">
+                ✓
+              </div>
+              <div>
+                <div class="text-sm font-bold text-green-800">การชำระเงินเสร็จสมบูรณ์</div>
+                <div class="text-xs text-green-600">เลขที่รายการ: TXN-2026-001234</div>
+              </div>
+            </div>
+            <div class="text-xs text-green-700">
+              ขอบคุณที่ชำระค่าเช่าเรียบร้อยแล้ว<br>
+              คุณสามารถเข้าชมรายละเอียดได้ที่เว็บไซต์
+            </div>
+          </div>
+          
+          <!-- Quick Actions -->
+          <div class="space-y-2">
+            <button class="w-full bg-[#06C755] text-white py-2 rounded-lg text-xs font-semibold cursor-pointer hover:bg-[#00A040] transition-colors" onclick="alert('📄 เปิดหน้าใบเสร็จ')">
+              📄 ดูใบเสร็จ
+            </button>
+            <button class="w-full bg-gray-200 text-gray-700 py-2 rounded-lg text-xs font-semibold cursor-pointer hover:bg-gray-300 transition-colors" onclick="alert('🏠 กลับหน้าหลัก')">
+              🏠 กลับหน้าหลัก
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Input Area -->
+    <div class="bg-white p-3 border-t border-gray-200">
+      <div class="flex items-center gap-2">
+        <button class="p-2 text-gray-400 hover:text-gray-600">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+        </button>
+        <input type="text" placeholder="พิมพ์ข้อความ..." 
+               class="flex-1 bg-gray-100 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#06C755]">
+        <button class="p-2 text-gray-400 hover:text-gray-600">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Simple interactivity for demo - removed since using inline onclick
+  </script>
+</body>
+</html>

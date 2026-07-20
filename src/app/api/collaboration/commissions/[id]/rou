@@ -1,0 +1,51 @@
+/**
+ * PUT /api/collaboration/commissions/:id
+ * Update commission status (mark as earned or paid)
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { updateCommissionStatus } from '@/lib/collaboration/commissions';
+import { verifyToken } from '@/lib/auth/jwt';
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.substring(7);
+    await verifyToken(token);
+
+    const body = await request.json();
+    const { status, paymentMethod, transactionId } = body;
+
+    if (!status || !['pending', 'earned', 'paid', 'cancelled'].includes(status)) {
+      return NextResponse.json(
+        { error: 'Invalid status' },
+        { status: 400 }
+      );
+    }
+
+    const commission = await updateCommissionStatus(
+      params.id,
+      status,
+      paymentMethod,
+      transactionId
+    );
+
+    return NextResponse.json(commission, { status: 200 });
+  } catch (error) {
+    console.error('Update commission error:', error);
+    return NextResponse.json(
+      { error: 'Failed to update commission' },
+      { status: 500 }
+    );
+  }
+}

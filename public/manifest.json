@@ -1,0 +1,28 @@
+{
+  "name": "PrimeRent — อสังหาริมทรัพย์พรีเมียม",
+  "short_name": "PrimeRent",
+  "description": "แพลตฟอร์มเช่าที่พักออนไลน์ที่ทันสมัยที่สุด พร้อมสัญญาเช่าดิจิทัลและระบบชำระเงินออนไลน์",
+  "theme_color": "#1A56DB",
+  "background_color": "#0f172a",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "start_url": "/",
+  "scope": "/",
+  "lang": "th",
+  "categories": ["business", "finance", "lifestyle"],
+  "icons": [],
+  "shortcuts": [
+    {
+      "name": "ค้นหาห้องเช่า",
+      "short_name": "ค้นหา",
+      "url": "/listings"
+    },
+    {
+      "name": "โปรไฟล์ของฉัน",
+      "short_name": "โปรไฟล์",
+      "url": "/profile"
+    }
+  ],
+  "screenshots": [],
+  "prefer_related_applications": false
+}

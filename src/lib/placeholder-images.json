@@ -1,0 +1,112 @@
+{
+  "placeholderImages": [
+    {
+      "id": "hero-1",
+      "description": "Luxury Bangkok condo skyline at night",
+      "imageUrl": "https://picsum.photos/seed/bkk-skyline/1920/1080",
+      "imageHint": "bangkok skyline"
+    },
+    {
+      "id": "hero-2",
+      "description": "Modern tropical villa in Phuket with pool",
+      "imageUrl": "https://picsum.photos/seed/phuket-villa/1920/1080",
+      "imageHint": "phuket villa"
+    },
+    {
+      "id": "hero-3",
+      "description": "Elegant contemporary house in Chiang Mai",
+      "imageUrl": "https://picsum.photos/seed/chiangmai-house/1920/1080",
+      "imageHint": "chiangmai house"
+    },
+    {
+      "id": "bkk-thumb",
+      "description": "Bangkok high-rise condo",
+      "imageUrl": "https://picsum.photos/seed/bkk-thumb/400/500",
+      "imageHint": "bangkok condo"
+    },
+    {
+      "id": "cm-thumb",
+      "description": "Chiang Mai mountain view boutique",
+      "imageUrl": "https://picsum.photos/seed/cm-thumb/400/500",
+      "imageHint": "chiangmai boutique"
+    },
+    {
+      "id": "pk-thumb",
+      "description": "Phuket beachfront property",
+      "imageUrl": "https://picsum.photos/seed/pk-thumb/400/500",
+      "imageHint": "beachfront villa"
+    },
+    {
+      "id": "pt-thumb",
+      "description": "Pattaya ocean view luxury",
+      "imageUrl": "https://picsum.photos/seed/pt-thumb/400/500",
+      "imageHint": "pattaya ocean"
+    },
+    {
+      "id": "hh-thumb",
+      "description": "Hua Hin resort style",
+      "imageUrl": "https://picsum.photos/seed/hh-thumb/400/500",
+      "imageHint": "huahin resort"
+    },
+    {
+      "id": "p1",
+      "description": "Sukhumvit Luxury Condo Interior",
+      "imageUrl": "https://picsum.photos/seed/sukhumvit-interior/800/600",
+      "imageHint": "condo interior"
+    },
+    {
+      "id": "p2",
+      "description": "Ram Inthra Modern House Exterior",
+      "imageUrl": "https://picsum.photos/seed/raminthra-ext/800/600",
+      "imageHint": "modern house"
+    },
+    {
+      "id": "p3",
+      "description": "Nimman Chiang Mai Minimalist Room",
+      "imageUrl": "https://picsum.photos/seed/nimman-room/800/600",
+      "imageHint": "minimalist room"
+    },
+    {
+      "id": "p4",
+      "description": "Patong Beachfront Apartment",
+      "imageUrl": "https://picsum.photos/seed/patong-apt/800/600",
+      "imageHint": "seaview apartment"
+    },
+    {
+      "id": "p5",
+      "description": "Ladprao Contemporary Townhouse",
+      "imageUrl": "https://picsum.photos/seed/ladprao-town/800/600",
+      "imageHint": "townhouse exterior"
+    },
+    {
+      "id": "p6",
+      "description": "Pattaya Luxury Condo Balcony",
+      "imageUrl": "https://picsum.photos/seed/pattaya-view/800/600",
+      "imageHint": "ocean view"
+    },
+    {
+      "id": "p7",
+      "description": "MRT Ladprao Cozy Studio",
+      "imageUrl": "https://picsum.photos/seed/mrt-studio/800/600",
+      "imageHint": "studio room"
+    },
+    {
+      "id": "p8",
+      "description": "Suthep Chiang Mai Student Apartment",
+      "imageUrl": "https://picsum.photos/seed/suthep-apt/800/600",
+      "imageHint": "student housing"
+    },
+    {
+      "id": "p9",
+      "description": "Hua Hin Tropical Garden Villa",
+      "imageUrl": "https://picsum.photos/seed/huahin-garden/800/600",
+      "imageHint": "garden villa"
+    },
+    {
+      "id": "p10",
+      "description": "Ari Modern Pet-Friendly Unit",
+      "imageUrl": "https://picsum.photos/seed/ari-unit/800/600",
+      "imageHint": "modern apartment"
+    }
+  ]
+}

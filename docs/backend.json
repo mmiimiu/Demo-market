@@ -1,0 +1,125 @@
+
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Extended user info including Role-specific data and KYC.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["renter", "landlord", "agent", "admin", "sa"] },
+        "photoURL": { "type": "string" },
+        "phoneNumber": { "type": "string" },
+        "kycStatus": { "type": "string", "enum": ["unverified", "pending", "verified", "rejected"] },
+        "creditBalance": { "type": "number", "default": 0 },
+        "agentType": { "type": "string", "enum": ["individual", "company"] },
+        "companyName": { "type": "string" },
+        "performance": {
+          "type": "object",
+          "properties": {
+            "responseTime": { "type": "number" },
+            "dealCloseRate": { "type": "number" },
+            "totalDeals": { "type": "number" }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Property": {
+      "title": "Property Listing",
+      "description": "Rental property listing details with verification status and advanced management fields.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "agentId": { "type": "string" },
+        "isVerified": { "type": "boolean" },
+        "isBoosted": { "type": "boolean" },
+        "title": { "type": "string" },
+        "type": { "type": "string", "enum": ["condo", "house", "apartment", "townhouse"] },
+        "price": { "type": "number" },
+        "location": { "type": "string" },
+        "floor": { "type": "number" },
+        "sqm": { "type": "number" },
+        "bed": { "type": "number" },
+        "bath": { "type": "number" },
+        "deposit": { "type": "number" },
+        "contractTerm": { "type": "number" },
+        "commonFee": { "type": "number" },
+        "amenities": { "type": "array", "items": { "type": "string" } },
+        "nearbyPlaces": { "type": "array", "items": { "type": "string" } },
+        "tour360Url": { "type": "string" },
+        "status": { "type": "string", "enum": ["available", "rented", "hidden"] },
+        "viewCount": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Ticket": {
+      "title": "Support Ticket",
+      "description": "Help desk and complaint records.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "subject": { "type": "string" },
+        "description": { "type": "string" },
+        "status": { "type": "string", "enum": ["open", "in_progress", "resolved", "closed"] },
+        "priority": { "type": "string", "enum": ["low", "medium", "high"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "ChatRoom": {
+      "title": "Chat Room",
+      "description": "A conversation between two or more users.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "participants": { "type": "array", "items": { "type": "string" } },
+        "participantInfo": { "type": "object" },
+        "lastMessage": { "type": "string" },
+        "lastMessageTimestamp": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Message": {
+      "title": "Message",
+      "description": "A single message within a chat room.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "senderId": { "type": "string" },
+        "text": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "auth": {
+    "providers": ["google.com", "password", "line.me", "phone"]
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profiles and performance data."
+    },
+    "/properties/{propertyId}": {
+      "schema": "Property",
+      "description": "Verified property listings."
+    },
+    "/tickets/{ticketId}": {
+      "schema": "Ticket",
+      "description": "Customer support and complaint management."
+    },
+    "/chatRooms/{roomId}": {
+      "schema": "ChatRoom",
+      "description": "Information about a chat conversation."
+    },
+    "/chatRooms/{roomId}/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Individual messages in a chat room."
+    }
+  }
+}

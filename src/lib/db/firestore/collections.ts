@@ -1,0 +1,18 @@
+export const Collections = {
+  USERS: 'users',
+  PROPERTIES: 'properties',
+  LISTINGS: 'listings',
+  INQUIRIES: 'inquiries',
+  CONTRACTS: 'contracts',
+  PAYMENTS: 'payments',
+  NOTIFICATIONS: 'notifications',
+  CHATS: 'chats',
+  MESSAGES: 'messages',
+  AGENT_ZONES: 'agent_zones',
+  REVIEWS: 'reviews',
+  CREDITS: 'credits',
+  SAVED_SEARCHES: 'saved_searches',
+  AUDIT_LOGS: 'audit_logs',
+  COMMUNITY_POSTS: 'community_posts',
+  REPORTS: 'reports',
+} as const;

@@ -1,0 +1,172 @@
+{
+  "placeholderImages": [
+    {
+      "id": "hero-1",
+      "description": "Luxury Bangkok condo skyline at night",
+      "imageUrl": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1920&q=80",
+      "imageHint": "bangkok skyline"
+    },
+    {
+      "id": "hero-2",
+      "description": "Modern tropical villa in Phuket with pool",
+      "imageUrl": "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1920&q=80",
+      "imageHint": "phuket villa"
+    },
+    {
+      "id": "hero-3",
+      "description": "Elegant contemporary house in Chiang Mai",
+      "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=80",
+      "imageHint": "chiangmai house"
+    },
+    {
+      "id": "bkk-thumb",
+      "description": "Bangkok high-rise condo",
+      "imageUrl": "https://images.unsplash.com/photo-1555636222-cae831e670b3?w=400&q=80",
+      "imageHint": "bangkok condo"
+    },
+    {
+      "id": "cm-thumb",
+      "description": "Chiang Mai mountain view boutique",
+      "imageUrl": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&q=80",
+      "imageHint": "chiangmai boutique"
+    },
+    {
+      "id": "pk-thumb",
+      "description": "Phuket beachfront property",
+      "imageUrl": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&q=80",
+      "imageHint": "beachfront villa"
+    },
+    {
+      "id": "pt-thumb",
+      "description": "Pattaya ocean view luxury",
+      "imageUrl": "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&q=80",
+      "imageHint": "pattaya ocean"
+    },
+    {
+      "id": "hh-thumb",
+      "description": "Hua Hin resort style",
+      "imageUrl": "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=400&q=80",
+      "imageHint": "huahin resort"
+    },
+    {
+      "id": "p1",
+      "description": "Sukhumvit Luxury Condo Interior",
+      "imageUrl": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80",
+      "imageHint": "condo interior"
+    },
+    {
+      "id": "p2",
+      "description": "Ram Inthra Modern House Exterior",
+      "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80",
+      "imageHint": "modern house"
+    },
+    {
+      "id": "p3",
+      "description": "Nimman Chiang Mai Minimalist Room",
+      "imageUrl": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80",
+      "imageHint": "minimalist room"
+    },
+    {
+      "id": "p4",
+      "description": "Patong Beachfront Apartment",
+      "imageUrl": "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&q=80",
+      "imageHint": "seaview apartment"
+    },
+    {
+      "id": "p5",
+      "description": "Ladprao Contemporary Townhouse",
+      "imageUrl": "https://images.unsplash.com/photo-1572120360610-d971b9d7767c?w=800&q=80",
+      "imageHint": "townhouse exterior"
+    },
+    {
+      "id": "p6",
+      "description": "Pattaya Luxury Condo Balcony",
+      "imageUrl": "https://images.unsplash.com/photo-1506059612708-99d6c258160e?w=800&q=80",
+      "imageHint": "ocean view"
+    },
+    {
+      "id": "p7",
+      "description": "MRT Ladprao Cozy Studio",
+      "imageUrl": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80",
+      "imageHint": "studio room"
+    },
+    {
+      "id": "p8",
+      "description": "Suthep Chiang Mai Student Apartment",
+      "imageUrl": "https://images.unsplash.com/photo-1555636222-cae831e670b3?w=800&q=80",
+      "imageHint": "student housing"
+    },
+    {
+      "id": "p9",
+      "description": "Hua Hin Tropical Garden Villa",
+      "imageUrl": "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800&q=80",
+      "imageHint": "garden villa"
+    },
+    {
+      "id": "p10",
+      "description": "Ari Modern Pet-Friendly Unit",
+      "imageUrl": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?w=800&q=80",
+      "imageHint": "modern apartment"
+    },
+    {
+      "id": "p11",
+      "description": "Chula University Student Condo",
+      "imageUrl": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80",
+      "imageHint": "university housing"
+    },
+    {
+      "id": "p12",
+      "description": "Phrom Phong High-end Residence",
+      "imageUrl": "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&q=80",
+      "imageHint": "luxury residence"
+    },
+    {
+      "id": "p13",
+      "description": "Thammasat Rangsit Modern Flat",
+      "imageUrl": "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=800&q=80",
+      "imageHint": "modern flat"
+    },
+    {
+      "id": "p14",
+      "description": "Bang Na Family House with Lawn",
+      "imageUrl": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&q=80",
+      "imageHint": "family home"
+    },
+    {
+      "id": "p15",
+      "description": "Bang Khun Non Local Townhouse",
+      "imageUrl": "https://images.unsplash.com/photo-1576941089067-2de3c901e126?w=800&q=80",
+      "imageHint": "local townhouse"
+    },
+    {
+      "id": "p16",
+      "description": "Kasetsart Student Lifestyle Room",
+      "imageUrl": "https://images.unsplash.com/photo-1536376072261-38c75010e6c9?w=800&q=80",
+      "imageHint": "student room"
+    },
+    {
+      "id": "p17",
+      "description": "Mahidol Salaya Modern Student Flat",
+      "imageUrl": "https://images.unsplash.com/photo-1565182999561-18d7dc61c393?w=800&q=80",
+      "imageHint": "student apartment"
+    },
+    {
+      "id": "p18",
+      "description": "ABAC Bangna Upscale Student Suite",
+      "imageUrl": "https://images.unsplash.com/photo-1630699144641-2d00a8d5b630?w=800&q=80",
+      "imageHint": "upscale suite"
+    },
+    {
+      "id": "p19",
+      "description": "Khon Kaen City Center Apartment",
+      "imageUrl": "https://images.unsplash.com/photo-1489171078254-c3365d6e359f?w=800&q=80",
+      "imageHint": "city apartment"
+    },
+    {
+      "id": "p20",
+      "description": "Hat Yai Modern Student Block",
+      "imageUrl": "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&q=80",
+      "imageHint": "modern block"
+    }
+  ]
+}

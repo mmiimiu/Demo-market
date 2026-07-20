@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /kyc/
+Disallow: /liff/
+
+Sitemap: https://primerent.app/sitemap.xml

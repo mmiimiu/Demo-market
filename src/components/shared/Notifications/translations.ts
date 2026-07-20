@@ -1,0 +1,47 @@
+export const translations = {
+  th: {
+    title: 'การแจ้งเตือน',
+    markAsRead: 'ทำเครื่องหมายว่าอ่านแล้ว',
+    markAllAsRead: 'ทำเครื่องหมายทั้งหมดว่าอ่านแล้ว',
+    delete: 'ลบ',
+    noNotifications: 'ไม่มีการแจ้งเตือน',
+    viewAll: 'ดูทั้งหมด',
+    new: 'ใหม่',
+    timeAgo: {
+      justNow: 'เมื่อสักครู่',
+      minutesAgo: '{n} นาทีที่แล้ว',
+      hoursAgo: '{n} ชั่วโมงที่แล้ว',
+      daysAgo: '{n} วันที่แล้ว',
+    },
+  },
+  en: {
+    title: 'Notifications',
+    markAsRead: 'Mark as read',
+    markAllAsRead: 'Mark all as read',
+    delete: 'Delete',
+    noNotifications: 'No notifications',
+    viewAll: 'View all',
+    new: 'New',
+    timeAgo: {
+      justNow: 'Just now',
+      minutesAgo: '{n} min ago',
+      hoursAgo: '{n} hours ago',
+      daysAgo: '{n} days ago',
+    },
+  },
+  cn: {
+    title: '通知',
+    markAsRead: '标记为已读',
+    markAllAsRead: '全部标记为已读',
+    delete: '删除',
+    noNotifications: '暂无通知',
+    viewAll: '查看全部',
+    new: '新',
+    timeAgo: {
+      justNow: '刚刚',
+      minutesAgo: '{n}分钟前',
+      hoursAgo: '{n}小时前',
+      daysAgo: '{n}天前',
+    },
+  },
+};
