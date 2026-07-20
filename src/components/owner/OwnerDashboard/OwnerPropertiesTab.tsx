@@ -46,29 +46,17 @@ export function OwnerPropertiesTab({ lang }: OwnerPropertiesTabProps) {
   }, [user]);
 
   const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'approved':
-        return (
-          <span className="flex items-center gap-1 text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg">
-            <CheckCircle2 className="w-3.5 h-3.5" /> 
-            {lang === 'en' ? 'Approved' : lang === 'cn' ? '已批准' : 'อนุมัติแล้ว'}
-          </span>
-        );
-      case 'rejected':
-        return (
-          <span className="flex items-center gap-1 text-xs font-bold text-red-600 bg-red-50 px-2.5 py-1 rounded-lg">
-            <XCircle className="w-3.5 h-3.5" /> 
-            {lang === 'en' ? 'Rejected' : lang === 'cn' ? '已拒绝' : 'ถูกปฏิเสธ'}
-          </span>
-        );
-      default:
-        return (
-          <span className="flex items-center gap-1 text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg">
-            <Clock className="w-3.5 h-3.5" /> 
-            {lang === 'en' ? 'Pending' : lang === 'cn' ? '待审核' : 'รอตรวจสอบ'}
-          </span>
-        );
-    }
+    const badges: Record<string, { color: string; bg: string; icon: React.ReactNode; text: string }> = {
+      approved: { color: 'text-emerald-600', bg: 'bg-emerald-50', icon: <CheckCircle2 className="w-3.5 h-3.5" />, text: lang === 'en' ? 'Approved' : lang === 'cn' ? '已批准' : 'อนุมัติแล้ว' },
+      rejected: { color: 'text-red-600', bg: 'bg-red-50', icon: <XCircle className="w-3.5 h-3.5" />, text: lang === 'en' ? 'Rejected' : lang === 'cn' ? '已拒绝' : 'ถูกปฏิเสธ' },
+      default: { color: 'text-amber-600', bg: 'bg-amber-50', icon: <Clock className="w-3.5 h-3.5" />, text: lang === 'en' ? 'Pending' : lang === 'cn' ? '待审核' : 'รอตรวจสอบ' }
+    };
+    const b = badges[status] || badges.default;
+    return (
+      <span className={`flex items-center gap-1 text-xs font-bold ${b.color} ${b.bg} px-2.5 py-1 rounded-lg`}>
+        {b.icon} {b.text}
+      </span>
+    );
   };
 
   return (
@@ -131,12 +119,7 @@ export function OwnerPropertiesTab({ lang }: OwnerPropertiesTabProps) {
                   )}
                 </div>
                 {prop.deedFileUrl && (
-                  <a 
-                    href={prop.deedFileUrl} 
-                    target="_blank" 
-                    rel="noreferrer"
-                    className="text-xs font-bold text-primary hover:underline bg-primary/5 px-3 py-1.5 rounded-lg shrink-0"
-                  >
+                  <a href={prop.deedFileUrl} target="_blank" rel="noreferrer" className="text-xs font-bold text-primary hover:underline bg-primary/5 px-3 py-1.5 rounded-lg shrink-0">
                     {lang === 'en' ? 'View Document' : 'ดูเอกสารโฉนด'}
                   </a>
                 )}
@@ -147,13 +130,9 @@ export function OwnerPropertiesTab({ lang }: OwnerPropertiesTabProps) {
       </div>
 
       {isAddModalOpen && (
-        <AddPropertyModal 
-          isOpen={isAddModalOpen} 
-          onClose={() => setIsAddModalOpen(false)} 
-          lang={lang} 
-          onSuccess={fetchProperties}
-        />
+        <AddPropertyModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} lang={lang} onSuccess={fetchProperties} />
       )}
     </div>
   );
 }
+

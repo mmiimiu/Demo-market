@@ -1,13 +1,6 @@
 'use client';
-
-/**
- * @fileOverview AgentFinder Component
- * สำหรับ Owner ใช้ค้นหา Agent เพื่อเชิญให้มาดูแลห้อง (Co-broker / Assign Agent)
- * มีระบบดึงรายชื่อ Agent และจำลองการส่งคำเชิญ
- */
-
 import React, { useState, useEffect } from 'react';
-import { Search, MapPin, Star, Shield, ChevronRight, UserPlus, CheckCircle2 } from 'lucide-react';
+import { Search, MapPin, Star, Shield, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -26,33 +19,13 @@ export const AgentFinder: React.FC<AgentFinderProps> = ({ lang, propertyId, onIn
   const [searchTerm, setSearchTerm] = useState('');
   const [invitingId, setInvitingId] = useState<string | null>(null);
 
-  // Fetch agents from API
   useEffect(() => {
     const fetchAgents = async () => {
       try {
-        // We reuse the matching endpoint's GET method to fetch the agent pool
-        const res = await fetch('/api/agent/match');
-        const data = await res.json();
-        
-        // Since the GET returns stats in our current implementation, we might need a dedicated endpoint
-        // For demo purposes, we will hardcode a few agents here if the API doesn't return an array.
-        // Let's assume we update the GET or just use mock data here for the UI.
-        
         const MOCK_AGENTS: AgentProfile[] = [
-          {
-            uid: 'agent-001', displayName: 'คุณอรุณ สว่างใจ', photoURL: 'https://api.dicebear.com/7.x/avataaars/svg?seed=agent001',
-            tier: 'platinum', rating: 4.9, responseRate: 0.97, avgResponseMinutes: 8,
-            serviceAreas: ['สุขุมวิท', 'อโศก', 'ทองหล่อ'], specialties: ['condo'],
-            activeJobs: 2, maxJobs: 5, isAvailable: true, experienceYears: 8, totalDeals: 342,
-          },
-          {
-            uid: 'agent-002', displayName: 'คุณมณี รุ่งเรือง', photoURL: 'https://api.dicebear.com/7.x/avataaars/svg?seed=agent002',
-            tier: 'gold', rating: 4.7, responseRate: 0.93, avgResponseMinutes: 12,
-            serviceAreas: ['ลาดพร้าว', 'รัชดา', 'ห้วยขวาง'], specialties: ['condo', 'house'],
-            activeJobs: 1, maxJobs: 4, isAvailable: true, experienceYears: 5, totalDeals: 198,
-          }
+          { uid: 'agent-001', displayName: 'คุณอรุณ สว่างใจ', photoURL: 'https://api.dicebear.com/7.x/avataaars/svg?seed=agent001', tier: 'platinum', rating: 4.9, responseRate: 0.97, avgResponseMinutes: 8, serviceAreas: ['สุขุมวิท', 'อโศก', 'ทองหล่อ'], specialties: ['condo'], activeJobs: 2, maxJobs: 5, isAvailable: true, experienceYears: 8, totalDeals: 342 },
+          { uid: 'agent-002', displayName: 'คุณมณี รุ่งเรือง', photoURL: 'https://api.dicebear.com/7.x/avataaars/svg?seed=agent002', tier: 'gold', rating: 4.7, responseRate: 0.93, avgResponseMinutes: 12, serviceAreas: ['ลาดพร้าว', 'รัชดา', 'ห้วยขวาง'], specialties: ['condo', 'house'], activeJobs: 1, maxJobs: 4, isAvailable: true, experienceYears: 5, totalDeals: 198 }
         ];
-        
         setAgents(MOCK_AGENTS);
       } catch (error) {
         console.error('Failed to fetch agents:', error);
@@ -60,7 +33,6 @@ export const AgentFinder: React.FC<AgentFinderProps> = ({ lang, propertyId, onIn
         setLoading(false);
       }
     };
-    
     fetchAgents();
   }, []);
 
@@ -72,7 +44,6 @@ export const AgentFinder: React.FC<AgentFinderProps> = ({ lang, propertyId, onIn
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ propertyId, agentId })
       });
-      
       const data = await res.json();
       if (data.success) {
         alert(lang === 'th' ? 'ส่งคำเชิญสำเร็จ!' : 'Invitation sent successfully!');
@@ -104,7 +75,6 @@ export const AgentFinder: React.FC<AgentFinderProps> = ({ lang, propertyId, onIn
             {lang === 'th' ? 'เลือกเอเจนต์เพื่อมอบหมายการหาผู้เช่าและดูแลห้อง' : 'Select an agent to manage your property'}
           </p>
         </div>
-        
         <div className="relative w-full md:w-64">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input 
@@ -118,9 +88,7 @@ export const AgentFinder: React.FC<AgentFinderProps> = ({ lang, propertyId, onIn
       </div>
 
       {loading ? (
-        <div className="py-12 text-center text-gray-400 font-black animate-pulse">
-          LOADING AGENTS...
-        </div>
+        <div className="py-12 text-center text-gray-400 font-black animate-pulse">LOADING AGENTS...</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredAgents.map(agent => (
@@ -155,9 +123,7 @@ export const AgentFinder: React.FC<AgentFinderProps> = ({ lang, propertyId, onIn
                 disabled={invitingId === agent.uid}
                 className={cn(
                   "w-full h-10 rounded-none font-black text-sm gap-2 transition-all mt-auto",
-                  invitingId === agent.uid 
-                    ? "bg-primary/50 text-white" 
-                    : "bg-primary/10 text-primary hover:bg-primary hover:text-white"
+                  invitingId === agent.uid ? "bg-primary/50 text-white" : "bg-primary/10 text-primary hover:bg-primary hover:text-white"
                 )}
               >
                 {invitingId === agent.uid ? (
@@ -171,14 +137,10 @@ export const AgentFinder: React.FC<AgentFinderProps> = ({ lang, propertyId, onIn
               </Button>
             </div>
           ))}
-
-          {filteredAgents.length === 0 && (
-            <div className="col-span-full py-8 text-center text-gray-400 font-medium">
-              {lang === 'th' ? 'ไม่พบเอเจนต์ที่ค้นหา' : 'No agents found'}
-            </div>
-          )}
         </div>
       )}
     </div>
   );
 };
+
+
