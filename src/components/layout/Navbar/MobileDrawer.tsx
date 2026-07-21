@@ -113,13 +113,6 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
             {userRole === 'renter' && (
               <>
                 <button 
-                  onClick={() => { onOpenRentalJourney ? onOpenRentalJourney() : router.push("/tenant/journey"); setMobileMenuOpen(false); }}
-                  className="flex items-center justify-between p-4 rounded-xl bg-gray-50 hover:bg-primary/5 group transition-all text-left"
-                >
-                  <span className="font-bold text-xs text-gray-700 group-hover:text-primary">{lang === 'en' ? 'Rental Journey' : lang === 'cn' ? '租房进程' : 'ติดตามการเช่า'}</span>
-                  <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-primary transition-all" />
-                </button>
-                <button 
                   onClick={() => { router.push("/tenant/dashboard"); setMobileMenuOpen(false); }}
                   className="flex items-center justify-between p-4 rounded-xl bg-gray-50 hover:bg-primary/5 group transition-all text-left"
                 >
@@ -160,13 +153,6 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
 
             {(userRole === 'renter' || !userRole) && user && (
               <>
-                <button 
-                  onClick={() => { onOpenRentalJourney ? onOpenRentalJourney() : router.push("/renter-matching"); setMobileMenuOpen(false); }}
-                  className="flex items-center justify-between p-4 rounded-xl bg-gray-50 hover:bg-primary/5 group transition-all text-left"
-                >
-                  <span className="font-bold text-xs text-gray-700 group-hover:text-primary">{lang === 'en' ? 'Rental Journey' : lang === 'cn' ? '租房进程' : 'ติดตามการเช่า'}</span>
-                  <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-primary transition-all" />
-                </button>
                 <button 
                   onClick={() => { router.push("/tenant/dashboard"); setMobileMenuOpen(false); }}
                   className="flex items-center justify-between p-4 rounded-xl bg-gray-50 hover:bg-primary/5 group transition-all text-left"

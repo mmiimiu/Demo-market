@@ -58,7 +58,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th">
+    <html lang="th" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -68,7 +68,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="format-detection" content="telephone=no" />
       </head>
-      <body className="antialiased font-kanit min-h-screen flex flex-col">
+      <body className="antialiased font-kanit min-h-screen flex flex-col" suppressHydrationWarning>
         <ErrorBoundary>
           <NotificationProvider>
             <AppProvider>

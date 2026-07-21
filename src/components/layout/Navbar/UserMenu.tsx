@@ -218,19 +218,20 @@ export const UserMenu: React.FC<UserMenuProps> = ({
                   <div className="p-2">
                     <p className="px-3 py-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider">For Renters</p>
                     <DropdownMenuItem 
-                      onClick={() => onOpenRentalJourney ? onOpenRentalJourney() : router.push("/renter-matching")} 
-                      className="w-full flex items-center rounded-xl gap-3 cursor-pointer px-3 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors"
-                    >
-                      <Building2 className="w-4 h-4 text-gray-400" /> {lang === 'en' ? 'Rental Journey' : lang === 'cn' ? '租房进程' : 'ติดตามการเช่า'}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => router.push("/tenant/dashboard")} 
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        router.push("/tenant/dashboard");
+                      }} 
                       className="w-full flex items-center rounded-xl gap-3 cursor-pointer px-3 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors"
                     >
                       <LayoutDashboard className="w-4 h-4 text-gray-400" /> {lang === 'en' ? 'Tenant Dashboard' : 'แดชบอร์ดผู้เช่า'}
                     </DropdownMenuItem>
                     <DropdownMenuItem 
-                      onClick={() => handlePostListingClick && handlePostListingClick()} 
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        if (handlePostListingClick) handlePostListingClick();
+                        else router.push("/post-listing");
+                      }} 
                       className="w-full flex items-center rounded-xl gap-3 cursor-pointer px-3 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors"
                     >
                       <PlusCircle className="w-4 h-4 text-gray-400" /> {lang === 'en' ? 'Post New Listing' : 'ลงประกาศใหม่'}
@@ -243,13 +244,21 @@ export const UserMenu: React.FC<UserMenuProps> = ({
                   <div className="p-2">
                     <p className="px-3 py-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider">For Agents</p>
                     <DropdownMenuItem 
-                      onClick={() => onOpenAgentDashboard ? onOpenAgentDashboard() : router.push("/agent/dashboard")} 
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        if (onOpenAgentDashboard) onOpenAgentDashboard();
+                        else router.push("/agent/dashboard");
+                      }} 
                       className="w-full flex items-center rounded-xl gap-3 cursor-pointer px-3 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors"
                     >
                       <LayoutDashboard className="w-4 h-4 text-gray-400" /> {lang === 'en' ? 'Agent Dashboard' : 'แดชบอร์ดเอเจนต์'}
                     </DropdownMenuItem>
                     <DropdownMenuItem 
-                      onClick={() => onOpenPostListing ? onOpenPostListing() : router.push("/post-listing")} 
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        if (onOpenPostListing) onOpenPostListing();
+                        else router.push("/post-listing");
+                      }} 
                       className="w-full flex items-center rounded-xl gap-3 cursor-pointer px-3 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors"
                     >
                       <PlusCircle className="w-4 h-4 text-gray-400" /> {lang === 'en' ? 'Post New Listing' : 'ลงประกาศใหม่'}
@@ -262,13 +271,21 @@ export const UserMenu: React.FC<UserMenuProps> = ({
                   <div className="p-2">
                     <p className="px-3 py-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider">For Owners</p>
                     <DropdownMenuItem 
-                      onClick={() => onOpenOwnerDashboard ? onOpenOwnerDashboard() : router.push("/owner/dashboard")} 
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        if (onOpenOwnerDashboard) onOpenOwnerDashboard();
+                        else router.push("/owner/dashboard");
+                      }} 
                       className="w-full flex items-center rounded-xl gap-3 cursor-pointer px-3 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors"
                     >
                       <LayoutDashboard className="w-4 h-4 text-gray-400" /> {lang === 'en' ? 'Owner Dashboard' : 'แดชบอร์ดเจ้าของ'}
                     </DropdownMenuItem>
                     <DropdownMenuItem 
-                      onClick={() => onOpenPostListing ? onOpenPostListing() : router.push("/post-listing")} 
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        if (onOpenPostListing) onOpenPostListing();
+                        else router.push("/post-listing");
+                      }} 
                       className="w-full flex items-center rounded-xl gap-3 cursor-pointer px-3 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors"
                     >
                       <PlusCircle className="w-4 h-4 text-gray-400" /> {lang === 'en' ? 'Post New Listing' : 'ลงประกาศใหม่'}

@@ -4,7 +4,8 @@ import { collection, addDoc, query, where, getDocs, updateDoc, doc, serverTimest
 export interface Notification {
   id?: string;
   userId: string;
-  type: 'contract_expiry' | 'rent_due' | 'commission_report' | 'overdue_payment' | 'broadcast';
+  targetRole?: 'tenant' | 'owner' | 'agent' | 'admin';
+  type: 'contract_expiry' | 'rent_due' | 'commission_report' | 'overdue_payment' | 'broadcast' | 'lead_dispatch' | 'showing_appointment' | 'maintenance_update' | 'system_alert';
   title: string;
   message: string;
   propertyId?: string;
@@ -15,6 +16,19 @@ export interface Notification {
 }
 
 export class NotificationService {
+  /** Filter notification types according to user role */
+  static isTypeAllowedForRole(type: string, role: string): boolean {
+    const roleAllowedTypes: Record<string, string[]> = {
+      tenant: ['saved_search', 'showing_appointment', 'contract_expiry', 'rent_due', 'maintenance_update', 'broadcast'],
+      owner: ['showing_appointment', 'rental_payout', 'contract_expiry', 'tenant_maintenance_request', 'rent_due'],
+      agent: ['lead_dispatch', 'showing_batch', 'commission_split', 'commission_report', 'qr_payment_success', 'sla_warning', 'showing_appointment'],
+      admin: ['system_alert', 'dispute_ticket', 'sla_breached', 'fraud_alert', 'broadcast'],
+      superadmin: ['system_alert', 'dispute_ticket', 'sla_breached', 'fraud_alert', 'broadcast'],
+    };
+    const allowed = roleAllowedTypes[role.toLowerCase()] || roleAllowedTypes['tenant'];
+    return allowed.includes(type);
+  }
+
   static async createNotification(notification: Omit<Notification, 'id' | 'createdAt' | 'isRead'>) {
     try {
       const docRef = await addDoc(collection(db, 'notifications'), {
@@ -29,7 +43,7 @@ export class NotificationService {
     }
   }
 
-  static async getUserNotifications(userId: string) {
+  static async getUserNotifications(userId: string, role: string = 'tenant') {
     try {
       const q = query(
         collection(db, 'notifications'),
@@ -37,7 +51,9 @@ export class NotificationService {
         where('isRead', '==', false)
       );
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notification));
+      const allNotifs = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notification));
+      // Apply Role-Based Notification Filter
+      return allNotifs.filter(n => !n.targetRole || n.targetRole === role || this.isTypeAllowedForRole(n.type, role));
     } catch (error) {
       console.error('Error fetching notifications:', error);
       return [];

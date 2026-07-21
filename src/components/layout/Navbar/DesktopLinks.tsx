@@ -119,9 +119,6 @@ export const DesktopLinks: React.FC<DesktopLinksProps> = ({
 
         {userRole === "renter" && (
           <>
-            <button onClick={() => onOpenRentalJourney ? onOpenRentalJourney() : router.push('/tenant/journey')} className={navLink(isSolid)}>
-              <Building2 className={navIcon} />{lang === 'en' ? 'Rental Journey' : lang === 'cn' ? '租房进程' : 'ติดตามการเช่า'}
-            </button>
             <button onClick={() => router.push('/tenant/dashboard')} className={navLink(isSolid)}>
               <Home className={navIcon} />{lang === 'en' ? 'My Space' : lang === 'cn' ? '租客中心' : 'แดชบอร์ด'}
             </button>
