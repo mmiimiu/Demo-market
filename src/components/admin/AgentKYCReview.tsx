@@ -12,7 +12,7 @@ import { toast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 export function AgentKYCReview() {
-  const { agentRequests, documents, loadDatabase, handleAgentKYC } = useAdminStore();
+  const { agentRequests, documents, loadDatabase, handleAgentKYC, receiveCriminalCheckWebhook } = useAdminStore();
   const [search, setSearch] = useState('');
   const [rejectDialog, setRejectDialog] = useState<{ requestId: string; userId: string } | null>(null);
   const [rejectReason, setRejectReason] = useState('');
@@ -70,6 +70,7 @@ export function AgentKYCReview() {
                 <th className="p-4">เลขที่ใบอนุญาต</th>
                 <th className="p-4 text-center">NDID Status</th>
                 <th className="p-4 text-center">Liveness Score</th>
+                <th className="p-4 text-center">ประวัติอาชญากรรม (Criminal Check)</th>
                 <th className="p-4 text-center">เอกสารประกอบ</th>
                 <th className="p-4 text-right">ดำเนินการ</th>
               </tr>
@@ -92,6 +93,19 @@ export function AgentKYCReview() {
                     <span className={cn('font-bold', req.livenessScore >= 90 ? 'text-green-600' : req.livenessScore >= 70 ? 'text-amber-600' : 'text-red-600')}>
                       {req.livenessScore}%
                     </span>
+                  </td>
+                  <td className="p-4 text-center">
+                    <div className="space-y-1">
+                      <span className={cn('text-[9px] font-black px-2 py-0.5 rounded-lg border uppercase',
+                        req.criminalCheckStatus === 'clear' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-amber-50 text-amber-700 border-amber-100'
+                      )}>
+                        {req.criminalCheckStatus === 'clear' ? '✓ CLEAR (ไม่มีประวัติ)' : '⏳ PENDING (รอผลตรวจ)'}
+                      </span>
+                      <p className="text-[9.5px] text-slate-400 font-bold block">
+                        {req.criminalCheckPaid ? '🎁 โปรโมชั่น: ฟรี 3 เดือนแรก' : '💳 ชำระแล้ว (ค่าธรรมเนียม ฿350)'}
+                      </p>
+                      <p className="text-[8.5px] text-red-500 font-bold tracking-tight block">🔒 สิทธิ์ข้อมูล: เฉพาะเจ้าตัว & แอดมิน</p>
+                    </div>
                   </td>
                   <td className="p-4">
                     <div className="flex flex-col gap-1.5">
@@ -127,7 +141,7 @@ export function AgentKYCReview() {
                 </tr>
               ))}
               {filtered.length === 0 && (
-                <tr><td colSpan={6} className="p-8 text-center text-slate-400 font-bold">ไม่พบรายการ</td></tr>
+                <tr><td colSpan={7} className="p-8 text-center text-slate-400 font-bold">ไม่พบรายการ</td></tr>
               )}
             </tbody>
           </table>
@@ -160,6 +174,66 @@ export function AgentKYCReview() {
               ))}
             </tbody>
           </table>
+        </div>
+      </Card>
+
+      {/* ⚡ Police e-Criminal Webhook Simulation Panel (Option 1) */}
+      <Card className="border border-indigo-200 bg-indigo-50/5 rounded-2xl p-5 shadow-sm space-y-4 mt-6">
+        <CardHeader className="p-0">
+          <CardTitle className="text-base font-black text-indigo-950 flex items-center gap-2">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+            </span>
+            ⚡ ตัวจำลองการส่งสัญญาณ Webhook (ทว. e-Criminal API)
+          </CardTitle>
+          <CardDescription className="text-xs text-indigo-700">
+            ใช้ในการจำลองสัญญาณความปลอดภัยจากกองทะเบียนประวัติอาชญากร ส่งผลการตรวจของเอเจ้นต์กลับมาระบบอัตโนมัติ
+          </CardDescription>
+        </CardHeader>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 items-end">
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-wide">เลือกใบสมัครเอเจ้นต์</label>
+            <select 
+              id="webhook_agent_req"
+              className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 h-9"
+            >
+              {agentRequests.map(r => (
+                <option key={r.id} value={r.id}>
+                  {r.name} ({r.id} - สถานะตรวจประวัติ: {r.criminalCheckStatus?.toUpperCase() || 'NONE'})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-wide">ผลการตรวจประวัติ (Criminal Status)</label>
+            <select 
+              id="webhook_agent_status"
+              className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 h-9"
+            >
+              <option value="clear">✓ CLEAR (ประวัติขาวสะอาด / ผ่าน)</option>
+              <option value="flagged">❌ FLAGGED (พบประวัติคดีอาชญากรรม)</option>
+            </select>
+          </div>
+
+          <Button 
+            className="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs h-9 rounded-xl shadow-md border-none"
+            onClick={() => {
+              const reqSelect = document.getElementById('webhook_agent_req') as HTMLSelectElement;
+              const statusSelect = document.getElementById('webhook_agent_status') as HTMLSelectElement;
+              if (reqSelect && statusSelect) {
+                receiveCriminalCheckWebhook(reqSelect.value, statusSelect.value as any);
+                toast({
+                  title: '⚡ จำลองสัญญาณ Webhook สำเร็จ',
+                  description: `ส่งข้อมูลผลตรวจ [${statusSelect.value.toUpperCase()}] ให้ใบสมัคร ${reqSelect.value} สำเร็จ`
+                });
+              }
+            }}
+          >
+            ⚡ ยิงจำลอง Webhook เข้าเซิร์ฟเวอร์
+          </Button>
         </div>
       </Card>
 

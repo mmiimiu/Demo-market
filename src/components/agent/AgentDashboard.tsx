@@ -16,6 +16,7 @@ export function AgentDashboard({ lang }: AgentDashboardProps) {
   const t = translations[lang] || translations.th;
   const isTh = lang === 'th';
   const { notifications, markAsRead, removeNotification } = useNotifications();
+  const [selectedPayout, setSelectedPayout] = useState<any>(null);
 
   // Filter agent notifications:
   // Hide Admin System Alerts, but show expiry alerts, wishlist/price drop alerts, LINE OA chat, appointment reminders, welcome, etc.
@@ -387,6 +388,165 @@ export function AgentDashboard({ lang }: AgentDashboardProps) {
           </div>
         </div>
       </div>
+
+      {/* Commission Split Payouts (สำหรับเอเจ้นต์และ Co-Agents) */}
+      <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-xs space-y-4">
+        <div className="flex justify-between items-center border-b border-gray-150 pb-2.5">
+          <div>
+            <h4 className="font-black text-gray-900 text-sm flex items-center gap-1.5">
+              <Coins className="w-4 h-4 text-indigo-600" />
+              {isTh ? 'รายงานค่าคอมมิชชันและส่วนแบ่ง Co-Agent (รอบจ่ายอัตโนมัติทุกวันที่ 25)' : 'My Commission Splits & Auto-Payouts'}
+            </h4>
+            <p className="text-[10px] text-gray-400 font-semibold mt-0.5">
+              {isTh ? 'ระบบจะคำนวณและแบ่งจ่ายตรงอัตโนมัติในวันที่ 25 ของเดือน คลิกเพื่อดูรายละเอียดห้องที่ปล่อยเช่าและส่วนแบ่ง' : 'Monthly splits processed automatically on the 25th. Click to view detailed splits.'}
+            </p>
+          </div>
+          <Badge className="bg-emerald-500 text-white font-bold border-none text-[8px]">ACTIVE AUTO-PAYOUT</Badge>
+        </div>
+
+        <div className="overflow-x-auto border border-gray-100 rounded-xl">
+          <table className="w-full text-xs text-left font-sans">
+            <thead className="bg-gray-50 border-b border-gray-150 text-[10px] text-gray-400 font-black uppercase">
+              <tr>
+                <th className="p-3">{isTh ? 'ห้องที่ปล่อยเช่า' : 'Property / Deal'}</th>
+                <th className="p-3">{isTh ? 'ค่าเช่า/สัญญา' : 'Rent / Contract'}</th>
+                <th className="p-3 text-center">{isTh ? 'บทบาทของคุณ' : 'My Role'}</th>
+                <th className="p-3 text-center">{isTh ? 'ส่วนแบ่งของคุณ (%)' : 'My Split (%)'}</th>
+                <th className="p-3 text-center">{isTh ? 'ยอดรับสุทธิ' : 'Net Amount'}</th>
+                <th className="p-3 text-center">{isTh ? 'สถานะรอบการโอน' : 'Status'}</th>
+                <th className="p-3 text-right">{isTh ? 'รายละเอียด' : 'Action'}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 font-semibold text-gray-700">
+              {[
+                { id: 'pay_001', room: 'Ideo Mix Sukhumvit (ห้อง 102)', rent: 12000, contract: 'doc_001', role: 'Main Agent', splitPercent: '70%', netAmount: 8400, status: 'waiting', mainAgent: 'วรรณา สุขใจ (คุณ)', coAgents: [{ name: 'ธีรพล มั่นคง', role: 'Co-Agent 1', percent: '20%', amount: 2400 }], websiteFee: 1200 },
+                { id: 'pay_002', room: 'The Base Park East (ห้อง 405)', rent: 15000, contract: 'doc_004', role: 'Main Agent', splitPercent: '90%', netAmount: 13500, status: 'disbursed', mainAgent: 'วรรณา สุขใจ (คุณ)', coAgents: [], websiteFee: 1500 },
+                { id: 'pay_003', room: 'Condo Asoke Place (ห้อง 1209)', rent: 20000, contract: 'doc_002', role: 'Co-Agent', splitPercent: '10%', netAmount: 2000, status: 'waiting', mainAgent: 'สมชาย นามดี', coAgents: [{ name: 'วรรณา สุขใจ (คุณ)', role: 'Co-Agent 1', percent: '10%', amount: 2000 }, { name: 'เก่ง กล้าหาญ', role: 'Co-Agent 2', percent: '10%', amount: 2000 }], websiteFee: 2000 }
+              ].map(pay => (
+                <tr key={pay.id} className="hover:bg-slate-50/40">
+                  <td className="p-3">
+                    <p className="font-black text-gray-900">{pay.room}</p>
+                    <p className="text-[9px] text-gray-400 font-semibold">ID: {pay.id}</p>
+                  </td>
+                  <td className="p-3">
+                    <p className="font-bold text-gray-850">฿{pay.rent.toLocaleString()}</p>
+                    <p className="text-[9px] text-gray-400 font-semibold">{pay.contract}</p>
+                  </td>
+                  <td className="p-3 text-center">
+                    <span className={cn('text-[9px] font-black px-2 py-0.5 rounded-lg border uppercase',
+                      pay.role === 'Main Agent' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-indigo-50 text-indigo-700 border-indigo-100'
+                    )}>
+                      {pay.role === 'Main Agent' ? (isTh ? '👤 เอเจ้นต์หลัก' : 'Main Agent') : (isTh ? '👥 โคเอเจ้นต์ร่วม' : 'Co-Agent')}
+                    </span>
+                  </td>
+                  <td className="p-3 text-center font-black text-slate-800">{pay.splitPercent}</td>
+                  <td className="p-3 text-center font-black text-green-600">฿{pay.netAmount.toLocaleString()}</td>
+                  <td className="p-3 text-center">
+                    <span className={cn('text-[8px] font-black px-2 py-0.5 rounded-lg border uppercase',
+                      pay.status === 'disbursed' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-amber-50 text-amber-700 border-amber-100'
+                    )}>
+                      {pay.status === 'disbursed' ? (isTh ? '✓ โอนแล้ว' : 'Disbursed') : (isTh ? '⏳ รอโอน 25 ของเดือน' : 'Waiting Batch')}
+                    </span>
+                  </td>
+                  <td className="p-3 text-right">
+                    <button 
+                      onClick={() => setSelectedPayout(pay)}
+                      className="text-[9px] font-black text-indigo-600 bg-indigo-50 border border-indigo-100 hover:bg-indigo-100 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer select-none"
+                    >
+                      🔍 {isTh ? 'ดูรายละเอียด' : 'Details'}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Commission Split Detail Modal */}
+      {selectedPayout && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
+          <div className="bg-white border border-gray-200 shadow-2xl rounded-2xl w-full max-w-md overflow-hidden font-sans">
+            <div className="bg-slate-900 text-white p-5 border-b border-slate-800 flex justify-between items-center">
+              <div>
+                <h3 className="font-black text-sm uppercase tracking-wider flex items-center gap-1.5">
+                  🛡️ {isTh ? 'สัดส่วนและรายละเอียดการแบ่งเงิน' : 'Commission Split Details'}
+                </h3>
+                <p className="text-[10px] text-slate-400 font-bold mt-0.5">PAYOUT ID: {selectedPayout.id}</p>
+              </div>
+              <button 
+                onClick={() => setSelectedPayout(null)}
+                className="text-slate-400 hover:text-white transition-colors text-xs font-black bg-transparent border-none cursor-pointer"
+              >
+                ✕ CLOSE
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-5">
+              {/* Condo info */}
+              <div className="space-y-1">
+                <p className="text-[10px] text-gray-400 font-black uppercase tracking-wider">{isTh ? 'ห้องที่ปล่อยเช่าได้สำเร็จ' : 'Rented Property'}</p>
+                <p className="font-black text-gray-900 text-sm">{selectedPayout.room}</p>
+                <p className="text-[10px] text-gray-500 font-bold">{isTh ? 'ค่าเช่าและสัญญา' : 'Rent & Contract'}: ฿{selectedPayout.rent.toLocaleString()}/ด · {selectedPayout.contract}</p>
+              </div>
+
+              <hr className="border-gray-100" />
+
+              {/* Commission Splits Hierarchy */}
+              <div className="space-y-3.5">
+                <p className="text-[10px] text-gray-400 font-black uppercase tracking-wider">{isTh ? 'ตารางการกระจายเงินส่วนแบ่ง (Split Distribution)' : 'Split Distribution'}</p>
+                
+                {/* 1. Main Agent */}
+                <div className="flex items-center justify-between text-xs p-2.5 bg-green-50/40 border border-green-100 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs">👤</span>
+                    <div>
+                      <p className="font-black text-green-950">{isTh ? 'เอเจ้นต์หลัก (Main Agent)' : 'Main Agent'}</p>
+                      <p className="text-[9px] text-green-600 font-bold">{selectedPayout.mainAgent}</p>
+                    </div>
+                  </div>
+                  <span className="font-black text-green-700">
+                    ฿{((selectedPayout.rent * 0.7) * (selectedPayout.coAgents.length > 0 ? 1 : 1.285)).toLocaleString(undefined, {maximumFractionDigits: 0})} ({selectedPayout.coAgents.length > 0 ? '70%' : '90%'})
+                  </span>
+                </div>
+
+                {/* 2. Co-agents */}
+                {selectedPayout.coAgents.map((co: any, i: number) => (
+                  <div key={i} className="flex items-center justify-between text-xs p-2.5 bg-indigo-50/40 border border-indigo-100 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs">👥</span>
+                      <div>
+                        <p className="font-black text-indigo-950">{co.role} ({co.name})</p>
+                        <p className="text-[9px] text-indigo-500 font-bold">{isTh ? 'โคเอเจ้นต์ร่วมรับส่วนแบ่งเท่ากัน' : 'Co-Agent Equal Split'}</p>
+                      </div>
+                    </div>
+                    <span className="font-black text-indigo-700">฿{co.amount.toLocaleString()} ({co.percent})</span>
+                  </div>
+                ))}
+
+                {/* 3. Platform Fee */}
+                <div className="flex items-center justify-between text-xs p-2.5 bg-slate-50 border border-gray-150 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs">💻</span>
+                    <div>
+                      <p className="font-black text-gray-900">{isTh ? 'ค่าธรรมเนียมเว็บไซต์' : 'Website Fee'}</p>
+                      <p className="text-[9px] text-gray-400 font-bold">PrimeRent Platform Escrow</p>
+                    </div>
+                  </div>
+                  <span className="font-black text-slate-700">฿{selectedPayout.websiteFee.toLocaleString()} (10%)</span>
+                </div>
+              </div>
+
+              {/* Automatic System Banner */}
+              <div className="bg-indigo-50/50 border border-indigo-100 rounded-xl p-3 text-[10.5px] text-indigo-900 font-bold leading-relaxed">
+                ⚡ {isTh 
+                  ? 'ระบบอัตโนมัติจะประมวลยอดและตัดจ่ายเงินโอนเข้าบัญชีธนาคารที่คุณผูกไว้โดยตรงในวันที่ 25 ของเดือน ไม่ต้องกดดำเนินการใดๆ' 
+                  : 'Automated batch payout processes this split directly into your registered bank account on the 25th of the month.'}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Agent Notifications & Activity Feed */}
       <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-xs space-y-4">

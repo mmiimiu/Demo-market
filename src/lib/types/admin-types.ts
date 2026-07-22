@@ -35,6 +35,10 @@ export interface AgentKYCRequest {
   reviewedBy?: string;
   reviewedAt?: string;
   rejectReason?: string;
+  criminalCheckStatus?: 'none' | 'pending' | 'clear' | 'flagged';
+  criminalCheckPaid?: boolean;
+  criminalCheckDocument?: string;
+  criminalCheckDate?: string;
 }
 
 export interface KYCDocument {

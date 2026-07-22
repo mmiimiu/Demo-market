@@ -118,6 +118,23 @@ export function EdocForm({ lang, role, formData, onChange }: EdocFormProps) {
                 className="h-10 bg-gray-50 border-gray-200 focus-visible:ring-primary/20 text-xs font-bold rounded-none"
               />
             </div>
+
+            {/* Criminal check info */}
+            <div className="col-span-1 md:col-span-2 bg-indigo-50/40 border border-indigo-100 p-4 rounded-xl mt-4 space-y-2">
+              <p className="text-xs font-black text-indigo-950 flex items-center gap-1.5">
+                🛡️ การตรวจสอบประวัติอาชญากรรม (Criminal Record Verification)
+              </p>
+              <p className="text-[11px] text-slate-600 font-bold leading-relaxed">
+                {isTh 
+                  ? 'ระบบจะส่งข้อมูลเชื่อมโยงตรวจประวัติกับ สตช. โดยอัตโนมัติ สิทธิ์พิเศษตรวจฟรีใน 3 เดือนแรกนับจากลงทะเบียนบัญชี (เอเจ้นต์ที่ล่วงเลยระยะโปรโมชั่นจะมีค่าธรรมเนียม 350 บาท)'
+                  : 'Automatic criminal verification records will link directly to our system. Free checks for the first 3 months from registration (standard 350 THB fee applies afterwards).'}
+              </p>
+              <p className="text-[10px] text-red-600 font-black">
+                {isTh
+                  ? '⚠️ ข้อกำหนดความคุ้มครองข้อมูล (PDPA): ข้อมูลการตรวจประวัติทั้งหมดจะจำกัดสิทธิ์ให้เห็นเฉพาะตัวแอดมินและเอเจ้นต์เจ้าของบัญชีเท่านั้น'
+                  : '⚠️ PDPA Privacy Notice: All criminal record inputs/outputs are private, visible strictly to platform administrators and the owner agent.'}
+              </p>
+            </div>
           </>
         ) : (
           <>

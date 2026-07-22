@@ -29,7 +29,11 @@ const DEFAULT_AGENTS: AgentKYCRequest[] = [
     documents: [
       { type: 'ID Card', filename: 'id_card_wanna.png', size: '1.2 MB' },
       { type: 'Agent License', filename: 'license_wanna.pdf', size: '2.4 MB' }
-    ]
+    ],
+    criminalCheckStatus: 'clear',
+    criminalCheckPaid: true,
+    criminalCheckDocument: 'criminal_check_report_wanna.pdf',
+    criminalCheckDate: '2026-07-05'
   },
   {
     id: 'req_002', userId: 'u_006', name: 'มานพ ขายดี', email: 'manop@sales.com',
@@ -37,7 +41,11 @@ const DEFAULT_AGENTS: AgentKYCRequest[] = [
     ndidStatus: 'pending', livenessScore: 84.1, submittedAt: '2026-07-06',
     documents: [
       { type: 'ID Card', filename: 'id_card_manop.png', size: '1.4 MB' }
-    ]
+    ],
+    criminalCheckStatus: 'pending',
+    criminalCheckPaid: false,
+    criminalCheckDocument: 'waiting_webhook_payload.json',
+    criminalCheckDate: '2026-07-06'
   }
 ];
 
@@ -148,6 +156,7 @@ interface AdminStore {
 
   // Loaders
   loadDatabase: () => void;
+  resetDatabase: () => void;
 
   // 12.1 Member actions
   updateUserRole: (userId: string, role: AdminUser['role']) => void;
@@ -155,6 +164,7 @@ interface AdminStore {
 
   // 12.2 Agent KYC actions
   handleAgentKYC: (requestId: string, userId: string, action: 'approve' | 'reject', reason?: string) => void;
+  receiveCriminalCheckWebhook: (requestId: string, status: 'clear' | 'flagged') => void;
 
   // 12.3 Scam report actions
   handleScamReport: (reportId: string, action: 'takedown' | 'dismiss' | 'investigate', resolution?: string) => void;
@@ -278,6 +288,22 @@ export const useAdminStore = create<AdminStore>((set, get) => ({
     });
   },
 
+  resetDatabase: () => {
+    if (typeof window === 'undefined') return;
+    localStorage.removeItem('primerent_admin_users');
+    localStorage.removeItem('primerent_admin_agent_requests');
+    localStorage.removeItem('primerent_admin_scam_reports');
+    localStorage.removeItem('primerent_admin_refunds');
+    localStorage.removeItem('primerent_admin_docs');
+    localStorage.removeItem('primerent_admin_classifications');
+    localStorage.removeItem('primerent_admin_insider_alerts');
+    localStorage.removeItem('primerent_admin_security_events');
+    localStorage.removeItem('primerent_admin_audit_logs');
+    localStorage.removeItem('primerent_admin_backups');
+    get().loadDatabase();
+    get().logAuditAction('Reset Database to Defaults', 'System');
+  },
+
   // ─── 12.1 Member Management ─────────────────────────────────────────────
   updateUserRole: (userId, role) => {
     const updated = get().users.map(u => u.id === userId ? { ...u, role } : u);
@@ -315,6 +341,17 @@ export const useAdminStore = create<AdminStore>((set, get) => ({
       set({ users: updatedUsers });
     }
     get().logAuditAction(`Agent KYC ${action.toUpperCase()}${reason ? `: ${reason}` : ''}`, userId);
+  },
+
+  receiveCriminalCheckWebhook: (requestId, status) => {
+    const updatedRequests = get().agentRequests.map(r => r.id === requestId ? {
+      ...r,
+      criminalCheckStatus: status,
+      criminalCheckDate: new Date().toISOString().slice(0, 10)
+    } : r);
+    persist('primerent_admin_agent_requests', updatedRequests);
+    set({ agentRequests: updatedRequests });
+    get().logAuditAction(`Receive Police Criminal Check Webhook [${status.toUpperCase()}]`, requestId);
   },
 
   // ─── 12.3 Scam Report ───────────────────────────────────────────────────
@@ -443,3 +480,25 @@ export const useAdminStore = create<AdminStore>((set, get) => ({
     get().logAuditAction('Insider Trading alert resolved', alertId, resolution);
   },
 }));
+
+export function calculateCommissionSplit(amount: number, coAgentCount: number) {
+  if (coAgentCount === 0) {
+    return {
+      websiteFee: Math.round(amount * 0.10),
+      agentAmount: Math.round(amount * 0.90),
+      coAgentAmount: 0,
+      coAgentAmountPerPerson: 0,
+      coAgentCount: 0
+    };
+  } else {
+    const totalCoAgentAmount = Math.round(amount * 0.20);
+    const coAgentAmountPerPerson = Math.round(totalCoAgentAmount / coAgentCount);
+    return {
+      websiteFee: Math.round(amount * 0.10),
+      agentAmount: Math.round(amount * 0.70),
+      coAgentAmount: totalCoAgentAmount,
+      coAgentAmountPerPerson,
+      coAgentCount
+    };
+  }
+}
