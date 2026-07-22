@@ -1,18 +1,8 @@
 'use client';
 
-import React, { Suspense } from 'react';
-import { AdminPanel } from '@/components/admin/AdminPanel';
-import { useApp } from '@/contexts/AppContext';
-
-function AdminDashboardContent() {
-  const { lang } = useApp();
-  return <AdminPanel lang={lang as any} />;
-}
+import React from 'react';
+import { DashboardAnalytics } from '@/components/admin/DashboardAnalytics';
 
 export default function AdminDashboardPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center">Loading...</div>}>
-      <AdminDashboardContent />
-    </Suspense>
-  );
+  return <DashboardAnalytics />;
 }

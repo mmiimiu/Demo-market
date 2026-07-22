@@ -13,7 +13,7 @@ export const handleEditSave = async (
   db: any,
   contract: any,
   setContract: React.Dispatch<React.SetStateAction<any>>,
-  setIsEditing: React.Dispatch<React.SetStateAction<boolean>>,
+  setIsEditing: (v: boolean) => void,
   setAuditLog: React.Dispatch<React.SetStateAction<AuditEvent[]>>,
   toast: (opts: any) => void,
   lang: 'th' | 'en' | 'cn'

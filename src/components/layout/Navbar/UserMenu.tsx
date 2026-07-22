@@ -308,13 +308,13 @@ export const UserMenu: React.FC<UserMenuProps> = ({
                 )}
 
                 {/* Admin Section */}
-                {userRole === 'admin' && (
+                {(userRole === 'admin' || userRole === 'superadmin' || userRole === 'sa') && (
                   <div className="p-2">
                     <p className="px-3 py-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider">For Admins</p>
                     <DropdownMenuItem 
                       onSelect={(e) => {
                         e.preventDefault();
-                        router.push("/admin/dashboard");
+                        router.push("/admin");
                       }} 
                       className="w-full flex items-center rounded-xl gap-3 cursor-pointer px-3 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors"
                     >
