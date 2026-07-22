@@ -24,49 +24,6 @@ export default function WebviewContracts({ onSendExpiryWarning, activeRole }: { 
   useEffect(() => {
     const role = localStorage.getItem('primerent_user_role') || 'renter';
     setUserRole(role);
-
-    // Auto-reset contract signatures on load for demo purposes
-    try {
-      const stored = localStorage.getItem('contracts');
-      if (stored) {
-        const contracts = JSON.parse(stored);
-        const idx = contracts.findIndex((c: any) => c.id === 'mock_ctr_A1204');
-        if (idx !== -1) {
-          const mappedRole = (role === 'owner' || role === 'landlord') ? 'owner' : role === 'agent' ? 'agent' : 'tenant';
-          
-          let forceReset = false;
-          // Apply role specific defaults
-          if (mappedRole === 'owner' && contracts[idx].agentId) {
-            delete contracts[idx].agentId; // Owner defaults to no agent
-            forceReset = true;
-          } else if (mappedRole !== 'owner' && !contracts[idx].agentId) {
-            contracts[idx].agentId = 'mock_agent_123'; // Others default to having agent
-            forceReset = true;
-          }
-
-          const expectedSignatures: any = {};
-          if (mappedRole !== 'owner') expectedSignatures.owner = { name: 'Owner (Mock)', signatureDataUrl: MOCK_SIG_OWNER, date: new Date().toISOString() };
-          if (mappedRole !== 'tenant') expectedSignatures.tenant = { name: 'Tenant (Mock)', signatureDataUrl: MOCK_SIG_TENANT, date: new Date().toISOString() };
-          if (mappedRole !== 'agent' && contracts[idx].agentId) expectedSignatures.agent = { name: 'Agent (Mock)', signatureDataUrl: MOCK_SIG_AGENT, date: new Date().toISOString() };
-
-          const currentSigs = contracts[idx].signatures || {};
-          let needsReset = forceReset || !!currentSigs[mappedRole];
-          
-          Object.keys(expectedSignatures).forEach(r => {
-            if (!currentSigs[r]) needsReset = true;
-          });
-
-          if (needsReset) {
-            contracts[idx].signatures = expectedSignatures;
-            contracts[idx].status = 'pending';
-            localStorage.setItem('contracts', JSON.stringify(contracts));
-            window.location.reload();
-          }
-        }
-      }
-    } catch (e) {
-      console.error(e);
-    }
   }, []);
 
   return (

@@ -57,3 +57,16 @@ export const MOCK_AUDIT_LOG: AuditEvent[] = [
     detail: 'เจ้าของที่พักลงนามในสัญญาเรียบร้อยแล้ว · IP: 49.228.x.x',
   },
 ];
+
+export const DEFAULT_ATTACHMENTS = [
+  { id: 'def_1', title: 'เครื่องปรับอากาศ (Air Conditioner)', content: '15000' },
+  { id: 'def_2', title: 'โทรทัศน์ (Television)', content: '10000' },
+  { id: 'def_3', title: 'ตู้เย็น (Refrigerator)', content: '8000' },
+  { id: 'def_4', title: 'เครื่องซักผ้า (Washing Machine)', content: '12000' },
+  { id: 'def_5', title: 'เตียงและที่นอน (Bed & Mattress)', content: '15000' },
+  { id: 'def_6', title: 'ตู้เสื้อผ้า (Wardrobe)', content: '10000' },
+  { id: 'def_7', title: 'ชุดโซฟา (Sofa Set)', content: '8000' },
+  { id: 'def_8', title: 'ไมโครเวฟ (Microwave)', content: '3000' },
+  { id: 'def_9', title: 'เครื่องทำน้ำอุ่น (Water Heater)', content: '4000' },
+  { id: 'def_10', title: 'โต๊ะอาหารและเก้าอี้ (Dining Table Set)', content: '5000' }
+];

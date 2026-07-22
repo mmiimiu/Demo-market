@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useUser, useFirestore, useDoc } from '@/firebase';
 import { ContractTemplate, AuditEvent } from './types';
-import { MOCK_AUDIT_LOG } from './constants';
+import { MOCK_AUDIT_LOG, DEFAULT_ATTACHMENTS } from './constants';
 
 export function useContractData(contractId: string, forceRole?: 'tenant' | 'owner' | 'agent') {
   const { user } = useUser();
@@ -49,6 +49,14 @@ export function useContractData(contractId: string, forceRole?: 'tenant' | 'owne
     }
 
     if (match) {
+      if (!match.attachments || match.attachments.length < 10) {
+        match.attachments = DEFAULT_ATTACHMENTS;
+        const idx = contracts.findIndex((c: any) => c.id === contractId);
+        if (idx !== -1) {
+          contracts[idx] = match;
+          localStorage.setItem('contracts', JSON.stringify(contracts));
+        }
+      }
       setContract(match);
     } else if (contractId.startsWith('mock_ctr_') || contractId === 'mock_ctr_1') {
       const simulated = {
@@ -76,11 +84,7 @@ export function useContractData(contractId: string, forceRole?: 'tenant' | 'owne
             ipAddress: '49.228.45.112'
           }
         },
-        attachments: [
-          { id: 'def_1', title: 'เครื่องปรับอากาศ (Air Conditioner)', content: '15000' },
-          { id: 'def_2', title: 'โทรทัศน์ (Television)', content: '10000' },
-          { id: 'def_3', title: 'ตู้เย็น (Refrigerator)', content: '8000' }
-        ],
+        attachments: DEFAULT_ATTACHMENTS,
         status: 'active',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
