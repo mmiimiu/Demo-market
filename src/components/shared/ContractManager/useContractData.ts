@@ -49,7 +49,7 @@ export function useContractData(contractId: string, forceRole?: 'tenant' | 'owne
     }
 
     if (match) {
-      if (!match.attachments || match.attachments.length < 10) {
+      if (!match.attachments || match.attachments.length !== 2 || !match.attachments[0].type) {
         match.attachments = DEFAULT_ATTACHMENTS;
         const idx = contracts.findIndex((c: any) => c.id === contractId);
         if (idx !== -1) {
@@ -62,23 +62,23 @@ export function useContractData(contractId: string, forceRole?: 'tenant' | 'owne
       const simulated = {
         id: contractId,
         propertyId: '1',
-        propertyName: 'คอนโดหรู ใกล้ BTS อโศก สุขุมวิท',
+        propertyName: 'คอนโดสุขุมวิท 101 ชั้น 12 ห้อง 1204',
         ownerId: 'owner_somyot',
         tenantId: 'tenant_tattap',
-        monthlyRent: 12000,
-        depositAmount: 24000,
-        advanceRentAmount: 12000,
-        startDate: new Date().toISOString(),
-        endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+        monthlyRent: 18000,
+        depositAmount: 36000,
+        advanceRentAmount: 18000,
+        startDate: '2026-07-01T00:00:00.000Z',
+        endDate: '2027-06-30T00:00:00.000Z',
         signatures: {
           owner: {
-            name: 'สมยศ ใจดี (Owner)',
+            name: 'นาย สมชาย ใจดี (Owner)',
             signatureDataUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAYAAACqWDpaAAAACXBIWXMAAAsTAAALEwEAmpwYAAABeklEQVR4nO2aTWrDMBSFP6t9G12ErKI30E10IXkDOyvIDbILySr2bXSReAO5gS7C90Ukh1aUOMWx6sA9B4QY2Y9PT0+WnFJKHMdxHMdxHMdxHMdxHNvFDHAATg34vQMeO8H6gCPwZcHzG/gAps04rpg58ArMmsM34A54teC6KqaAM2C2OHqLzS7A1YLrq5gC1qT3M1uMvcf2DHgC7gU2xTADPAEPwLgYc1fR4o5U5lM8i78g64c7UrWfYm7HqvgLst7cqaobNlV2q/gNf7W4V3U/t1Z2q/gN99b4V3U/t1Z2q/gN32pxu25/Fv9a3Gpx72F/q8VdxW941uKeiz/E3I6L/Cnm6R1HqvhzzO24yL9int5xpIp+w18t7lXdL22q7FbxG77V4nbd/iz+tbiq7u/Wyq6K/9p7Vffzqaq+Kj1Wpcf2Lw8qPUyFh6XwYCo87ApPrsKjrvAkFZ5ChZeHrvA0FZ62wtNW+P8pjuM4juM4juM4juM4tuf4AQ+Yd6n2XwYJAAAAAElFTkSuQmCC',
             signedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
             ipAddress: '182.52.12.98'
           },
           tenant: {
-            name: 'ทัตเทพ แสนสุข (Tenant)',
+            name: 'นาย ณัฐพล ใจสู้ (Tenant)',
             signatureDataUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAYAAACqWDpaAAAACXBIWXMAAAsTAAALEwEAmpwYAAABeklEQVR4nO2aTWrDMBSFP6t9G12ErKI30E10IXkDOyvIDbILySr2bXSReAO5gS7C90Ukh1aUOMWx6sA9B4QY2Y9PT0+WnFJKHMdxHMdxHMdxHMdxHNvFDHAATg34vQMeO8H6gCPwZcHzG/gAps04rpg58ArMmsM34A54teC6KqaAM2C2OHqLzS7A1YLrq5gC1qT3M1uMvcf2DHgC7gU2xTADPAEPwLgYc1fR4o5U5lM8i78g64c7UrWfYm7HqvgLst7cqaobNlV2q/gNf7W4V3U/t1Z2q/gN99b4V3U/t1Z2q/gN32pxu25/Fv9a3Gpx72F/q8VdxW941uKeiz/E3I6L/Cnm6R1HqvhzzO24yL9int5xpIp+w18t7lXdL22q7FbxG77V4nbd/iz+tbiq7u/Wyq6K/9p7Vffzqaq+Kj1Wpcf2Lw8qPUyFh6XwYCo87ApPrsKjrvAkFZ5ChZeHrvA0FZ62wtNW+P8pjuM4juM4juM4juM4tuf4AQ+Yd6n2XwYJAAAAAElFTkSuQmCC',
             signedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
             ipAddress: '49.228.45.112'
@@ -115,10 +115,10 @@ export function useContractData(contractId: string, forceRole?: 'tenant' | 'owne
       }
 
       setEditAttachments(contract.attachments?.length > 0 ? contract.attachments : []);
-      setEditLandlordName(contract.landlordName || 'สมชาย มืออาชีพ (Agent)');
+      setEditLandlordName(contract.landlordName || 'นาย สมชาย ใจดี');
       setEditTenantName(contract.tenantName || 'นาย ณัฐพล ใจสู้');
       setEditAgentName(contract.agentName || 'PrimeRent Agent');
-      setEditPropertyName(contract.propertyName || 'คอนโดหรู ใกล้ BTS อโศก สุขุมวิท');
+      setEditPropertyName(contract.propertyName || 'คอนโดสุขุมวิท 101 ชั้น 12 ห้อง 1204');
       if (contract.template) setTemplate(contract.template);
       if (contract.auditLog) setAuditLog(contract.auditLog);
     }

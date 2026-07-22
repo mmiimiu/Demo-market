@@ -9,6 +9,8 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ContractTemplate } from './types';
 import { TEMPLATES } from './constants';
+import { SignatureBlocks } from './SignatureBlocks';
+import { AttachmentPage } from './AttachmentPage';
 
 interface DocumentPreviewProps {
   contract: any;
@@ -23,6 +25,10 @@ export function DocumentPreviewModal({ contract, contractId, lang, template }: D
 
   const sDate = contract?.startDate ? format(new Date(contract.startDate), 'dd MMMM yyyy') : 'N/A';
   const eDate = contract?.endDate ? format(new Date(contract.endDate), 'dd MMMM yyyy') : 'N/A';
+
+  const ownerName = contract?.signatures?.owner?.name || contract?.landlordName || 'นาย สมชาย ใจดี';
+  const tenantName = contract?.signatures?.tenant?.name || contract?.tenantName || 'นาย ณัฐพล ใจสู้';
+  const agentName = contract?.signatures?.agent?.name || contract?.agentName || 'PrimeRent Agent';
 
   return (
     <Dialog>
@@ -63,84 +69,87 @@ export function DocumentPreviewModal({ contract, contractId, lang, template }: D
                 </span>
               </div>
 
-              <div className="text-center border-b-2 border-gray-900 pb-6 mb-8">
-                <div className="text-xs font-bold uppercase tracking-[0.3em] text-gray-400 mb-2">PrimeRent Digital Platform</div>
-                <h1 className="text-2xl font-bold text-gray-900 uppercase tracking-tight">
-                  {isTh ? 'สัญญาเช่าที่พักอาศัย' : lang === 'cn' ? '住宅租赁合同' : 'Residential Lease Agreement'}
-                </h1>
-                <div className="text-xs text-gray-500 font-bold mt-2">
-                  {isTh ? 'รหัสสัญญา' : 'Contract ID'}: {contractId} &nbsp;·&nbsp;
-                  {isTh ? 'ประเภท' : 'Type'}: {isTh ? TEMPLATES[template].labelTh : TEMPLATES[template].label}
+              <div className="text-center border-b border-gray-100 pb-6 mb-8 mt-4">
+                <h3 className="text-2xl font-black text-gray-900 mb-2">
+                  {isTh ? 'หนังสือสัญญาเช่าที่พักอาศัย' : 'Residential Lease Agreement'}
+                </h3>
+                <p className="text-xs font-medium text-gray-500">
+                  {isTh ? 'ทำขึ้น ณ แพลตฟอร์ม PrimeRent (สัญญาเช่าฉบับสมบูรณ์)' : 'Created on PrimeRent Platform (Complete Lease Agreement)'}
+                </p>
+              </div>
+
+              <div className="text-sm leading-8 text-gray-800 space-y-6 mb-10 text-left indent-8">
+                <p>
+                  {isTh ? 'สัญญาเช่าฉบับนี้ทำขึ้นระหว่าง ' : 'This agreement is made between '}
+                  <span className="font-bold underline px-1 text-black">{ownerName}</span>
+                  {isTh ? ' (ซึ่งต่อไปในสัญญานี้จะเรียกว่า "ผู้ให้เช่า") ฝ่ายหนึ่ง กับ ' : ' (hereinafter referred to as the "Lessor"), and '}
+                  <span className="font-bold underline px-1 text-black">{tenantName}</span>
+                  {isTh ? ' (ซึ่งต่อไปในสัญญานี้จะเรียกว่า "ผู้เช่า") อีกฝ่ายหนึ่ง โดยมี ' : ' (hereinafter referred to as the "Tenant"), and '}
+                  <span className="font-bold underline px-1 text-black">{agentName}</span>
+                  {isTh ? ' เป็นตัวแทนและพยานผู้ประสานงานร่วมดูแล' : ' acting as the agent and coordinating witness.'}
+                </p>
+                
+                <p>
+                  {isTh ? 'ทั้งสองฝ่ายตกลงทำสัญญาเช่าทรัพย์สินประเภทห้องพัก โครงการ ' : 'Both parties agree to lease the residential property located at '}
+                  <span className="font-bold underline px-1 text-black">{contract?.propertyName || 'คอนโดสุขุมวิท 101 ชั้น 12 ห้อง 1204'}</span>
+                  {isTh ? ' โดยมีเงื่อนไขรายละเอียดดังนี้:' : ' with the following terms and conditions:'}
+                </p>
+              </div>
+
+              <div className="bg-gray-50/80 p-6 md:p-8 rounded-2xl mb-10 border border-gray-100 space-y-4 shadow-sm text-left">
+                <div className="flex justify-between items-center pb-2 border-b border-gray-200/50">
+                  <span className="text-gray-600 font-medium">{isTh ? 'อัตราค่าเช่ารายเดือน:' : 'Monthly Rent:'}</span>
+                  <span className="font-black text-lg text-primary">฿{Number(contract?.monthlyRent || 0).toLocaleString()} <span className="text-xs font-bold text-gray-600 ml-1">{isTh ? 'บาท / เดือน' : 'THB / month'}</span></span>
+                </div>
+                <div className="flex justify-between items-center pb-2 border-b border-gray-200/50">
+                  <span className="text-gray-600 font-medium">{isTh ? 'เงินประกันความเสียหาย (มัดจำ):' : 'Security Deposit:'}</span>
+                  <span className="font-black text-lg text-gray-800">฿{Number(contract?.depositAmount || 0).toLocaleString()} <span className="text-xs font-bold text-gray-600 ml-1">{isTh ? 'บาท' : 'THB'}</span></span>
+                </div>
+                <div className="flex justify-between items-center pb-2">
+                  <span className="text-gray-600 font-medium">{isTh ? 'ระยะเวลาเช่าเริ่มต้น:' : 'Lease Start Date:'}</span>
+                  <span className="font-black text-base text-gray-800">{sDate}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600 font-medium">{isTh ? 'ระยะเวลาเช่าสิ้นสุด:' : 'Lease End Date:'}</span>
+                  <span className="font-black text-base text-gray-800">{eDate}</span>
                 </div>
               </div>
 
-              <section className="mb-8">
-                <h2 className="text-sm font-bold text-gray-900 uppercase tracking-widest border-b border-gray-200 pb-2 mb-4">
-                  1. {isTh ? 'คู่สัญญา' : 'Parties to Agreement'}
+              <div className="mb-12 text-sm text-gray-800 leading-relaxed text-left">
+                <h4 className="font-black mb-4 text-black">{isTh ? 'ข้อตกลงและหน้าที่เพิ่มเติม:' : 'Additional Terms and Duties:'}</h4>
+                <ol className="list-decimal pl-6 space-y-3 font-medium text-gray-600">
+                  <li>{isTh ? 'ผู้เช่าตกลงชำระเงินค่าเช่าล่วงหน้าภายในวันที่ 5 ของทุกเดือน หากล่าช้าจะยินยอมให้ปรับวันละ 100 บาท' : 'Tenant agrees to pay rent by the 5th of every month. Late payments incur a 100 THB/day penalty.'}</li>
+                  <li>{isTh ? 'ผู้เช่าตกลงรับผิดชอบชำระค่าสาธารณูปโภค ค่าน้ำ ค่าไฟ ตามหน่วยวัดอัตราที่ทางการเรียกเก็บ' : 'Tenant is responsible for utility bills (water, electricity) at government rates.'}</li>
+                  <li>{isTh ? 'ห้ามมิให้ผู้เช่านำทรัพย์สินไปให้ผู้อื่นเช่าช่วง หรือใช้ประกอบกิจการผิดกฎหมาย' : 'Subletting or using the property for illegal activities is strictly prohibited.'}</li>
+                </ol>
+              </div>
+
+              {/* Main Contract Signatures */}
+              <section className="mt-12 text-left">
+                <h2 className="text-sm font-bold text-gray-900 uppercase tracking-widest border-b border-gray-200 pb-2 mb-6">
+                  {isTh ? 'ลายเซ็นผู้มีอำนาจลงนาม (Main Contract)' : 'Authorized Signatures'}
                 </h2>
-                <div className="grid grid-cols-2 gap-6 text-sm font-bold">
-                  <div className="space-y-1">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{isTh ? 'ผู้ให้เช่า (Landlord)' : 'Landlord / Owner'}</p>
-                    <p className="text-gray-800">ID: {contract?.ownerId || 'N/A'}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{isTh ? 'ผู้เช่า (Tenant)' : 'Tenant'}</p>
-                    <p className="text-gray-800">ID: {contract?.tenantId || 'N/A'}</p>
-                  </div>
-                  {contract?.agentId && (
-                    <div className="space-y-1 col-span-2">
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{isTh ? 'ตัวแทน (Agent)' : 'Agent'}</p>
-                      <p className="text-gray-800">ID: {contract.agentId}</p>
-                    </div>
-                  )}
-                </div>
+                <SignatureBlocks contract={contract} isTh={isTh} />
               </section>
 
-              <section className="mb-8">
-                <h2 className="text-sm font-bold text-gray-900 uppercase tracking-widest border-b border-gray-200 pb-2 mb-4">
-                  2. {isTh ? 'ระยะเวลาสัญญา' : 'Term of Lease'}
-                </h2>
-                <div className="grid grid-cols-2 gap-6 text-sm font-bold">
-                  <div className="space-y-1">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{isTh ? 'วันที่เริ่ม' : 'Start Date'}</p>
-                    <p className="text-gray-800">{sDate}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{isTh ? 'วันที่สิ้นสุด' : 'End Date'}</p>
-                    <p className="text-gray-800">{eDate}</p>
-                  </div>
-                </div>
-              </section>
+              {/* Attachments Pages */}
+              {contract?.attachments?.map((att: any, idx: number) => (
+                <AttachmentPage
+                  key={att.id}
+                  att={att}
+                  index={idx}
+                  contract={contract}
+                  isTh={isTh}
+                />
+              ))}
 
-              <section className="mb-8">
-                <h2 className="text-sm font-bold text-gray-900 uppercase tracking-widest border-b border-gray-200 pb-2 mb-4">
-                  3. {isTh ? 'ค่าเช่าและเงื่อนไขการชำระ' : 'Rent and Payment Terms'}
-                </h2>
-                <div className="text-sm font-bold space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">{isTh ? 'ค่าเช่ารายเดือน' : 'Monthly Rent'}</span>
-                    <span className="text-gray-900">฿{contract?.rent?.toLocaleString() || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">{isTh ? 'วันที่ชำระ' : 'Payment Due Date'}</span>
-                    <span className="text-gray-900">{contract?.paymentDay || 'N/A'}</span>
-                  </div>
-                </div>
-              </section>
+              {/* Footer */}
+              <div className="mt-12 pt-4 border-t border-gray-200 text-center">
+                <p className="text-[9px] text-gray-300 font-bold uppercase tracking-[0.2em]">
+                  🔒 Digitally Secured &amp; Encrypted · PrimeRent Digital Platform · {new Date().getFullYear()}
+                </p>
+              </div>
 
-              {isSigned && (
-                <div className="mt-12 pt-8 border-t-2 border-gray-900">
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                    <span className="text-sm font-bold text-emerald-600 uppercase tracking-widest">
-                      {isTh ? 'สถานะ: บังคับใช้' : 'Status: Active'}
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-500 font-bold">
-                    {isTh ? 'เอกสารนี้ได้รับการลงนามดิจิทัลแล้ว' : 'This document has been digitally signed'}
-                  </p>
-                </div>
-              )}
             </div>
           </div>
         </div>
