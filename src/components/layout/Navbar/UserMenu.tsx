@@ -64,6 +64,8 @@ export const UserMenu: React.FC<UserMenuProps> = ({
 
   const handleRoleSwitch = async (newRole: UserRole) => {
     localStorage.setItem('primerent_user_role', newRole);
+    const mappedCookieRole = newRole === 'landlord' ? 'owner' : newRole;
+    document.cookie = `user_role=${mappedCookieRole}; path=/; max-age=31536000`;
     if (user?.isMock) {
       const mockUserStr = localStorage.getItem('prime_mock_user');
       if (mockUserStr) {
@@ -165,7 +167,8 @@ export const UserMenu: React.FC<UserMenuProps> = ({
                     {[
                       { role: 'renter', label: isTh ? 'ผู้เช่า' : 'Renter' },
                       { role: 'landlord', label: isTh ? 'เจ้าของ' : 'Owner' },
-                      { role: 'agent', label: isTh ? 'นายหน้า' : 'Agent' }
+                      { role: 'agent', label: isTh ? 'นายหน้า' : 'Agent' },
+                      { role: 'admin', label: isTh ? 'ผู้ดูแล' : 'Admin' }
                     ].map((item) => {
                       const isActive = userRole === item.role;
                       
@@ -289,6 +292,22 @@ export const UserMenu: React.FC<UserMenuProps> = ({
                       className="w-full flex items-center rounded-xl gap-3 cursor-pointer px-3 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors"
                     >
                       <PlusCircle className="w-4 h-4 text-gray-400" /> {lang === 'en' ? 'Post New Listing' : 'ลงประกาศใหม่'}
+                    </DropdownMenuItem>
+                  </div>
+                )}
+
+                {/* Admin Section */}
+                {userRole === 'admin' && (
+                  <div className="p-2">
+                    <p className="px-3 py-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider">For Admins</p>
+                    <DropdownMenuItem 
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        router.push("/admin/dashboard");
+                      }} 
+                      className="w-full flex items-center rounded-xl gap-3 cursor-pointer px-3 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      <LayoutDashboard className="w-4 h-4 text-gray-400" /> {lang === 'en' ? 'Admin Dashboard' : 'แดชบอร์ดแอดมิน'}
                     </DropdownMenuItem>
                   </div>
                 )}
