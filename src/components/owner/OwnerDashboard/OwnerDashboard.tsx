@@ -75,56 +75,37 @@ export function OwnerDashboard({ lang }: { lang: 'th' | 'en' | 'cn' }) {
   });
 
   return (
-    <div className="flex h-[calc(100vh-80px)] lg:h-[calc(100vh-100px)] bg-gray-50 overflow-hidden pt-4 lg:pt-0">
-      <OwnerSidebar activeTab={activeTab as any} setActiveTab={setActiveTab as any} isThai={isThai} isChinese={isChinese} />
-
-      <div className="flex-1 overflow-y-auto p-4 md:p-8 relative">
-        <div className="max-w-[1600px] mx-auto">
-          {/* Top Alert Banner */}
-          <div className="mb-6 bg-white border border-gray-100 border-l-4 border-l-[#E51D53] rounded-2xl p-4 flex items-start gap-3 shadow-sm shadow-gray-200/50">
-            <span className="text-xl">👋</span>
-            <div>
-              <h3 className="text-sm font-bold text-gray-900">{isThai ? 'ยินดีต้อนรับกลับมาครับ Owner!' : 'Welcome back, Owner!'}</h3>
-              <p className="text-xs text-gray-600 mt-1">{isThai ? 'พรุ่งนี้มีนัดหมายผู้เช่าเข้ามาดูห้องเวลา 10:00 น.' : 'You have a tenant viewing appointment tomorrow at 10:00 AM.'}</p>
-            </div>
+    <div className="min-h-screen bg-gray-50 p-4 md:p-8 relative">
+      <div className="max-w-[1600px] mx-auto space-y-6">
+        {/* Top Alert Banner */}
+        <div className="bg-white border border-gray-100 border-l-4 border-l-[#E51D53] rounded-2xl p-4 flex items-start gap-3 shadow-sm shadow-gray-200/50">
+          <span className="text-xl">👋</span>
+          <div>
+            <h3 className="text-sm font-bold text-gray-900">{isThai ? 'ยินดีต้อนรับกลับมาครับ Owner!' : 'Welcome back, Owner!'}</h3>
+            <p className="text-xs text-gray-600 mt-1">{isThai ? 'พรุ่งนี้มีนัดหมายผู้เช่าเข้ามาดูห้องเวลา 10:00 น.' : 'You have a tenant viewing appointment tomorrow at 10:00 AM.'}</p>
           </div>
+        </div>
 
-          <OwnerDashboardHeader lang={lang} onCreateClick={() => handleCreateListingClick()} />
- 
+        <OwnerDashboardHeader lang={lang} onCreateClick={() => handleCreateListingClick()} />
+
         <LeaseRenewalAlert lang={lang} />
         <ArrearsWarningAlert lang={lang} />
 
-        {/* Dashboard Widgets specific to 'properties' tab or general view */}
-        {activeTab === 'properties' && (
-          <>
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-              <div className="xl:col-span-2 space-y-6">
-                <OwnerKpis lang={lang} propertiesCount={displayProperties.length} />
-                <OwnerRevenueChart lang={lang} />
-              </div>
-              <div className="xl:col-span-1 space-y-6">
-                <RecentInquiries lang={lang} />
-                <OwnerNotificationCards 
-                  expiringCount={2} 
-                  overdueCount={0} 
-                  totalUnits={displayProperties.length} 
-                  isThai={isThai} 
-                  isChinese={isChinese} 
-                />
-              </div>
-            </div>
-          </>
-        )}
+        {/* Full-width Owner Overview Widgets */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          <div className="xl:col-span-2 space-y-6">
+            <OwnerKpis lang={lang} propertiesCount={displayProperties.length} />
+            <OwnerRevenueChart lang={lang} />
+          </div>
+          <div className="xl:col-span-1 space-y-6">
+            <RecentInquiries lang={lang} />
+            <AgentMatching lang={lang} />
+          </div>
+        </div>
 
-        {/* Render Agent Matching */}
-        {activeTab === 'matching' && (
-          <AgentMatching lang={lang} />
-        )}
-
-        {/* Render Tab Content based on selection */}
-        <div className={activeTab === 'properties' ? 'mt-8' : ''}>
+        <div className="mt-8">
           <OwnerDashboardContent
-            activeTab={activeTab}
+            activeTab="properties"
             lang={lang}
             properties={displayProperties}
             loading={displayLoading}
@@ -136,15 +117,17 @@ export function OwnerDashboard({ lang }: { lang: 'th' | 'en' | 'cn' }) {
             onPin={handlePinListing}
           />
         </div>
-
-        <OwnerDashboardModals
-          lang={lang}
-          isPostListingOpen={isPostListingOpen}
-          editingProperty={editingProperty}
-          onClose={() => { setIsPostListingOpen(false); setEditingProperty(null); }}
-        />
-        </div>
       </div>
+
+      <OwnerDashboardModals
+        lang={lang}
+        isPostListingOpen={isPostListingOpen}
+        editingProperty={editingProperty}
+        onClose={() => {
+          setIsPostListingOpen(false);
+          setEditingProperty(null);
+        }}
+      />
     </div>
   );
 }

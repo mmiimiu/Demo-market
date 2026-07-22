@@ -107,64 +107,44 @@ export function TenantDashboard({ lang }: TenantDashboardProps) {
   });
 
   return (
-    <div className="flex h-[calc(100vh-80px)] lg:h-[calc(100vh-100px)] overflow-hidden bg-gray-50 font-thai pt-4 lg:pt-0">
-      <div className="hidden lg:block p-4">
-        <TenantSidebar activeTab={activeTab} setActiveTab={setActiveTab} lang={lang} />
-      </div>
-      
-      <div className="flex-1 overflow-y-auto p-4 md:p-8">
-        <div className="max-w-[1600px] mx-auto space-y-6">
-          {activeTab === 'overview' && (
-            <>
-              <LeaseRenewalAlert lang={lang} />
+    <div className="min-h-screen bg-gray-50 font-thai p-4 md:p-8">
+      <div className="max-w-[1600px] mx-auto space-y-6">
+        <header className="flex justify-between items-center mb-2">
+          <div>
+            <h1 className="text-2xl font-black text-gray-900">
+              {label('ภาพรวมผู้เช่า (Tenant Overview)', 'Tenant Overview', '租客概览')}
+            </h1>
+            <p className="text-xs text-gray-500 font-semibold mt-0.5">
+              {label('ติดตามสัญญาเช่า งานแจ้งซ่อม บิลชำระเงิน และสถานะที่พักของคุณในจุดเดียว', 'Manage your active lease, bills, and maintenance in one place.', '在一处管理您的活跃租赁、账单和维护。')}
+            </p>
+          </div>
+        </header>
 
-              <OverdueAlert overdueInvoices={overdueInvoices} label={label} isTh={isTh} />
+        <LeaseRenewalAlert lang={lang} />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 auto-rows-max">
-                {/* Bento Box: Lease Hero (Spans full width) */}
-                <div className="col-span-1 md:col-span-2 xl:col-span-3">
-                  <LeaseHero lease={MOCK_LEASE} daysLeft={daysLeft} isTh={isTh} label={label} />
-                </div>
-                
-                {/* Left Column Widgets (col-span-2) */}
-                <div className="col-span-1 md:col-span-2 xl:col-span-2 flex flex-col gap-6">
-                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm shadow-gray-200/50 p-6">
-                    <MaintenanceTab lang={lang} />
-                  </div>
-                  <PaymentsList payments={combinedPayments} label={label} isTh={isTh} />
-                </div>
-                
-                {/* Right Column Widgets (col-span-1) */}
-                <div className="col-span-1 flex flex-col gap-6">
-                  <KpiStats monthsPaid={monthsPaid} totalPaid={totalPaid} nextPaymentDays={nextPaymentDays} checklistDone={checklistDone} checklistTotal={MOCK_CHECKLIST.length} label={label} />
-                  <ChecklistSection checklist={MOCK_CHECKLIST} doneCount={checklistDone} totalCount={MOCK_CHECKLIST.length} label={label} />
-                  <TenantPreferences label={label} />
-                  <PitchedRoomsList label={label} />
-                </div>
-              </div>
-            </>
-          )}
+        <OverdueAlert overdueInvoices={overdueInvoices} label={label} isTh={isTh} />
 
-          {activeTab === 'maintenance' && <MaintenanceTab lang={lang} />}
-
-          {activeTab === 'notifications' && (
-            <Notifications
-              lang={lang}
-              notifications={filteredNotifications}
-              onMarkAsRead={handleMarkAsRead}
-              onMarkAllAsRead={handleMarkAllAsRead}
-              onDelete={handleDelete}
-              onActionClick={handleActionClick}
-            />
-          )}
-
-          {activeTab !== 'overview' && activeTab !== 'maintenance' && activeTab !== 'notifications' && (
-            <div className="h-64 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-none">
-              <p className="text-gray-500 font-medium">
-                {label('กำลังพัฒนาระบบส่วนนี้...', 'Coming Soon...', '即将推出...')}
-              </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 auto-rows-max">
+          {/* Bento Box: Lease Hero (Spans full width) */}
+          <div className="col-span-1 md:col-span-2 xl:col-span-3">
+            <LeaseHero lease={MOCK_LEASE} daysLeft={daysLeft} isTh={isTh} label={label} />
+          </div>
+          
+          {/* Left Column Widgets (col-span-2) */}
+          <div className="col-span-1 md:col-span-2 xl:col-span-2 flex flex-col gap-6">
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm shadow-gray-200/50 p-6">
+              <MaintenanceTab lang={lang} />
             </div>
-          )}
+            <PaymentsList payments={combinedPayments} label={label} isTh={isTh} />
+          </div>
+          
+          {/* Right Column Widgets (col-span-1) */}
+          <div className="col-span-1 flex flex-col gap-6">
+            <KpiStats monthsPaid={monthsPaid} totalPaid={totalPaid} nextPaymentDays={nextPaymentDays} checklistDone={checklistDone} checklistTotal={MOCK_CHECKLIST.length} label={label} />
+            <ChecklistSection checklist={MOCK_CHECKLIST} doneCount={checklistDone} totalCount={MOCK_CHECKLIST.length} label={label} />
+            <TenantPreferences label={label} />
+            <PitchedRoomsList label={label} />
+          </div>
         </div>
       </div>
     </div>

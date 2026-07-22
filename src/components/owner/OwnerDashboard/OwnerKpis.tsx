@@ -59,7 +59,7 @@ export function OwnerKpis({ lang, propertiesCount }: OwnerKpisProps) {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
       {kpis.map((kpi, i) => (
         <Card key={i} className={cn(
           "rounded-2xl border-gray-100 shadow-sm shadow-gray-200/50 bg-white overflow-hidden transition-all duration-300",
@@ -70,9 +70,9 @@ export function OwnerKpis({ lang, propertiesCount }: OwnerKpisProps) {
               <div className={cn(kpi.bg, "w-10 h-10 rounded-full flex items-center justify-center")}>
                 <kpi.icon className={cn("w-5 h-5", kpi.color)} />
               </div>
-              <div className="flex-1">
-                <p className="text-xs font-bold text-slate-500">{kpi.label}</p>
-                <p className="text-2xl font-black text-slate-900 mt-0.5">{kpi.value}</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold text-slate-500 truncate">{kpi.label}</p>
+                <p className="text-xl sm:text-2xl font-black text-slate-900 mt-0.5 truncate tracking-tight">{kpi.value}</p>
               </div>
             </div>
             <div className="flex items-center justify-between mt-2 pt-4 border-t border-slate-50">

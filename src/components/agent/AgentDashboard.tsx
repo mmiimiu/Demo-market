@@ -141,24 +141,24 @@ export function AgentDashboard({ lang }: AgentDashboardProps) {
       <AgentPerformanceDashboard lang={lang} occupiedCount={occupiedCount} totalManaged={totalManaged} />
 
       {/* KPI Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
         {[
           { key: 'total', label: isTh ? 'ห้องในมือทั้งหมด' : 'Total Units Managed', value: `${totalManaged} ห้อง`, icon: Building2, color: 'bg-teal-500/10 text-teal-700 border-teal-100', desc: isTh ? 'คอนโด & อพาร์ตเมนต์' : 'Condos & Apartments' },
           { key: 'occupied', label: isTh ? 'ปล่อยเช่าอยู่ตอนนี้' : 'Occupied / Rented', value: `${occupiedCount} ห้อง`, icon: CheckCircle2, color: 'bg-emerald-500/10 text-emerald-700 border-emerald-100', desc: isTh ? 'ผู้เช่าพักอาศัยอยู่' : 'Active tenants' },
           { key: 'vacant', label: isTh ? 'กำลังรอปล่อยเช่า' : 'Vacant / Available', value: `${vacantCount} ห้อง`, icon: Home, color: 'bg-amber-500/10 text-amber-700 border-amber-100', desc: isTh ? 'ว่างพร้อมเปิดดีล' : 'Ready for matching' },
           { key: 'commission', label: commDetails.label, value: commDetails.value, icon: Coins, color: 'bg-indigo-500/10 text-indigo-700 border-indigo-100', desc: commDetails.desc },
         ].map((kpi) => (
-          <div key={kpi.label} className="bg-white border border-gray-150 rounded-2xl p-5 shadow-xs transition-all hover:shadow-md hover:scale-[1.01] flex flex-col justify-between">
+          <div key={kpi.label} className="bg-white border border-gray-150 rounded-2xl p-5 sm:p-6 shadow-xs transition-all hover:shadow-md flex flex-col justify-between min-w-0">
             <div>
-              <div className="flex justify-between items-start">
-                <div className={cn('p-2.5 rounded-xl shrink-0 border', kpi.color)}>
+              <div className="flex justify-between items-start gap-2">
+                <div className={cn('p-2.5 rounded-xl shrink-0 border shadow-2xs', kpi.color)}>
                   <kpi.icon className="w-5 h-5" />
                 </div>
                 {kpi.key === 'commission' ? (
                   <select 
                     value={commissionFilter}
                     onChange={(e) => setCommissionFilter(e.target.value)}
-                    className="bg-slate-100 hover:bg-slate-200 text-[9px] text-gray-800 border-none rounded-lg px-2 py-1 font-black outline-none cursor-pointer transition-colors shadow-inner"
+                    className="bg-slate-100 hover:bg-slate-200 text-[9px] text-gray-800 border-none rounded-lg px-2 py-1 font-black outline-none cursor-pointer transition-colors shadow-inner shrink-0"
                   >
                     <option value="Jun">{isTh ? 'มิ.ย. (เดือนนี้)' : 'Jun (MTD)'}</option>
                     <option value="May">{isTh ? 'พ.ค. 2026' : 'May 2026'}</option>
@@ -169,13 +169,35 @@ export function AgentDashboard({ lang }: AgentDashboardProps) {
                     <option value="Yearly">{isTh ? 'ทั้งปี 2026' : 'Yearly 2026'}</option>
                   </select>
                 ) : (
-                  <Badge className="bg-slate-50 text-slate-400 font-bold border-none text-[8px] tracking-wider uppercase">Verified</Badge>
+                  <Badge className="bg-slate-50 text-slate-400 font-bold border-none text-[8px] tracking-wider uppercase shrink-0">Verified</Badge>
                 )}
               </div>
-              <p className="text-xl font-black text-gray-900 mt-4">{kpi.value}</p>
-              <p className="text-[10px] text-gray-800 font-black mt-1">{kpi.label}</p>
+              <p className="text-lg sm:text-xl md:text-2xl font-black text-gray-900 mt-3 truncate tracking-tight">{kpi.value}</p>
+              <p className="text-[11px] text-gray-700 font-bold mt-1 truncate">{kpi.label}</p>
             </div>
-            <p className="text-[9px] text-gray-400 font-semibold mt-1">{kpi.desc}</p>
+            <div className="flex items-center justify-between gap-1 mt-2 pt-2 border-t border-slate-100/60">
+              <p className="text-[9px] text-gray-400 font-semibold truncate">{kpi.desc}</p>
+              {kpi.key === 'commission' && (
+                <button 
+                  onClick={async () => {
+                    try {
+                      const res = await fetch('/api/tax/wht?role=agent&agentId=AG-88941');
+                      const data = await res.json();
+                      if (data.success) {
+                        alert(isTh 
+                          ? `[หนังสือรับรองหักภาษี ณ ที่จ่าย 3%]\nเลขที่เอกสาร: ${data.data.documentNo}\nผู้ได้รับเงิน: ${data.data.agentName}\nค่า Commission รวม: ฿${data.data.grossCommission.toLocaleString()}\nหักภาษี 3%: ฿${data.data.whtAmount.toLocaleString()}\nสุทธิรับจริง: ฿${data.data.netPayout.toLocaleString()}\n\nดาวน์โหลดไฟล์ PDF เรียบร้อยแล้ว!` 
+                          : `Downloaded WHT 3% Certificate: ${data.data.documentNo}`);
+                      }
+                    } catch (e) {
+                      alert('Error fetching WHT certificate');
+                    }
+                  }}
+                  className="text-[9px] font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2 py-0.5 rounded border border-indigo-100 transition-all cursor-pointer shrink-0"
+                >
+                  {isTh ? '📄 ใบ WHT 3%' : '📄 WHT 3%'}
+                </button>
+              )}
+            </div>
           </div>
         ))}
       </div>
