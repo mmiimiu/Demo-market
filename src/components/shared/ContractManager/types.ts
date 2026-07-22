@@ -1,6 +1,9 @@
 export interface ContractManagerProps {
   contractId: string;
   lang: 'th' | 'en' | 'cn';
+  isCompact?: boolean;
+  forceRole?: 'tenant' | 'owner' | 'agent';
+  canEdit?: boolean;
 }
 
 export type ContractTemplate = 'monthly' | 'annual' | 'short_term';
