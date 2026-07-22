@@ -223,7 +223,7 @@ export const DepositTestButton: React.FC = () => {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-50 px-4 py-2.5 bg-teal-50 text-teal-700 border border-teal-200 rounded-full text-xs font-black hover:bg-teal-100 transition-all shadow-lg flex items-center gap-2"
+        className="fixed bottom-24 right-6 z-50 px-4 py-2.5 bg-teal-50 text-teal-700 border border-teal-200 rounded-full text-xs font-black hover:bg-teal-100 transition-all shadow-lg flex items-center gap-2"
       >
         <Wallet className="w-4 h-4" />
         ทดสอบมัดจำ

@@ -232,12 +232,19 @@ export function AgentKYCReview() {
           <Button 
             className="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs h-9 rounded-xl shadow-md border-none"
             onClick={() => {
-              if (!selectedReqId) return;
-              receiveCriminalCheckWebhook(selectedReqId, selectedStatus);
+              const targetId = selectedReqId || agentRequests[0]?.id;
+              if (!targetId) {
+                toast({
+                  title: '❌ ไม่พบใบสมัคร',
+                  description: 'ไม่มีใบสมัครเอเจ้นต์ให้ทดสอบในระบบ'
+                });
+                return;
+              }
+              receiveCriminalCheckWebhook(targetId, selectedStatus);
               loadDatabase();
               toast({
                 title: '⚡ จำลองสัญญาณ Webhook สำเร็จ',
-                description: `ส่งข้อมูลผลตรวจ [${selectedStatus.toUpperCase()}] ให้ใบสมัคร ${selectedReqId} สำเร็จ`
+                description: `ส่งข้อมูลผลตรวจ [${selectedStatus.toUpperCase()}] ให้ใบสมัคร ${targetId} สำเร็จ`
               });
             }}
           >
