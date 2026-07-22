@@ -18,7 +18,16 @@ export function AgentKYCReview() {
   const [rejectReason, setRejectReason] = useState('');
   const [docAudit, setDocAudit] = useState<any>(null);
 
+  const [selectedReqId, setSelectedReqId] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState<'clear' | 'flagged'>('clear');
+
   useEffect(() => { loadDatabase(); }, [loadDatabase]);
+
+  useEffect(() => {
+    if (agentRequests.length > 0 && !selectedReqId) {
+      setSelectedReqId(agentRequests[0].id);
+    }
+  }, [agentRequests, selectedReqId]);
 
   const filtered = agentRequests.filter(r =>
     r.name.toLowerCase().includes(search.toLowerCase()) || r.email.toLowerCase().includes(search.toLowerCase())
@@ -196,7 +205,8 @@ export function AgentKYCReview() {
           <div className="space-y-1.5">
             <label className="text-[10px] font-black text-slate-500 uppercase tracking-wide">เลือกใบสมัครเอเจ้นต์</label>
             <select 
-              id="webhook_agent_req"
+              value={selectedReqId}
+              onChange={e => setSelectedReqId(e.target.value)}
               className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 h-9"
             >
               {agentRequests.map(r => (
@@ -210,7 +220,8 @@ export function AgentKYCReview() {
           <div className="space-y-1.5">
             <label className="text-[10px] font-black text-slate-500 uppercase tracking-wide">ผลการตรวจประวัติ (Criminal Status)</label>
             <select 
-              id="webhook_agent_status"
+              value={selectedStatus}
+              onChange={e => setSelectedStatus(e.target.value as any)}
               className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 h-9"
             >
               <option value="clear">✓ CLEAR (ประวัติขาวสะอาด / ผ่าน)</option>
@@ -221,15 +232,13 @@ export function AgentKYCReview() {
           <Button 
             className="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs h-9 rounded-xl shadow-md border-none"
             onClick={() => {
-              const reqSelect = document.getElementById('webhook_agent_req') as HTMLSelectElement;
-              const statusSelect = document.getElementById('webhook_agent_status') as HTMLSelectElement;
-              if (reqSelect && statusSelect) {
-                receiveCriminalCheckWebhook(reqSelect.value, statusSelect.value as any);
-                toast({
-                  title: '⚡ จำลองสัญญาณ Webhook สำเร็จ',
-                  description: `ส่งข้อมูลผลตรวจ [${statusSelect.value.toUpperCase()}] ให้ใบสมัคร ${reqSelect.value} สำเร็จ`
-                });
-              }
+              if (!selectedReqId) return;
+              receiveCriminalCheckWebhook(selectedReqId, selectedStatus);
+              loadDatabase();
+              toast({
+                title: '⚡ จำลองสัญญาณ Webhook สำเร็จ',
+                description: `ส่งข้อมูลผลตรวจ [${selectedStatus.toUpperCase()}] ให้ใบสมัคร ${selectedReqId} สำเร็จ`
+              });
             }}
           >
             ⚡ ยิงจำลอง Webhook เข้าเซิร์ฟเวอร์
