@@ -126,8 +126,8 @@ export function EdocForm({ lang, role, formData, onChange }: EdocFormProps) {
               </p>
               <p className="text-[11px] text-slate-600 font-bold leading-relaxed">
                 {isTh 
-                  ? 'ระบบจะส่งข้อมูลเชื่อมโยงตรวจประวัติกับ สตช. โดยอัตโนมัติ สิทธิ์พิเศษตรวจฟรีใน 3 เดือนแรกนับจากลงทะเบียนบัญชี (เอเจ้นต์ที่ล่วงเลยระยะโปรโมชั่นจะมีค่าธรรมเนียม 350 บาท)'
-                  : 'Automatic criminal verification records will link directly to our system. Free checks for the first 3 months from registration (standard 350 THB fee applies afterwards).'}
+                  ? 'ระบบจะส่งข้อมูลเชื่อมโยงตรวจประวัติกับ สตช. โดยอัตโนมัติ สิทธิ์พิเศษตรวจฟรีใน 3 เดือนแรกนับจากลงทะเบียนบัญชี (เอเจ้นต์ที่ล่วงเลยระยะโปรโมชั่นจะมีค่าธรรมเนียม 100 บาท)'
+                  : 'Automatic criminal verification records will link directly to our system. Free checks for the first 3 months from registration (standard 100 THB fee applies afterwards).'}
               </p>
               <p className="text-[10px] text-red-600 font-black">
                 {isTh

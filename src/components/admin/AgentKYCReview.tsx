@@ -102,7 +102,7 @@ export function AgentKYCReview() {
                         {req.criminalCheckStatus === 'clear' ? '✓ CLEAR (ไม่มีประวัติ)' : '⏳ PENDING (รอผลตรวจ)'}
                       </span>
                       <p className="text-[9.5px] text-slate-400 font-bold block">
-                        {req.criminalCheckPaid ? '🎁 โปรโมชั่น: ฟรี 3 เดือนแรก' : '💳 ชำระแล้ว (ค่าธรรมเนียม ฿350)'}
+                        {req.criminalCheckPaid ? '🎁 โปรโมชั่น: ฟรี 3 เดือนแรก' : '💳 ชำระแล้ว (ค่าธรรมเนียม ฿100)'}
                       </p>
                       <p className="text-[8.5px] text-red-500 font-bold tracking-tight block">🔒 สิทธิ์ข้อมูล: เฉพาะเจ้าตัว & แอดมิน</p>
                     </div>
