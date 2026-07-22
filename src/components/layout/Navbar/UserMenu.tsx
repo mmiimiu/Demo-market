@@ -85,7 +85,18 @@ export const UserMenu: React.FC<UserMenuProps> = ({
         console.error('Failed to update role in Firestore:', e);
       }
     }
-    window.location.reload();
+    
+    if (newRole === 'admin') {
+      window.location.href = '/admin/dashboard';
+    } else if (newRole === 'landlord') {
+      window.location.href = '/owner/dashboard';
+    } else if (newRole === 'agent') {
+      window.location.href = '/agent/dashboard';
+    } else if (newRole === 'renter') {
+      window.location.href = '/tenant/dashboard';
+    } else {
+      window.location.reload();
+    }
   };
 
   return (

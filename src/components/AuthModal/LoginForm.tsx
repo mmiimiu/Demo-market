@@ -76,13 +76,25 @@ export default function LoginForm({ text, onRegister, onForgotPassword, onClose 
         
         // Save selected user role to local storage session
         localStorage.setItem('primerent_user_role', targetRole);
+        const mappedCookieRole = targetRole === 'landlord' ? 'owner' : targetRole;
+        document.cookie = `user_role=${mappedCookieRole}; path=/; max-age=31536000`;
         if (data.user) {
           localStorage.setItem('prime_mock_user', JSON.stringify(data.user));
         }
 
         alert('เข้าสู่ระบบสำเร็จ! (Login Success!)');
         onClose();
-        window.location.reload();
+        if (targetRole === 'admin') {
+          window.location.href = '/admin/dashboard';
+        } else if (targetRole === 'landlord') {
+          window.location.href = '/owner/dashboard';
+        } else if (targetRole === 'agent') {
+          window.location.href = '/agent/dashboard';
+        } else if (targetRole === 'renter') {
+          window.location.href = '/tenant/dashboard';
+        } else {
+          window.location.reload();
+        }
       } else {
         const err = await response.json();
         alert(err.error || 'Login failed');
