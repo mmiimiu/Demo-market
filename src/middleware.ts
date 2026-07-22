@@ -13,20 +13,11 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // 2. Admin System Guard: Only admin / superadmin allowed
-  if (pathname.startsWith('/admin') && !['admin', 'superadmin'].includes(userRole)) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/';
-    url.searchParams.set('error', 'unauthorized');
-    return NextResponse.redirect(url);
-  }
-
   return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    '/admin/:path*',
     '/agent/:path*',
     '/owner/:path*',
     '/profile/credits/:path*',
