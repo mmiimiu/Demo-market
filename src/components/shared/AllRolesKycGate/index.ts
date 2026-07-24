@@ -1,0 +1,1 @@
+export { AllRolesKycGate } from './AllRolesKycGate';

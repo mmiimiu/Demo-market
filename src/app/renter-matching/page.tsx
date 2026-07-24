@@ -19,6 +19,7 @@ import { Language } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/firebase';
 import { toast } from '@/hooks/use-toast';
+import { AllRolesKycGate } from '@/components/shared/AllRolesKycGate';
 
 const URGENCY_CONFIG = {
   high:   { label: { th: 'ต้องการด่วน!', en: 'Urgent!' },   color: 'bg-red-500',    text: 'text-red-500',   bg: 'bg-red-50',    border: 'border-red-100',   icon: Zap },
@@ -354,10 +355,19 @@ function RenterMatchingContent() {
 }
 
 export default function RenterMatchingPage() {
+  // NOTE: AllRolesKycGate wraps the page — resets on every refresh (sessionStorage)
+  // Agents and owners must also verify identity to access tenant lead data
+  const [lang, setLang] = React.useState<Language>('th');
+  React.useEffect(() => {
+    const saved = localStorage.getItem('primerent_lang') as Language;
+    if (saved) setLang(saved);
+  }, []);
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>}>
-      <RenterMatchingContent />
-    </Suspense>
+    <AllRolesKycGate lang={lang}>
+      <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>}>
+        <RenterMatchingContent />
+      </Suspense>
+    </AllRolesKycGate>
   );
 }
 
