@@ -75,6 +75,9 @@ export function WebhookSimulator({
               return;
             }
             receiveCriminalCheckWebhook(targetId, selectedStatus);
+            if (typeof window !== 'undefined') {
+              window.alert(`[DEV SIMULATOR] ยิงจำลอง Webhook สำเร็จ!\nใบสมัคร ID: ${targetId}\nผลตรวจประวัติ: ${selectedStatus.toUpperCase()}`);
+            }
             toast({
               title: '⚡ จำลองสัญญาณ Webhook สำเร็จ',
               description: `ส่งข้อมูลผลตรวจ [${selectedStatus.toUpperCase()}] ให้ใบสมัคร ${targetId} สำเร็จ`
