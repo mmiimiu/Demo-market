@@ -32,7 +32,6 @@ import { usePropertyComparison } from '@/hooks/usePropertyComparison';
 import { CompareDrawer } from '@/components/shared/CompareDrawer';
 import { MapView } from '@/components/listings/MapView';
 import { Map, List } from 'lucide-react';
-import { AllRolesKycGate } from '@/components/shared/AllRolesKycGate';
 
 interface FilterState {
   priceMin: number;
@@ -853,23 +852,14 @@ function ListingsContent() {
 }
 
 export default function ListingsPage() {
-  // NOTE: AllRolesKycGate wraps the page — resets on every refresh (sessionStorage)
-  // This enforces ID card + liveness verification for ALL roles (including tenants)
-  const [lang, setLang] = React.useState<Language>('th');
-  React.useEffect(() => {
-    const saved = localStorage.getItem('primerent_lang') as Language;
-    if (saved) setLang(saved);
-  }, []);
   return (
-    <AllRolesKycGate lang={lang}>
-      <Suspense fallback={
-        <main className="min-h-screen flex items-center justify-center bg-gray-50/50">
-          <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
-        </main>
-      }>
-        <ListingsContent />
-      </Suspense>
-    </AllRolesKycGate>
+    <Suspense fallback={
+      <main className="min-h-screen flex items-center justify-center bg-gray-50/50">
+        <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+      </main>
+    }>
+      <ListingsContent />
+    </Suspense>
   );
 }
 

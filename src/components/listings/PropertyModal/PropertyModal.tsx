@@ -20,6 +20,7 @@ import { TransactionVerificationModal } from '@/components/auth/TransactionVerif
 import { AuthModal } from '@/components/auth/AuthModal';
 import { OnboardingModal } from '@/components/auth/OnboardingModal';
 import { DepositCheckoutModal } from '@/components/payment/DepositCheckoutModal';
+import { TenantKycGuardModal, isSessionKycPassed } from '@/components/shared/TenantKycGuardModal';
 
 import { PropertyModalProps } from './types';
 import { GalleryGrid } from './GalleryGrid';
@@ -81,6 +82,10 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const [pendingAction, setPendingAction] = useState<'book' | 'chat' | null>(null);
+  // KYC Guard state — intercepts transaction actions if user is not yet verified this session
+  const [showKycGuard, setShowKycGuard] = useState(false);
+  const [pendingKycAction, setPendingKycAction] = useState<'book' | 'chat' | null>(null);
+  const [kycActionLabel, setKycActionLabel] = useState('');
   const [showViewingScheduler, setShowViewingScheduler] = useState(false);
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [showContactAccordion, setShowContactAccordion] = useState(false);
@@ -193,6 +198,28 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
     }
   };
 
+  /**
+   * KYC intercept: called AFTER auth/onboarding passes.
+   * - 'chat' → ไม่ต้อง KYC — แชทได้ทันที
+   * - 'book' → ต้องยืนยันตัวตนก่อน (ID card + liveness)
+   */
+  const requireKycThenExecute = (action: 'book' | 'chat') => {
+    // Chat is free — no KYC required
+    if (action === 'chat') {
+      executePendingAction(action);
+      return;
+    }
+    // Only booking requires KYC
+    if (isSessionKycPassed()) {
+      executePendingAction(action);
+      return;
+    }
+    const label = lang === 'th' ? 'จองห้อง' : 'Book Room';
+    setPendingKycAction(action);
+    setKycActionLabel(label);
+    setShowKycGuard(true);
+  };
+
   const requireAuthAndOnboarding = (action: 'book' | 'chat') => {
     if (!user) {
       setPendingAction(action);
@@ -200,7 +227,7 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
       return;
     }
     if (user.isMock) {
-      executePendingAction(action);
+      requireKycThenExecute(action);
       return;
     }
     if (!(user as any).onboardingCompleted || !(user as any).isLineLinked) {
@@ -208,7 +235,7 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
       setShowOnboardingModal(true);
       return;
     }
-    executePendingAction(action);
+    requireKycThenExecute(action);
   };
 
   const t = translations[lang] || translations.th;
@@ -967,6 +994,23 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
               ? 'คุณได้รับสิทธิ์นายหน้า 1:1 แล้ว — กดรีโพสต์ประกาศนี้ได้ทันที'
               : 'You now have 1:1 agent rights — you can repost this listing now'
           });
+        }}
+      />
+
+      {/* Tenant KYC Guard — shown ONLY when tenant attempts a transaction (book/chat/schedule).
+          Browsing listings is always free. Resets on page refresh (sessionStorage). */}
+      <TenantKycGuardModal
+        isOpen={showKycGuard}
+        lang={lang}
+        actionLabel={kycActionLabel}
+        onVerified={() => {
+          setShowKycGuard(false);
+          if (pendingKycAction) executePendingAction(pendingKycAction);
+          setPendingKycAction(null);
+        }}
+        onClose={() => {
+          setShowKycGuard(false);
+          setPendingKycAction(null);
         }}
       />
     </div>
