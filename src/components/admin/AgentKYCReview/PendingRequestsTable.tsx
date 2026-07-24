@@ -7,9 +7,10 @@ interface PendingRequestsTableProps {
   filtered: any[];
   handleApprove: (requestId: string, userId: string) => void;
   setRejectDialog: (dialog: { requestId: string; userId: string } | null) => void;
+  onSelectKyc?: (request: any) => void;
 }
 
-export function PendingRequestsTable({ filtered, handleApprove, setRejectDialog }: PendingRequestsTableProps) {
+export function PendingRequestsTable({ filtered, handleApprove, setRejectDialog, onSelectKyc }: PendingRequestsTableProps) {
   return (
     <div className="overflow-x-auto border rounded-xl divide-y divide-slate-100">
       <table className="w-full text-xs text-left">
@@ -38,8 +39,8 @@ export function PendingRequestsTable({ filtered, handleApprove, setRejectDialog 
                   {req.ndidStatus.toUpperCase()}
                 </Badge>
               </td>
-              <td className="p-4 text-center">
-                <span className={cn('font-bold', req.livenessScore >= 90 ? 'text-green-600' : req.livenessScore >= 70 ? 'text-amber-600' : 'text-red-600')}>
+              <td className="p-4 text-center cursor-pointer hover:bg-slate-50 transition-colors" onClick={() => onSelectKyc?.(req)}>
+                <span className={cn('font-bold border-b border-dashed border-slate-300', req.livenessScore >= 90 ? 'text-green-600' : req.livenessScore >= 70 ? 'text-amber-600' : 'text-red-600')}>
                   {req.livenessScore}%
                 </span>
               </td>
@@ -67,7 +68,11 @@ export function PendingRequestsTable({ filtered, handleApprove, setRejectDialog 
               <td className="p-4">
                 <div className="flex flex-col gap-1.5">
                   {req.documents.map((d: any, i: number) => (
-                    <span key={i} className="inline-flex items-center text-[10px] text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200/50 w-fit">
+                    <span 
+                      key={i} 
+                      onClick={() => onSelectKyc?.(req)}
+                      className="inline-flex items-center text-[10px] text-slate-600 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 cursor-pointer px-2 py-0.5 rounded border border-slate-200/50 w-fit transition-colors"
+                    >
                       📄 {d.type} ({d.filename})
                     </span>
                   ))}

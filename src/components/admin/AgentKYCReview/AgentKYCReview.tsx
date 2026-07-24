@@ -10,6 +10,7 @@ import { PendingRequestsTable } from './PendingRequestsTable';
 import { KycDocumentsTable } from './KycDocumentsTable';
 import { WebhookSimulator } from './WebhookSimulator';
 import { RejectDialog } from './RejectDialog';
+import { KycDetailModal } from './KycDetailModal';
 
 export function AgentKYCReview() {
   const { agentRequests, documents, loadDatabase, handleAgentKYC, receiveCriminalCheckWebhook } = useAdminStore();
@@ -19,6 +20,7 @@ export function AgentKYCReview() {
 
   const [selectedReqId, setSelectedReqId] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<'clear' | 'flagged'>('clear');
+  const [selectedDetailReq, setSelectedDetailReq] = useState<any | null>(null);
 
   useEffect(() => {
     loadDatabase();
@@ -75,6 +77,7 @@ export function AgentKYCReview() {
           filtered={filtered} 
           handleApprove={handleApprove} 
           setRejectDialog={setRejectDialog} 
+          onSelectKyc={setSelectedDetailReq}
         />
       </Card>
 
@@ -95,6 +98,12 @@ export function AgentKYCReview() {
         rejectReason={rejectReason}
         setRejectReason={setRejectReason}
         handleReject={handleReject}
+      />
+
+      <KycDetailModal 
+        isOpen={!!selectedDetailReq} 
+        onClose={() => setSelectedDetailReq(null)} 
+        request={selectedDetailReq} 
       />
     </div>
   );
