@@ -207,6 +207,7 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
    * - 'book' | 'schedule_viewing' → ต้องยืนยันตัวตนก่อน (ID card + liveness)
    */
   const requireKycThenExecute = (action: 'book' | 'chat' | 'schedule_viewing') => {
+    console.log('[KYC Guard] requireKycThenExecute called with action:', action);
     // Chat is free — no KYC required
     if (action === 'chat') {
       executePendingAction(action);
@@ -214,11 +215,22 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
     }
     // Booking and Schedule Viewing require KYC
     const isMock = user?.isMock;
+    const mockKycVal = typeof window !== 'undefined' ? localStorage.getItem('primerent_mock_kyc') : null;
     const isProfileKycVerified = isMock 
-      ? (typeof window !== 'undefined' ? localStorage.getItem('primerent_mock_kyc') === 'verified' : false)
+      ? (mockKycVal === 'verified')
       : (profile?.kycStatus === 'verified');
+    const sessionKycPassed = isSessionKycPassed();
 
-    if (isSessionKycPassed() || isProfileKycVerified) {
+    console.log('[KYC Guard] Status check:', {
+      isMock,
+      mockKycVal,
+      profileKycStatus: profile?.kycStatus,
+      isProfileKycVerified,
+      sessionKycPassed
+    });
+
+    if (sessionKycPassed || isProfileKycVerified) {
+      console.log('[KYC Guard] Verification bypass allowed (already verified)');
       executePendingAction(action);
       return;
     }
@@ -228,23 +240,29 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
     setPendingKycAction(action);
     setKycActionLabel(label);
     setShowKycGuard(true);
+    console.log('[KYC Guard] Verification required, displaying TenantKycGuardModal. Label:', label);
   };
 
   const requireAuthAndOnboarding = (action: 'book' | 'chat' | 'schedule_viewing') => {
+    console.log('[KYC Guard] requireAuthAndOnboarding called for action:', action, 'user:', user);
     if (!user) {
+      console.log('[KYC Guard] No logged-in user, displaying AuthModal');
       setPendingAction(action);
       setShowAuthModal(true);
       return;
     }
     if (user.isMock) {
+      console.log('[KYC Guard] Mock user detected, proceeding to KYC check');
       requireKycThenExecute(action);
       return;
     }
     if (!(user as any).onboardingCompleted || !(user as any).isLineLinked) {
+      console.log('[KYC Guard] Onboarding/LINE link incomplete, displaying OnboardingModal');
       setPendingAction(action);
       setShowOnboardingModal(true);
       return;
     }
+    console.log('[KYC Guard] User authenticated and onboarded, proceeding to KYC check');
     requireKycThenExecute(action);
   };
 

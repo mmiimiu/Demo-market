@@ -81,6 +81,10 @@ export default function LoginForm({ text, onRegister, onForgotPassword, onClose 
         if (data.user) {
           localStorage.setItem('prime_mock_user', JSON.stringify(data.user));
         }
+        localStorage.setItem('primerent_mock_kyc', 'unverified');
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem('primerent_session_kyc');
+        }
 
         alert('เข้าสู่ระบบสำเร็จ! (Login Success!)');
         onClose();

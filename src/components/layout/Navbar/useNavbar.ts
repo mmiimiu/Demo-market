@@ -87,6 +87,9 @@ export function useNavbar(
   };
 
   const handleSignOut = () => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('primerent_session_kyc');
+    }
     if (user?.isMock) {
       localStorage.removeItem('prime_mock_user');
       localStorage.removeItem('primerent_user_role');
