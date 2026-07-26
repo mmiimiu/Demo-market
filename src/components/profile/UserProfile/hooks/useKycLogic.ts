@@ -92,6 +92,9 @@ export function useKycLogic(user: any, lang: Language, formDataDisplayName: stri
         setIsUploading(false);
         setMockKycStatus('verified');
         localStorage.setItem('primerent_mock_kyc', 'verified');
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('primerent_session_kyc', 'passed');
+        }
         toast({
           title: lang === 'th' ? 'ยืนยันตัวตนสำเร็จ!' : 'Verification Success!',
           description: lang === 'th' 
@@ -114,6 +117,9 @@ export function useKycLogic(user: any, lang: Language, formDataDisplayName: stri
     if (user?.isMock) {
       setMockKycStatus('verified');
       localStorage.setItem('primerent_mock_kyc', 'verified');
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('primerent_session_kyc', 'passed');
+      }
       toast({ title: lang === 'th' ? 'ยืนยันตัวตนสำเร็จ (Dev)' : 'Verified (Dev)' });
       setIsOpenKycModal(false);
     }

@@ -17,13 +17,13 @@ export function KycStepType({ lang, currentRole, kycDocType, onSetDocType, onNex
     { 
       id: 'thaid', 
       title: lang === 'th' ? 'ThaID (แอปพลิเคชันจากรัฐ DOPA)' : 'ThaID (DOPA Government App)', 
-      desc: lang === 'th' ? 'ยืนยันตัวตนโดยใช้โทรศัพท์สแกน QR Code ผ่านแอป ThaID ของกระทรวงมหาดไทย' : 'Verify by scanning a secure DOPA QR code on your mobile device', 
+      desc: lang === 'th' ? 'ยืนยันตัวตนโดยใช้โทรศัพท์สแกน QR Code ผ่านแอป ThaID ของกระทรวงมหาดไทย พร้อมสแกนใบหน้าและบัตรประชาชน' : 'Verify by scanning a secure DOPA QR code on your mobile device, followed by ID card upload and face scan', 
       icon: QrCode 
     },
     { 
       id: 'ndid', 
       title: lang === 'th' ? 'NDID (National Digital ID ผ่านธนาคาร)' : 'NDID (Bank Digital ID)', 
-      desc: lang === 'th' ? 'ยืนยันตัวตนผ่านโมบายแบงก์กิ้งของธนาคารที่คุณลงทะเบียนไว้ (เช่น K-Plus, SCB Easy)' : 'Verify identity via registered mobile banking apps (e.g. K-Plus, SCB Easy)', 
+      desc: lang === 'th' ? 'ยืนยันตัวตนผ่านโมบายแบงก์กิ้งที่คุณลงทะเบียนไว้ พร้อมอัปโหลดบัตรประชาชนและสแกนใบหน้าเพื่อความปลอดภัยสูงสุด' : 'Verify identity via registered mobile banking apps, followed by ID card upload and face scan', 
       icon: Building2 
     },
     {
@@ -33,6 +33,7 @@ export function KycStepType({ lang, currentRole, kycDocType, onSetDocType, onNex
       icon: Globe
     }
   ] as { id: string; title: string; desc: string; icon: any }[];
+
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300 font-sans">

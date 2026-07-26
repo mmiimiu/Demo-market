@@ -67,7 +67,7 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
   const [isTemplateSaved, setIsTemplateSaved] = useState(false);
 
   // Get user role to conditionally show/hide buttons
-  const { data: profile } = useDoc<{ role: string }>(
+  const { data: profile } = useDoc<{ role: string; kycStatus?: string }>(
     user && !user.isMock ? `users/${user.uid}` : null
   );
   const userRole = (
@@ -210,7 +210,12 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
       return;
     }
     // Only booking requires KYC
-    if (isSessionKycPassed()) {
+    const isMock = user?.isMock;
+    const isProfileKycVerified = isMock 
+      ? (typeof window !== 'undefined' ? localStorage.getItem('primerent_mock_kyc') === 'verified' : false)
+      : (profile?.kycStatus === 'verified');
+
+    if (isSessionKycPassed() || isProfileKycVerified) {
       executePendingAction(action);
       return;
     }
