@@ -186,12 +186,9 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
   if (!property) return null;
 
   const executePendingAction = (action: 'book' | 'chat' | 'schedule_viewing') => {
+    // This is called AFTER KYC guard has been passed — open the target flow directly
     if (action === 'book') {
-      if (user?.isMock) {
-        setShowBookingForm(true);
-      } else {
-        setShowKyc(true);
-      }
+      setShowBookingForm(true);
     }
     if (action === 'chat') {
       openChat({ id: property.id as number, name: property.name }, 'renter');
