@@ -959,7 +959,7 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
         onClose={() => setShowOnboardingModal(false)}
         onComplete={() => {
           if (pendingAction) {
-            executePendingAction(pendingAction);
+            requireKycThenExecute(pendingAction);
           }
         }}
       />

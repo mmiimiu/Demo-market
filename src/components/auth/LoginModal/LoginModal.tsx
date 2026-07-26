@@ -85,6 +85,12 @@ export function LoginModal({ isOpen, onClose, onSwitchToSignup, lang }: LoginMod
     };
     localStorage.setItem('prime_mock_user', JSON.stringify(mockUser));
     localStorage.setItem('primerent_user_role', roleConfig.role);
+    if (roleConfig.role === 'renter') {
+      localStorage.setItem('primerent_mock_kyc', 'unverified');
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('primerent_session_kyc');
+      }
+    }
     setTimeout(() => {
       onClose();
       window.location.reload();
