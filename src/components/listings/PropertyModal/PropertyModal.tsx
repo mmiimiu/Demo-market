@@ -86,6 +86,8 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
   const [showKycGuard, setShowKycGuard] = useState(false);
   const [pendingKycAction, setPendingKycAction] = useState<'book' | 'chat' | 'schedule_viewing' | null>(null);
   const [kycActionLabel, setKycActionLabel] = useState('');
+  // Tracks KYC verification within this modal session only — resets when modal reopens
+  const [kycVerifiedThisModal, setKycVerifiedThisModal] = useState(false);
   const [showViewingScheduler, setShowViewingScheduler] = useState(false);
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [showContactAccordion, setShowContactAccordion] = useState(false);
@@ -204,30 +206,14 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
    * - 'book' | 'schedule_viewing' → ต้องยืนยันตัวตนก่อน (ID card + liveness)
    */
   const requireKycThenExecute = (action: 'book' | 'chat' | 'schedule_viewing') => {
-    console.log('[KYC Guard] requireKycThenExecute called with action:', action);
     // Chat is free — no KYC required
     if (action === 'chat') {
       executePendingAction(action);
       return;
     }
     // Booking and Schedule Viewing require KYC
-    const isMock = user?.isMock;
-    const mockKycVal = typeof window !== 'undefined' ? localStorage.getItem('primerent_mock_kyc') : null;
-    const isProfileKycVerified = isMock 
-      ? (mockKycVal === 'verified')
-      : (profile?.kycStatus === 'verified');
-    const sessionKycPassed = isSessionKycPassed();
-
-    console.log('[KYC Guard] Status check:', {
-      isMock,
-      mockKycVal,
-      profileKycStatus: profile?.kycStatus,
-      isProfileKycVerified,
-      sessionKycPassed
-    });
-
-    if (sessionKycPassed || isProfileKycVerified) {
-      console.log('[KYC Guard] Verification bypass allowed (already verified)');
+    // kycVerifiedThisModal resets every time PropertyModal mounts — guarantees popup shows every session
+    if (kycVerifiedThisModal) {
       executePendingAction(action);
       return;
     }
@@ -237,13 +223,10 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
     setPendingKycAction(action);
     setKycActionLabel(label);
     setShowKycGuard(true);
-    console.log('[KYC Guard] Verification required, displaying TenantKycGuardModal. Label:', label);
   };
 
   const requireAuthAndOnboarding = (action: 'book' | 'chat' | 'schedule_viewing') => {
-    console.log('[KYC Guard] requireAuthAndOnboarding called for action:', action, 'user:', user);
     if (!user) {
-      console.log('[KYC Guard] No logged-in user, displaying AuthModal');
       setPendingAction(action);
       setShowAuthModal(true);
       return;
@@ -1030,6 +1013,7 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
         actionLabel={kycActionLabel}
         onVerified={() => {
           setShowKycGuard(false);
+          setKycVerifiedThisModal(true); // Mark as verified for this modal session
           if (pendingKycAction) executePendingAction(pendingKycAction);
           setPendingKycAction(null);
         }}
