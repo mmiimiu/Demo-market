@@ -81,10 +81,10 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
   const [showKyc, setShowKyc] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
-  const [pendingAction, setPendingAction] = useState<'book' | 'chat' | null>(null);
+  const [pendingAction, setPendingAction] = useState<'book' | 'chat' | 'schedule_viewing' | null>(null);
   // KYC Guard state — intercepts transaction actions if user is not yet verified this session
   const [showKycGuard, setShowKycGuard] = useState(false);
-  const [pendingKycAction, setPendingKycAction] = useState<'book' | 'chat' | null>(null);
+  const [pendingKycAction, setPendingKycAction] = useState<'book' | 'chat' | 'schedule_viewing' | null>(null);
   const [kycActionLabel, setKycActionLabel] = useState('');
   const [showViewingScheduler, setShowViewingScheduler] = useState(false);
   const [showDepositModal, setShowDepositModal] = useState(false);
@@ -185,7 +185,7 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
 
   if (!property) return null;
 
-  const executePendingAction = (action: 'book' | 'chat') => {
+  const executePendingAction = (action: 'book' | 'chat' | 'schedule_viewing') => {
     if (action === 'book') {
       if (user?.isMock) {
         setShowBookingForm(true);
@@ -196,20 +196,23 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
     if (action === 'chat') {
       openChat({ id: property.id as number, name: property.name }, 'renter');
     }
+    if (action === 'schedule_viewing') {
+      setShowViewingScheduler(true);
+    }
   };
 
   /**
    * KYC intercept: called AFTER auth/onboarding passes.
    * - 'chat' → ไม่ต้อง KYC — แชทได้ทันที
-   * - 'book' → ต้องยืนยันตัวตนก่อน (ID card + liveness)
+   * - 'book' | 'schedule_viewing' → ต้องยืนยันตัวตนก่อน (ID card + liveness)
    */
-  const requireKycThenExecute = (action: 'book' | 'chat') => {
+  const requireKycThenExecute = (action: 'book' | 'chat' | 'schedule_viewing') => {
     // Chat is free — no KYC required
     if (action === 'chat') {
       executePendingAction(action);
       return;
     }
-    // Only booking requires KYC
+    // Booking and Schedule Viewing require KYC
     const isMock = user?.isMock;
     const isProfileKycVerified = isMock 
       ? (typeof window !== 'undefined' ? localStorage.getItem('primerent_mock_kyc') === 'verified' : false)
@@ -219,13 +222,15 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
       executePendingAction(action);
       return;
     }
-    const label = lang === 'th' ? 'จองห้อง' : 'Book Room';
+    const label = action === 'book' 
+      ? (lang === 'th' ? 'จองห้อง' : 'Book Room')
+      : (lang === 'th' ? 'นัดดูห้อง' : 'Schedule Viewing');
     setPendingKycAction(action);
     setKycActionLabel(label);
     setShowKycGuard(true);
   };
 
-  const requireAuthAndOnboarding = (action: 'book' | 'chat') => {
+  const requireAuthAndOnboarding = (action: 'book' | 'chat' | 'schedule_viewing') => {
     if (!user) {
       setPendingAction(action);
       setShowAuthModal(true);
@@ -886,7 +891,7 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
                     {showContactAccordion && (
                       <div className="mt-3 space-y-2">
                         <button
-                          onClick={() => setShowViewingScheduler(true)}
+                          onClick={() => requireAuthAndOnboarding('schedule_viewing')}
                           className="w-full flex items-center gap-2 p-2.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all text-xs font-bold text-gray-700"
                         >
                           <CalendarDays className="w-4 h-4" />
