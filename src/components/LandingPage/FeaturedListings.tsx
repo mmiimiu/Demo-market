@@ -37,10 +37,10 @@ export default function FeaturedListings({ lang, savedIds, toggleSave }: Feature
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">{text.featured.title}</h2>
             <p className="text-slate-500 text-sm sm:text-base leading-[1.6]">{text.featured.subtitle}</p>
           </div>
-          <Link href="/listings" className="group flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base text-blue-600 font-semibold hover:text-blue-700 transition-colors whitespace-nowrap">
+          <a href="/listings" className="group flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base text-blue-600 font-semibold hover:text-blue-700 transition-colors whitespace-nowrap">
             {text.featured.viewAll} 
             <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
-          </Link>
+          </a>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
           {mockListings.map((listing, i) => (
