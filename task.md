@@ -1,0 +1,7 @@
+- [x] Redesign Landlord Dashboard (`OwnerDashboard.tsx`, `OwnerTenantsBilling.tsx`)
+- [x] Redesign Homepage & Listings Feed (`PrimeRentApp.tsx`, `ListingsSection.tsx`, `PropertyCard.tsx`, `listings/page.tsx`)
+- [x] Redesign Property Comparison Drawer (`CompareDrawer.tsx`, `CompareTable.tsx`)
+- [x] Redesign Legal Notice Modal (`WarningNoticeModal.tsx`, `NoticePaper.tsx`)
+- [x] Verify changes compile and render cleanly
+  - [x] Run typecheck to verify build
+  - [x] Inspect pages in browser
