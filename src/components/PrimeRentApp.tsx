@@ -86,11 +86,10 @@ export default function PrimeRentApp() {
         onOpenAgentDashboard={() => state.openModal('agentDashboard')}
         onOpenOwnerFinder={() => state.openModal('ownerFinder')}
         onOpenOwnerDashboard={() => state.openModal('ownerDashboard')}
+        onOpenProfile={() => state.openModal('profile')}
         onOpenSupport={() => state.openModal('support')}
         onOpenRentalJourney={() => state.openModal('rentalJourney')}
       />
-
-
 
       <div className="pt-24 lg:pt-28">
         <ListingsSection
@@ -117,6 +116,7 @@ export default function PrimeRentApp() {
       <ModuleModal isOpen={state.modals.agentDashboard} onClose={() => state.closeModal('agentDashboard')} lang={lang} title={t.nav_agent_dashboard}><AgentDashboard lang={lang} /></ModuleModal>
       <ModuleModal isOpen={state.modals.ownerFinder} onClose={() => state.closeModal('ownerFinder')} lang={lang} title={t.nav_find_owner}><AgentOwnerFinder lang={lang} /></ModuleModal>
       <ModuleModal isOpen={state.modals.ownerDashboard} onClose={() => state.closeModal('ownerDashboard')} lang={lang} title={t.nav_owner_dashboard}><OwnerDashboard lang={lang} /></ModuleModal>
+      <ModuleModal isOpen={state.modals.profile} onClose={() => state.closeModal('profile')} lang={lang} title={t.profile || 'โปรไฟล์ของฉัน'} maxWidth="max-w-6xl"><UserProfile lang={lang} /></ModuleModal>
       <ModuleModal isOpen={state.modals.support} onClose={() => state.closeModal('support')} lang={lang} title={t.support} maxWidth="max-w-4xl"><SupportSystem lang={lang} /></ModuleModal>
       <ModuleModal isOpen={state.modals.rentalJourney} onClose={() => state.closeModal('rentalJourney')} lang={lang} title={lang === 'en' ? 'Rental Journey' : lang === 'cn' ? '租房进程' : 'ติดตามการเช่า'} maxWidth="max-w-4xl">
         <RentalJourneyTracker lang={lang} onClose={() => state.closeModal('rentalJourney')} />
