@@ -327,12 +327,14 @@ export const UserMenu: React.FC<UserMenuProps> = ({
 
                 {/* General Section */}
                 <div className="p-2 pb-3">
+                {userRole !== 'admin' && (
                   <DropdownMenuItem 
                     onClick={() => router.push("/profile?tab=upgrade")}
                     className="w-full flex items-center rounded-xl gap-3 cursor-pointer px-3 py-2 text-xs font-bold text-amber-600 hover:bg-amber-50 hover:text-amber-700 transition-colors bg-amber-50/30 mb-1"
                   >
                     <UserCircle className="w-4 h-4 text-amber-500" /> {lang === 'en' ? 'Upgrade Account' : lang === 'cn' ? '升级账户' : 'อัปเกรดบัญชี'}
                   </DropdownMenuItem>
+                )}
                   <DropdownMenuItem 
                     onClick={() => onOpenProfile ? onOpenProfile() : router.push("/profile")} 
                     className="w-full flex items-center rounded-xl gap-3 cursor-pointer px-3 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors"

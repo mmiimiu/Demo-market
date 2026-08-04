@@ -38,7 +38,9 @@ export function ProfileSidebar({
     { id: 'saved_properties', label: lang === 'th' ? 'ที่พักที่บันทึกไว้' : 'Saved Properties', icon: Heart },
     { id: 'search_reports', label: lang === 'th' ? 'ประวัติการค้นหา' : 'Search History', icon: Search },
     { id: 'payment', label: lang === 'th' ? 'ธุรกรรมการเงิน (Payments)' : 'Financial Portal', icon: Landmark },
-    { id: 'upgrade', label: lang === 'th' ? 'อัปเกรดบัญชี (KYC)' : 'Upgrade Partner', icon: Sparkles },
+    ...(currentRole !== 'admin' ? [
+      { id: 'upgrade', label: lang === 'th' ? 'อัปเกรดบัญชี (KYC)' : 'Upgrade Partner', icon: Sparkles },
+    ] : []),
     ...((currentRole === 'user' || currentRole === 'renter') ? [
       { id: 'contracts', label: lang === 'th' ? 'สัญญาของฉัน' : 'My Contracts', icon: FileText },
       { id: 'tenant_screening', label: lang === 'th' ? 'สมัครการตรวจสอบผู้เช่า' : 'Tenant Screening', icon: Star }
