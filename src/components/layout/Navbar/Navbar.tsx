@@ -36,6 +36,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenPostListing,
   onOpenAgentDashboard,
   onOpenOwnerDashboard,
+  onOpenOwnerFinder,
   onOpenProfile,
   onOpenSupport,
   onOpenRentalJourney,
