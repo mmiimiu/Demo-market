@@ -119,22 +119,37 @@ export const FilterContent: React.FC<FilterContentProps> = ({
       {/* Bathrooms */}
       <div>
         <Label className="text-sm font-bold mb-3 block">{lang === 'th' ? 'ห้องน้ำ' : 'Bathrooms'}</Label>
-        <div className="grid grid-cols-4 gap-2">
-          {[0, 1, 2, 3].map((num) => (
+        <div className="grid grid-cols-5 gap-2">
+          {[0, 1, 2, 3, 4].map((num) => (
             <button
               key={num}
               type="button"
               onClick={() => setFilterState((prev: any) => ({ ...prev, minBathrooms: num }))}
               className={cn(
-                "py-2 rounded-none font-bold transition-all border-2 text-xs",
-                (filterState.minBathrooms || 0) === num 
+                "py-2 rounded-none font-bold transition-all border-2 text-xs text-center",
+                (num === 4 ? (filterState.minBathrooms || 0) >= 4 : (filterState.minBathrooms || 0) === num)
                   ? "bg-primary text-white border-primary shadow-lg" 
                   : "bg-white border-gray-100 text-gray-500 hover:border-primary/30"
               )}
             >
-              {num === 0 ? (lang === 'th' ? 'ทั้งหมด' : 'Any') : `${num} ${lang === 'th' ? 'ห้อง' : 'Room'}`}
+              {num === 0 ? (lang === 'th' ? 'ทั้งหมด' : 'Any') : num === 4 ? (lang === 'th' ? '4+ ห้อง' : '4+ Rooms') : `${num} ${lang === 'th' ? 'ห้อง' : 'Room'}`}
             </button>
           ))}
+        </div>
+        <div className="flex items-center gap-2 mt-2">
+          <span className="text-[10px] font-bold text-gray-500 shrink-0">{lang === 'th' ? 'ระบุจำนวน:' : 'Custom Bath:'}</span>
+          <Input
+            type="number"
+            min="0"
+            max="10"
+            value={filterState.minBathrooms || ''}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              const val = Math.max(0, parseInt(e.target.value) || 0);
+              setFilterState((prev: any) => ({ ...prev, minBathrooms: val }));
+            }}
+            className="h-8 text-xs font-bold rounded-none border-gray-200 bg-gray-50"
+            placeholder={lang === 'th' ? 'เช่น 4, 5 ห้องน้ำ' : 'e.g. 4, 5'}
+          />
         </div>
       </div>
 

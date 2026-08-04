@@ -4,7 +4,7 @@ import React from 'react';
 import { LayoutDashboard, Users, UserPlus, Handshake, MapPin, Settings, DollarSign, MessageCircle, Bell } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-export type AgentTab = 'overview' | 'tenant-requests' | 'co-broker' | 'showings' | 'commission' | 'notifications' | 'settings';
+export type AgentTab = 'overview' | 'tenant-requests' | 'co-broker' | 'showings' | 'commission' | 'contracts' | 'notifications' | 'settings';
 
 interface AgentSidebarProps {
   activeTab: AgentTab;
@@ -20,8 +20,10 @@ export const AgentSidebar: React.FC<AgentSidebarProps> = ({ activeTab, setActive
     { id: 'co-broker', labelEn: 'Co-Broker', labelTh: 'Co-Broker', labelCn: '合作经纪人', icon: Handshake },
     { id: 'showings', labelEn: 'Showings', labelTh: 'พาลูกค้าดูห้อง', labelCn: '带看记录', icon: MapPin },
     { id: 'commission', labelEn: 'Commission', labelTh: 'ค่าคอมมิชชั่น', labelCn: '佣金', icon: DollarSign },
+    { id: 'contracts', labelEn: '📝 Contracts & Drafts', labelTh: '📝 สัญญา & แบบร่าง', labelCn: '📝 合同与草稿', icon: UserPlus },
     { id: 'notifications', labelEn: 'Notifications', labelTh: 'การแจ้งเตือน', labelCn: '通知', icon: Bell },
     { id: 'settings', labelEn: 'Settings & Zones', labelTh: 'ตั้งค่า & โซนทำงาน', labelCn: '设置', icon: Settings },
+
   ];
 
   const getLabel = (item: typeof navItems[0]) => {

@@ -8,6 +8,7 @@ import { TenantScreening } from '@/components/shared/TenantScreening';
 import { PropertyValuationTool } from '@/components/shared/PropertyValuationTool';
 import { OwnerNotificationsTab } from './OwnerNotificationsTab';
 import { OwnerPropertiesTab } from './OwnerPropertiesTab';
+import { TabContracts } from '@/components/contract/ContractSystem/TabContracts';
 
 interface OwnerDashboardContentProps {
   activeTab: string;
@@ -58,11 +59,8 @@ export function OwnerDashboardContent({
 
   if (activeTab === 'contracts') {
     return (
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 space-y-6">
-        <h3 className="text-lg font-black text-[#1E293B] mb-4">📋 รายการสัญญาเช่าดิจิทัล (Digital Contracts)</h3>
-        <div className="text-center py-20 border border-dashed border-[#E2E8F0] rounded-xl text-gray-400 font-bold">
-          ยังไม่มีสัญญาเช่าดิจิทัลในระบบ
-        </div>
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
+        <TabContracts userRole="owner" />
       </div>
     );
   }

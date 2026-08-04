@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { AgentPerformanceDashboard } from './AgentPerformanceDashboard';
+import { TabContracts } from '@/components/contract/ContractSystem/TabContracts';
 
 interface AgentDashboardProps {
   lang: 'th' | 'en' | 'cn';
@@ -614,6 +615,11 @@ export function AgentDashboard({ lang }: AgentDashboardProps) {
             ))}
           </div>
         )}
+      </div>
+
+      {/* Contracts & Draft Templates Section */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <TabContracts userRole="agent" />
       </div>
     </div>
   );
