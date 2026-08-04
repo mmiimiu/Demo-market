@@ -103,19 +103,11 @@ export function OwnerDashboard({ lang }: { lang: 'th' | 'en' | 'cn' }) {
           </div>
         </div>
 
-        <div className="mt-8">
-          <OwnerDashboardContent
-            activeTab="properties"
-            lang={lang}
-            properties={displayProperties}
-            loading={displayLoading}
-            onRenew={handleRenewListing}
-            onDelete={handleDeleteListing}
-            onEdit={handleEditListing}
-            onCreateClick={() => handleCreateListingClick()}
-            onBoost={handleBoostListing}
-            onPin={handlePinListing}
-          />
+        <div className="mt-8 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <h3 className="text-lg font-black text-gray-900 mb-4 flex items-center gap-2">
+            📜 {isThai ? 'สัญญาเช่าดิจิทัล & แบบร่างสัญญา Manual' : 'Digital Lease Contracts & Draft Templates'}
+          </h3>
+          <TabContracts userRole="owner" />
         </div>
       </div>
 
