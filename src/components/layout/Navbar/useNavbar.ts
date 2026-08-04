@@ -89,20 +89,17 @@ export function useNavbar(
   const handleSignOut = () => {
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem('primerent_session_kyc');
+      document.cookie = 'user_role=; path=/; max-age=0';
     }
-    if (user?.isMock) {
-      localStorage.removeItem('prime_mock_user');
-      localStorage.removeItem('primerent_user_role');
-      localStorage.removeItem('prime_registered_roles');
-      localStorage.removeItem('primerent_mock_kyc');
-      localStorage.removeItem('primerent_agent_verified');
-      window.location.reload();
-    } else {
-      localStorage.removeItem('prime_registered_roles');
-      localStorage.removeItem('primerent_mock_kyc');
-      localStorage.removeItem('primerent_agent_verified');
-      if (auth) signOut(auth);
+    localStorage.removeItem('prime_mock_user');
+    localStorage.removeItem('primerent_user_role');
+    localStorage.removeItem('prime_registered_roles');
+    localStorage.removeItem('primerent_mock_kyc');
+    localStorage.removeItem('primerent_agent_verified');
+    if (!user?.isMock && auth) {
+      signOut(auth);
     }
+    window.location.href = '/';
   };
 
   const handlePostListingClick = () => {

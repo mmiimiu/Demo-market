@@ -18,21 +18,7 @@ export function useUser() {
 
   useEffect(() => {
     // 1. Check for Mock User in LocalStorage first (for demo/mockup mode)
-    let mockUserStr = typeof window !== 'undefined' ? localStorage.getItem('prime_mock_user') : null;
-
-    if (!mockUserStr && typeof window !== 'undefined') {
-      const defaultRole = localStorage.getItem('primerent_user_role') || 'agent';
-      const defaultMock = {
-        uid: 'mock_user_1',
-        displayName: 'คุณสมชาย ใจดี',
-        email: 'demo@primerent.com',
-        phoneNumber: '0812345678',
-        role: defaultRole,
-        photoURL: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256'
-      };
-      localStorage.setItem('prime_mock_user', JSON.stringify(defaultMock));
-      mockUserStr = JSON.stringify(defaultMock);
-    }
+    const mockUserStr = typeof window !== 'undefined' ? localStorage.getItem('prime_mock_user') : null;
 
     if (mockUserStr) {
       try {
@@ -54,6 +40,7 @@ export function useUser() {
 
     // 2. Fallback to real Firebase Auth
     if (!auth) {
+      setUser(null);
       setLoading(false);
       return () => {}; // Return empty cleanup function if no auth
     }
