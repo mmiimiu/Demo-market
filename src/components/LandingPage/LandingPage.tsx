@@ -45,6 +45,13 @@ export default function LandingPage() {
   const [matchedProperties, setMatchedProperties] = useState<Property[]>([]);
 
   useEffect(() => {
+    // If logged in as admin, redirect directly to admin dashboard
+    const currentRole = localStorage.getItem('primerent_user_role');
+    if (currentRole === 'admin') {
+      window.location.href = '/admin';
+      return;
+    }
+
     // Check if redirecting from admin logout requesting a login popup
     const params = new URLSearchParams(window.location.search);
     if (params.get('openLogin') === 'true') {

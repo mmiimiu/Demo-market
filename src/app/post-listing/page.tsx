@@ -118,8 +118,8 @@ export default function PostListingPage() {
               </h3>
               <p className="text-xs font-bold text-gray-500 leading-relaxed">
                 {isTh 
-                  ? 'เพื่อความปลอดภัยสูงสุดและมาตรฐานของแพลตฟอร์ม นายหน้าและเจ้าของห้องจำเป็นต้องผ่านการยืนยันตัวตนดิจิทัลและส่งตรวจประวัติก่อนลงประกาศทรัพย์สินครับ' 
-                  : 'To ensure platform safety, all owners and agents must complete their digital ID e-KYC and criminal history checks before posting listings.'}
+                  ? 'เพื่อความปลอดภัยสูงสุดและมาตรฐานของแพลตฟอร์ม นายหน้าจำเป็นต้องผ่านการยืนยันตัวตนดิจิทัลและส่งตรวจประวัติอาชญากรรมก่อนลงประกาศทรัพย์สินครับ' 
+                  : 'To ensure platform safety, agent roles must complete digital ID e-KYC and criminal history checks before posting listings.'}
               </p>
             </div>
             <div className="pt-4 flex flex-col gap-2">

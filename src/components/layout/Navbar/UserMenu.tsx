@@ -87,7 +87,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({
     }
     
     if (newRole === 'admin') {
-      window.location.href = '/admin/dashboard';
+      window.location.href = '/admin';
     } else if (newRole === 'landlord') {
       window.location.href = '/owner/dashboard';
     } else if (newRole === 'agent') {

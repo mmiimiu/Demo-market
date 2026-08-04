@@ -29,8 +29,12 @@ export default function PrimeRentApp() {
 
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
+      const currentRole = localStorage.getItem('primerent_user_role');
+      if (currentRole === 'admin') {
+        window.location.href = '/admin';
+        return;
+      }
       const mode = localStorage.getItem('primerent_maintenance_mode') === 'true';
-      const currentRole = localStorage.getItem('primerent_user_role') || 'renter';
       const isAdmin = currentRole === 'admin' || currentRole === 'superadmin' || currentRole === 'sa';
       setIsMaintenance(mode && !isAdmin);
     }

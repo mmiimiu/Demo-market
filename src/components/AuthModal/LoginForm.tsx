@@ -89,7 +89,7 @@ export default function LoginForm({ text, onRegister, onForgotPassword, onClose 
         alert('เข้าสู่ระบบสำเร็จ! (Login Success!)');
         onClose();
         if (targetRole === 'admin') {
-          window.location.href = '/admin/dashboard';
+          window.location.href = '/admin';
         } else if (targetRole === 'landlord') {
           window.location.href = '/owner/dashboard';
         } else if (targetRole === 'agent') {
