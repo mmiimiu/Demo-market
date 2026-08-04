@@ -335,53 +335,56 @@ export function AgentDashboard({ lang }: AgentDashboardProps) {
           </div>
         </div>
 
-        {/* Recent Lease Contracts Panel */}
+        {/* Recent Lease Contracts & Expiry Alerts Panel */}
         <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-xs space-y-4">
           <div>
             <h4 className="font-black text-gray-900 text-sm flex items-center gap-1.5">
               <FileText className="w-4 h-4 text-teal-600" />
-              {isTh ? 'ผลงานการทำสัญญาเช่าล่าสุด (3-Party Signature)' : 'Recent Lease Contracts'}
+              {isTh ? 'แจ้งเตือนสัญญาใกล้หมดอายุ & กำหนดดูแลห้องพัก' : 'Lease Expirations & Property Maintenance'}
             </h4>
             <p className="text-[10px] text-gray-400 font-semibold mt-0.5">
-              {isTh ? 'ตรวจสอบความคืบหน้าของลายเซ็นอิเล็กทรอนิกส์ในสัญญา' : 'Status check of 3-party digital signatures.'}
+              {isTh ? 'เรียงลำดับสัญญาที่ใกล้หมดอายุขึ้นก่อน พร้อมกำหนดการซักผ้าม่าน ล้างแอร์ และวันเก็บค่าเช่า' : 'Sorted by contract expiration date with maintenance schedules.'}
             </p>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-3 max-h-[380px] overflow-y-auto pr-1">
             {[
-              { name: 'Ideo Mix Sukhumvit (102)', tenant: 'Somchai J.', agent: 'You (Agent)', rent: 14000, term: '1 Year', status: 'completed', ownerSigned: true, tenantSigned: true, agentSigned: true },
-              { name: 'The Base Park East (405)', tenant: 'Sarah J.', agent: 'You (Agent)', rent: 18500, term: '1 Year', status: 'completed', ownerSigned: true, tenantSigned: true, agentSigned: true },
-              { name: 'Studio BTS Onnut (77)', tenant: 'Napa W.', agent: 'You (Agent)', rent: 9500, term: '6 Months', status: 'pending', ownerSigned: true, tenantSigned: true, agentSigned: false },
-            ].map((contract, i) => (
-              <div key={i} className="p-3 border border-gray-100 rounded-xl space-y-2 hover:bg-slate-50/50 transition-colors">
+              { name: 'Ideo Mix Sukhumvit (102)', tenant: 'Somchai J.', rent: 14000, daysLeft: 15, expireDate: '19 ส.ค. 2026', curtainDate: '15 ส.ค. 2026', acDate: '20 ส.ค. 2026', rentDueDate: 'ทุกวันที่ 1', payWindowDays: 5, urgent: true },
+              { name: 'The Base Park East (405)', tenant: 'Sarah J.', rent: 18500, daysLeft: 42, expireDate: '15 ก.ย. 2026', curtainDate: '1 ก.ย. 2026', acDate: '10 ก.ย. 2026', rentDueDate: 'ทุกวันที่ 5', payWindowDays: 3, urgent: false },
+              { name: 'Condo Asoke Place (1209)', tenant: 'Kittisak P.', rent: 22000, daysLeft: 88, expireDate: '30 ต.ค. 2026', curtainDate: '15 ต.ค. 2026', acDate: '25 ต.ค. 2026', rentDueDate: 'ทุกวันที่ 1', payWindowDays: 7, urgent: false },
+              { name: 'Studio BTS Onnut (77)', tenant: 'Napa W.', rent: 9500, daysLeft: 150, expireDate: '31 ธ.ค. 2026', curtainDate: '10 ธ.ค. 2026', acDate: '15 ธ.ค. 2026', rentDueDate: 'ทุกวันที่ 28', payWindowDays: 5, urgent: false },
+              { name: 'Whizdom 101 (2304)', tenant: 'David L.', rent: 16000, daysLeft: 210, expireDate: '28 ก.พ. 2027', curtainDate: '15 ก.พ. 2027', acDate: '20 ก.พ. 2027', rentDueDate: 'ทุกวันที่ 10', payWindowDays: 5, urgent: false }
+            ].sort((a, b) => a.daysLeft - b.daysLeft).map((c, i) => (
+              <div key={i} className={cn("p-3.5 border rounded-xl space-y-2.5 transition-all", c.urgent ? "bg-rose-50/40 border-rose-200" : "bg-white border-gray-150 hover:bg-slate-50/50")}>
                 <div className="flex justify-between items-start">
                   <div>
-                    <p className="font-bold text-gray-900 text-xs">{contract.name}</p>
-                    <p className="text-[9px] text-gray-400 font-semibold">{isTh ? 'ผู้เช่า' : 'Tenant'}: {contract.tenant} · ฿{contract.rent.toLocaleString()}/{isTh ? 'ด' : 'mo'} ({contract.term})</p>
+                    <div className="flex items-center gap-2">
+                      <p className="font-black text-gray-900 text-xs">{c.name}</p>
+                      {c.urgent && <Badge className="bg-rose-500 text-white font-bold text-[8px] border-none px-1.5 py-0">หมดอายุเร็วๆ นี้</Badge>}
+                    </div>
+                    <p className="text-[9.5px] text-gray-500 font-bold mt-0.5">{isTh ? 'ผู้เช่า' : 'Tenant'}: {c.tenant} · ฿{c.rent.toLocaleString()}/ด</p>
                   </div>
-                  <Badge 
-                    className={cn(
-                      'text-[8px] font-black border-none px-2 py-0.5',
-                      contract.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700 animate-pulse'
-                    )}
-                  >
-                    {contract.status === 'completed' ? (isTh ? 'ลงนามเสร็จสิ้น' : 'Signed') : (isTh ? 'รอนายหน้าลงนาม' : 'Pending signature')}
-                  </Badge>
+                  <div className="text-right">
+                    <span className={cn("text-[9.5px] font-black px-2 py-0.5 rounded-lg border", c.urgent ? "bg-rose-100 text-rose-800 border-rose-200" : "bg-amber-50 text-amber-800 border-amber-200")}>
+                      ⏳ เหลือ {c.daysLeft} วัน (หมด {c.expireDate})
+                    </span>
+                  </div>
                 </div>
-                {/* Signing Checklist Status */}
-                <div className="flex gap-4 pt-1 text-[9px] font-bold text-gray-500 border-t border-gray-50 border-dashed">
-                  <span className="flex items-center gap-1">
-                    <span className={cn('w-2.5 h-2.5 rounded-full flex items-center justify-center text-[7px] text-white', contract.ownerSigned ? 'bg-emerald-500' : 'bg-gray-200')}>✓</span>
-                    {isTh ? 'ผู้ให้เช่า' : 'Owner'}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <span className={cn('w-2.5 h-2.5 rounded-full flex items-center justify-center text-[7px] text-white', contract.tenantSigned ? 'bg-emerald-500' : 'bg-gray-250')}>✓</span>
-                    {isTh ? 'ผู้เช่า' : 'Tenant'}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <span className={cn('w-2.5 h-2.5 rounded-full flex items-center justify-center text-[7px] text-white', (contract.name.includes('Sukhumvit') || contract.name.includes('Base')) ? (interactiveRooms.find(r => r.id === '1' || r.id === '2')?.status === 'rented' ? 'bg-emerald-500' : 'bg-gray-200') : (contract.agentSigned ? 'bg-emerald-500' : 'bg-gray-200'))}>✓</span>
-                    {isTh ? 'นายหน้า' : 'Agent'}
-                  </span>
+
+                {/* Maintenance & Billing Schedule Bar */}
+                <div className="grid grid-cols-3 gap-2 pt-2 text-[9px] font-bold border-t border-gray-100 border-dashed">
+                  <div className="bg-blue-50/70 p-1.5 rounded-lg text-blue-900 border border-blue-100">
+                    <span className="text-gray-500 font-medium block">{isTh ? '🧺 วันซักผ้าม่าน' : 'Curtain Wash'}</span>
+                    <span className="font-black text-blue-950">{c.curtainDate}</span>
+                  </div>
+                  <div className="bg-teal-50/70 p-1.5 rounded-lg text-teal-900 border border-teal-100">
+                    <span className="text-gray-500 font-medium block">{isTh ? '❄️ วันล้างแอร์' : 'AC Clean'}</span>
+                    <span className="font-black text-teal-950">{c.acDate}</span>
+                  </div>
+                  <div className="bg-emerald-50/70 p-1.5 rounded-lg text-emerald-900 border border-emerald-100">
+                    <span className="text-gray-500 font-medium block">{isTh ? '💰 เก็บค่าเช่า' : 'Rent Due'}</span>
+                    <span className="font-black text-emerald-950">{c.rentDueDate} (ชำระใน {c.payWindowDays} วัน)</span>
+                  </div>
                 </div>
               </div>
             ))}

@@ -242,9 +242,9 @@ export function AgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' | 'cn'
               </div>
               <div className="flex sm:flex-col justify-end gap-3 sm:min-w-[140px] shrink-0">
                 <div className="text-left sm:text-right flex-1 sm:flex-none">
-                  <div className="text-xs text-gray-500 font-medium">ส่วนแบ่ง Co-Agent</div>
+                  <div className="text-xs text-gray-500 font-medium">ส่วนแบ่งของคุณ (Co-Agent)</div>
                   <div className={`text-2xl font-black ${interestedJobs['job-1'] ? 'text-gray-500' : 'text-blue-600'}`}>10%</div>
-                  <div className="text-[10px] text-gray-400 font-medium">หักจากคอมมิชชัน Owner</div>
+                  <div className="text-[10px] text-gray-400 font-medium">🔒 แสดงเฉพาะส่วนของคุณ</div>
                 </div>
                 {interestedJobs['job-1'] ? (
                   <button disabled className="flex-1 sm:flex-none px-4 py-2.5 bg-gray-200 text-gray-500 rounded-lg text-sm font-bold shadow-inner cursor-not-allowed flex items-center justify-center gap-2">
@@ -318,23 +318,18 @@ export function AgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' | 'cn'
             <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-4 my-2">
               <h4 className="text-sm font-bold text-blue-900 mb-2 flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-blue-600" />
-                สัดส่วนค่าคอมมิชชันมาตรฐาน (ระบบจัดสรรให้อัตโนมัติ)
+                สัดส่วนค่าคอมมิชชันของคุณ (ความเป็นส่วนตัวสำหรับตัวแทน)
               </h4>
-              <div className="grid grid-cols-3 gap-2 mt-3">
-                <div className="bg-white rounded-lg p-3 border border-blue-100 text-center shadow-sm">
-                  <div className="text-xs text-gray-500 font-medium">Agent หลัก (คุณ)</div>
-                  <div className="text-lg font-black text-blue-600 mt-0.5">70%</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                <div className="bg-white rounded-lg p-3 border border-blue-200 text-center shadow-sm">
+                  <div className="text-xs text-gray-500 font-medium">ส่วนแบ่งของคุณ (Agent หลัก)</div>
+                  <div className="text-xl font-black text-blue-600 mt-0.5">70%</div>
                 </div>
-                <div className="bg-white rounded-lg p-3 border border-amber-100 text-center shadow-sm">
-                  <div className="text-xs text-gray-500 font-medium">Co-Agent</div>
-                  <div className="text-lg font-black text-amber-600 mt-0.5">10%</div>
-                </div>
-                <div className="bg-white rounded-lg p-3 border border-gray-100 text-center shadow-sm">
-                  <div className="text-xs text-gray-500 font-medium">Platform</div>
-                  <div className="text-lg font-black text-gray-600 mt-0.5">20%</div>
+                <div className="bg-slate-50 rounded-lg p-3 border border-gray-200 text-center shadow-inner flex items-center justify-center">
+                  <span className="text-xs text-gray-400 font-bold">🔒 ซ่อนสัดส่วน Co-Agent เพื่อความเป็นส่วนตัว</span>
                 </div>
               </div>
-              <p className="text-xs text-gray-500 mt-3 text-center">หักจ่ายตามสัดส่วนจากรายได้ฝั่ง Owner เมื่อจบงาน</p>
+              <p className="text-xs text-gray-500 mt-3 text-center">ระบบจะคำนวณและกระจายส่วนแบ่งให้แต่ละฝ่ายโดยอิสระ</p>
             </div>
             <div className="pt-4 mt-2 border-t border-gray-100">
               <button 

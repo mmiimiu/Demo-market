@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Heart, Share2, X, Badge, MapPin, CreditCard, Repeat, ShieldCheck, LayoutTemplate, CheckCircle } from 'lucide-react';
+import { Heart, Share2, X, Badge, MapPin, CreditCard, Repeat, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
@@ -64,7 +64,6 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
   const { user } = useUser();
   const db = useFirestore();
   const [imgIdx, setImgIdx] = useState(0);
-  const [isTemplateSaved, setIsTemplateSaved] = useState(false);
 
   // Get user role to conditionally show/hide buttons
   const { data: profile } = useDoc<{ role: string; kycStatus?: string }>(
@@ -364,93 +363,6 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
     window.open('/chat/line-oa', '_blank');
   };
 
-  const handleSaveAsTemplate = async () => {
-    try {
-      const currentOwnerId = user?.uid || 'mock_owner_id';
-
-      // Check for duplicate template first
-      if (!user || user.isMock) {
-        const stored = localStorage.getItem('primerent_mock_properties');
-        if (stored) {
-          const list = JSON.parse(stored);
-          const exists = list.some((p: any) => 
-            p.isTemplate && p.ownerId === currentOwnerId && p.originalPropertyId === property.id
-          );
-          if (exists) {
-            setIsTemplateSaved(true);
-            toast({
-              title: lang === 'th' ? 'มีเทมเพลตนี้อยู่แล้ว' : 'Template Already Exists',
-              description: lang === 'th' ? 'คุณได้บันทึกที่พักนี้เป็นเทมเพลตไว้แล้ว' : 'You have already saved this property as a template'
-            });
-            return;
-          }
-        }
-      } else if (db) {
-        const q = query(
-          collection(db, 'properties'), 
-          where('ownerId', '==', currentOwnerId), 
-          where('isTemplate', '==', true),
-          where('originalPropertyId', '==', property.id)
-        );
-        const snap = await getDocs(q);
-        if (!snap.empty) {
-          setIsTemplateSaved(true);
-          toast({
-            title: lang === 'th' ? 'มีเทมเพลตนี้อยู่แล้ว' : 'Template Already Exists',
-            description: lang === 'th' ? 'คุณได้บันทึกที่พักนี้เป็นเทมเพลตไว้แล้ว' : 'You have already saved this property as a template'
-          });
-          return;
-        }
-      }
-
-      const templateData = {
-        ...property,
-        isTemplate: true,
-        isPublicTemplate: false,
-        ownerId: currentOwnerId,
-        templateName: `${property.name} (Copy)`,
-        originalPropertyId: property.id,
-        status: 'draft',
-      };
-      
-      // Remove fields that shouldn't be copied
-      const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, ...templateDataClean } = templateData;
-      const cleanTemplate = templateDataClean;
-
-      if (!user || user.isMock) {
-        const stored = localStorage.getItem('primerent_mock_properties');
-        const list = stored ? JSON.parse(stored) : [];
-        list.push({
-          ...cleanTemplate,
-          id: `mock_tpl_${Date.now()}`,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        });
-        localStorage.setItem('primerent_mock_properties', JSON.stringify(list));
-      } else if (db) {
-        await addDoc(collection(db, 'properties'), {
-          ...cleanTemplate,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
-        });
-      }
-
-      setIsTemplateSaved(true);
-      
-      toast({
-        title: lang === 'th' ? 'บันทึกเป็นเทมเพลตแล้ว' : 'Saved as Template',
-        description: lang === 'th' ? 'เพิ่มลงในเทมเพลตของคุณเรียบร้อยแล้ว' : 'Successfully added to your templates'
-      });
-    } catch (err) {
-      console.error('Error saving template:', err);
-      toast({
-        variant: 'destructive',
-        title: lang === 'th' ? 'เกิดข้อผิดพลาด' : 'Error',
-        description: lang === 'th' ? 'ไม่สามารถบันทึกเทมเพลตได้' : 'Failed to save template'
-      });
-    }
-  };
-
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4 md:p-8 overflow-hidden pointer-events-auto">
       {/* Backdrop */}
@@ -505,18 +417,6 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
             </button>
             <button onClick={handleShare} className="w-9 h-9 flex items-center justify-center border border-gray-200 text-gray-400 hover:border-gray-300 transition-all rounded-xl">
               <Share2 className="w-4 h-4" />
-            </button>
-            <button 
-              onClick={handleSaveAsTemplate}
-              className={cn(
-                "w-9 h-9 flex items-center justify-center border transition-all rounded-xl",
-                isTemplateSaved 
-                  ? "bg-green-50 border-green-200 text-green-600" 
-                  : "bg-white border-gray-200 text-gray-400 hover:border-gray-300 hover:text-indigo-600"
-              )}
-              title={lang === 'th' ? 'บันทึกเทมเพลต' : 'Save Template'}
-            >
-              {isTemplateSaved ? <CheckCircle className="w-4 h-4" /> : <LayoutTemplate className="w-4 h-4" />}
             </button>
             <button onClick={onClose} className="w-9 h-9 flex items-center justify-center border border-gray-200 text-gray-500 hover:bg-gray-50 transition-all rounded-xl ml-2">
               <X className="w-4 h-4" />
@@ -759,28 +659,6 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
                     >
                       <Share2 className="w-4 h-4" />
                       {lang === 'th' ? 'แชร์' : lang === 'cn' ? '分享' : 'Share'}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleSaveAsTemplate}
-                      className={cn(
-                        "flex-1 flex flex-col sm:flex-row items-center justify-center gap-1.5 p-2 border rounded-lg transition-all text-[11px] sm:text-xs font-bold relative z-10 cursor-pointer pointer-events-auto",
-                        isTemplateSaved
-                          ? "bg-green-50 border-green-200 text-green-600"
-                          : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"
-                      )}
-                    >
-                      {isTemplateSaved ? (
-                        <>
-                          <CheckCircle className="w-4 h-4" />
-                          <span className="text-center">{lang === 'th' ? 'บันทึกแล้ว' : 'Saved'}</span>
-                        </>
-                      ) : (
-                        <>
-                          <LayoutTemplate className="w-4 h-4" />
-                          <span className="text-center">{lang === 'th' ? 'บันทึกเทมเพลต' : 'Save Template'}</span>
-                        </>
-                      )}
                     </button>
                   </div>
 

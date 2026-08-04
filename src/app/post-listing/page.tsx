@@ -89,7 +89,9 @@ export default function PostListingPage() {
   };
 
   const isTh = lang === 'th';
-  const isVerified = kycStatus === 'verified';
+  const storedRole = typeof window !== 'undefined' ? localStorage.getItem('primerent_user_role') : null;
+  const isLandlordRole = storedRole === 'owner' || storedRole === 'landlord';
+  const canPost = isVerified || isLandlordRole;
 
   return (
     <>
@@ -101,7 +103,7 @@ export default function PostListingPage() {
         title={isTh ? 'ลงประกาศที่พักฟรี' : 'List Property for Free'}
         maxWidth="max-w-5xl"
       >
-        {isVerified ? (
+        {canPost ? (
           <Suspense fallback={<div>Loading...</div>}>
             <PostListingContent lang={lang} />
           </Suspense>

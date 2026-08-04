@@ -82,22 +82,37 @@ export const FilterContent: React.FC<FilterContentProps> = ({
       {/* Bedrooms */}
       <div>
         <Label className="text-sm font-bold mb-3 block">{t.bedrooms}</Label>
-        <div className="grid grid-cols-4 gap-2">
-          {[0, 1, 2, 3].map((num) => (
+        <div className="grid grid-cols-5 gap-2">
+          {[0, 1, 2, 3, 4].map((num) => (
             <button
               key={num}
               type="button"
               onClick={() => setFilterState((prev: any) => ({ ...prev, minBedrooms: num }))}
               className={cn(
-                "py-2 rounded-none font-bold transition-all border-2 text-xs",
-                filterState.minBedrooms === num 
+                "py-2 rounded-none font-bold transition-all border-2 text-xs text-center",
+                (num === 4 ? filterState.minBedrooms >= 4 : filterState.minBedrooms === num)
                   ? "bg-primary text-white border-primary shadow-lg" 
                   : "bg-white border-gray-100 text-gray-500 hover:border-primary/30"
               )}
             >
-              {num === 0 ? 'Studio' : `${num} ${lang === 'th' ? 'ห้อง' : 'Room'}`}
+              {num === 0 ? 'Studio' : num === 4 ? (lang === 'th' ? '4+ ห้อง' : '4+ Rooms') : `${num} ${lang === 'th' ? 'ห้อง' : 'Room'}`}
             </button>
           ))}
+        </div>
+        <div className="flex items-center gap-2 mt-2">
+          <span className="text-[10px] font-bold text-gray-500 shrink-0">{lang === 'th' ? 'ระบุจำนวนห้อง:' : 'Custom Bed:'}</span>
+          <Input
+            type="number"
+            min="0"
+            max="20"
+            value={filterState.minBedrooms || ''}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              const val = Math.max(0, parseInt(e.target.value) || 0);
+              setFilterState((prev: any) => ({ ...prev, minBedrooms: val }));
+            }}
+            className="h-8 text-xs font-bold rounded-none border-gray-200 bg-gray-50"
+            placeholder={lang === 'th' ? 'เช่น 4, 5, 6 ห้อง' : 'e.g. 4, 5, 6'}
+          />
         </div>
       </div>
 
