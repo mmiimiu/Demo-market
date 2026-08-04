@@ -33,7 +33,7 @@ export function AgentKYCReview() {
   }, [agentRequests, selectedReqId]);
 
   const filtered = agentRequests.filter(r =>
-    r.name.toLowerCase().includes(search.toLowerCase()) || r.email.toLowerCase().includes(search.toLowerCase())
+    (r.name || '').toLowerCase().includes(search.toLowerCase()) || (r.email || '').toLowerCase().includes(search.toLowerCase())
   );
 
   const handleApprove = (requestId: string, userId: string) => {

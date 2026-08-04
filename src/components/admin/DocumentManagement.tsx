@@ -19,7 +19,7 @@ export function DocumentManagement() {
   useEffect(() => { loadDatabase(); }, [loadDatabase]);
 
   const filtered = documents.filter(d => {
-    const matchSearch = d.propertyName.toLowerCase().includes(search.toLowerCase()) || d.tenantName.toLowerCase().includes(search.toLowerCase());
+    const matchSearch = (d.propertyName || '').toLowerCase().includes(search.toLowerCase()) || (d.tenantName || '').toLowerCase().includes(search.toLowerCase());
     const matchType = filterType === 'all' || d.documentType === filterType;
     return matchSearch && matchType;
   });
@@ -158,7 +158,7 @@ export function DocumentManagement() {
               <div className="bg-slate-50 border rounded-xl p-3 space-y-1.5">
                 <p>ชื่อเอกสาร: <span className="font-black text-slate-950">{activeDocAudit.propertyName}</span></p>
                 <p>Status: <span className="text-indigo-600 font-black">{activeDocAudit.status}</span></p>
-                <p>ประเภท: <Badge className={`${typeColor(activeDocAudit.documentType)} border font-bold text-[9px]`}>{typeLabel(activeDocAudit.documentType)}</Badge></p>
+                <div className="flex items-center gap-1.5"><span>ประเภท:</span> <Badge className={`${typeColor(activeDocAudit.documentType)} border font-bold text-[9px]`}>{typeLabel(activeDocAudit.documentType)}</Badge></div>
                 <p>Signatures: <span className="font-black text-slate-950">{activeDocAudit.signaturesCount}/3</span></p>
                 {activeDocAudit.retentionExpiry && <p>Retention Expiry: <span className="text-slate-500">{activeDocAudit.retentionExpiry}</span></p>}
               </div>

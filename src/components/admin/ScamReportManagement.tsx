@@ -21,7 +21,7 @@ export function ScamReportManagement() {
   useEffect(() => { loadDatabase(); }, [loadDatabase]);
 
   const filtered = scamReports.filter(r => {
-    const matchSearch = r.reason.toLowerCase().includes(search.toLowerCase()) || r.reporterName.toLowerCase().includes(search.toLowerCase());
+    const matchSearch = (r.reason || '').toLowerCase().includes(search.toLowerCase()) || (r.reporterName || '').toLowerCase().includes(search.toLowerCase());
     const matchStatus = filterStatus === 'all' || r.status === filterStatus;
     return matchSearch && matchStatus;
   });
