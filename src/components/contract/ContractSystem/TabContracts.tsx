@@ -1,45 +1,109 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Plus, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Plus, RotateCcw, Building, FileText, CheckCircle2, Clock, Edit3, MapPin, User, FileSpreadsheet } from 'lucide-react';
 import type { UserRole } from '@/lib/types';
 import { Contract, ContractStatus, DEFAULT_MOCK_CONTRACTS, CONTRACTS_STORAGE_KEY } from './constants';
 import { ContractManager } from './ContractManager';
 
 const STATUS_LABEL: Record<ContractStatus, string> = {
-  draft: 'ร่าง', pending_signatures: 'รอลายเซ็น', completed: 'สมบูรณ์', expired: 'หมดอายุ',
+  draft: 'ฉบับร่าง (กำลังกรอกข้อมูล)',
+  pending_signatures: 'รอลายเซ็น (อยู่ระหว่างจัดส่ง)',
+  completed: 'สมบูรณ์ (เข้าอยู่แล้ว)',
+  expired: 'หมดอายุสัญญา',
 };
-const STATUS_COLOR: Record<ContractStatus, string> = {
-  draft: 'bg-gray-100 text-gray-500',
-  pending_signatures: 'bg-amber-50 text-amber-700',
-  completed: 'bg-green-50 text-green-700',
-  expired: 'bg-red-50 text-red-500',
+
+const STATUS_BADGE: Record<ContractStatus, { bg: string; text: string; border: string; icon: any }> = {
+  draft: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200', icon: Edit3 },
+  pending_signatures: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200', icon: Clock },
+  completed: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', icon: CheckCircle2 },
+  expired: { bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200', icon: FileText },
 };
 
 function loadContracts(): Contract[] {
-  try { const r = localStorage.getItem(CONTRACTS_STORAGE_KEY); return r ? JSON.parse(r) : DEFAULT_MOCK_CONTRACTS; }
-  catch { return DEFAULT_MOCK_CONTRACTS; }
+  try {
+    const r = localStorage.getItem(CONTRACTS_STORAGE_KEY);
+    return r ? JSON.parse(r) : DEFAULT_MOCK_CONTRACTS;
+  } catch {
+    return DEFAULT_MOCK_CONTRACTS;
+  }
 }
-function saveContracts(c: Contract[]) { localStorage.setItem(CONTRACTS_STORAGE_KEY, JSON.stringify(c)); }
+
+function saveContracts(c: Contract[]) {
+  localStorage.setItem(CONTRACTS_STORAGE_KEY, JSON.stringify(c));
+}
 
 function ContractCard({ c, onClick }: { c: Contract; onClick: () => void }) {
   const sigCount = Object.values(c.signatures).filter(Boolean).length;
+  const badge = STATUS_BADGE[c.status] || STATUS_BADGE.draft;
+  const Icon = badge.icon;
+
   return (
-    <button onClick={onClick} className="w-full text-left p-5 bg-white border border-gray-100 rounded-2xl hover:border-blue-200 hover:shadow-md transition-all group">
-      <div className="flex justify-between items-start gap-3">
-        <div className="flex-1 min-w-0">
-          <h4 className="font-black text-gray-900 text-sm truncate group-hover:text-blue-700 transition-colors">{c.propertyName}</h4>
-          <p className="text-xs text-gray-400 mt-0.5 truncate">{c.propertyAddress}</p>
-          <p className="text-xs text-gray-500 mt-2 font-medium">{c.startDate} – {c.endDate}</p>
+    <div 
+      onClick={onClick}
+      className="w-full bg-white border border-gray-200 hover:border-blue-400 rounded-2xl p-5 shadow-xs hover:shadow-md transition-all cursor-pointer group space-y-4"
+    >
+      {/* Zone & Unit header */}
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 pb-3">
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-black text-blue-700 bg-blue-50 border border-blue-100 px-2.5 py-1 rounded-lg flex items-center gap-1">
+            <MapPin className="w-3 h-3 text-blue-600" />
+            {c.zone || 'ทุกโซน'}
+          </span>
+          {c.unitNo && (
+            <span className="text-[11px] font-black text-gray-700 bg-gray-100 border border-gray-200 px-2.5 py-1 rounded-lg">
+              {c.unitNo}
+            </span>
+          )}
         </div>
-        <div className="flex flex-col items-end gap-1.5 shrink-0">
-          <span className={`text-[10px] font-black px-2.5 py-1 rounded-full ${STATUS_COLOR[c.status]}`}>
+        <div className="flex items-center gap-2">
+          <span className={`text-[11px] font-black px-3 py-1 rounded-full border flex items-center gap-1.5 ${badge.bg} ${badge.text} ${badge.border}`}>
+            <Icon className="w-3.5 h-3.5" />
             {STATUS_LABEL[c.status]}
           </span>
-          <span className="text-[10px] text-gray-400 font-bold">ลายเซ็น {sigCount}/2</span>
+          <span className="text-[11px] font-black text-gray-500 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full">
+            ลายเซ็น {sigCount}/2
+          </span>
         </div>
       </div>
-    </button>
+
+      {/* Property Title & Address */}
+      <div>
+        <h4 className="font-black text-gray-900 text-base group-hover:text-blue-600 transition-colors">
+          {c.propertyName}
+        </h4>
+        <p className="text-xs text-gray-500 font-medium mt-1 truncate">
+          📍 {c.propertyAddress}
+        </p>
+      </div>
+
+      {/* Parties & Terms Info Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs">
+        <div>
+          <span className="text-[10px] font-bold text-gray-400 block uppercase">เจ้าของห้องพัก</span>
+          <span className="font-bold text-gray-800 truncate block">{c.ownerName || '-'}</span>
+        </div>
+        <div>
+          <span className="text-[10px] font-bold text-gray-400 block uppercase">ผู้เช่า</span>
+          <span className="font-bold text-gray-800 truncate block">{c.tenantName || '-'}</span>
+        </div>
+        <div>
+          <span className="text-[10px] font-bold text-gray-400 block uppercase">ค่าเช่า / เงินมัดจำ</span>
+          <span className="font-black text-blue-700 block">฿{c.rentAmount.toLocaleString()} /ด.</span>
+        </div>
+        <div>
+          <span className="text-[10px] font-bold text-gray-400 block uppercase">ระยะเวลาสัญญา</span>
+          <span className="font-bold text-gray-700 block">{c.startDate} ถึง {c.endDate}</span>
+        </div>
+      </div>
+
+      {/* Action Footer */}
+      <div className="flex justify-end pt-1">
+        <span className="text-xs font-black text-blue-600 group-hover:translate-x-1 transition-transform flex items-center gap-1">
+          👁️ เปิดดูและแก้ไขเอกสารฉบับนี้ →
+        </span>
+      </div>
+    </div>
   );
 }
 
@@ -47,30 +111,41 @@ export function TabContracts({ userRole }: { userRole: UserRole }) {
   const [contracts, setContracts] = useState<Contract[]>(DEFAULT_MOCK_CONTRACTS);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [activeTabMode, setActiveTabMode] = useState<'contracts' | 'drafts'>('contracts');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'completed' | 'pending_signatures' | 'draft'>('all');
 
-  useEffect(() => { setContracts(loadContracts()); }, []);
+  useEffect(() => {
+    setContracts(loadContracts());
+  }, []);
 
   const selected = contracts.find(c => c.id === selectedId) ?? null;
 
   const handleUpdate = (updated: Contract) => {
     const next = contracts.map(c => c.id === updated.id ? updated : c);
-    setContracts(next); saveContracts(next);
+    setContracts(next);
+    saveContracts(next);
   };
 
   const handleAddNew = (templateType?: string) => {
-    const title = templateType || 'ทรัพย์สินใหม่ (แบบร่างสัญญา Manual)';
+    const title = templateType || 'สัญญาเช่าห้องพักใหม่ (แบบร่างสัญญา Manual)';
     const newC: Contract = {
       id: `cnt-${Date.now()}`,
-      propertyName: title, propertyAddress: 'กรุณาระบุที่อยู่ห้องพักที่ทำสัญญา',
+      propertyName: title,
+      propertyAddress: 'กรุณาระบุที่อยู่ห้องพักที่ทำสัญญา',
+      zone: 'โซนทั่วไป',
+      unitNo: 'ห้องใหม่',
       startDate: new Date().toISOString().slice(0, 10),
       endDate: new Date(Date.now() + 365 * 86400000).toISOString().slice(0, 10),
-      rentAmount: 12000, deposit: 24000,
-      ownerName: userRole === 'owner' ? 'คุณ (เจ้าของห้อง)' : 'เจ้าของที่พัก', 
+      rentAmount: 15000,
+      deposit: 30000,
+      ownerName: userRole === 'owner' ? 'คุณ (เจ้าของห้อง)' : 'เจ้าของที่พัก (รอระบุชื่อ)',
       tenantName: 'ผู้เช่า (รอระบุชื่อ)',
-      status: 'draft', signatures: {},
+      status: 'draft',
+      signatures: {},
     };
     const next = [newC, ...contracts];
-    setContracts(next); saveContracts(next); setSelectedId(newC.id);
+    setContracts(next);
+    saveContracts(next);
+    setSelectedId(newC.id);
   };
 
   const handleReset = () => {
@@ -81,11 +156,15 @@ export function TabContracts({ userRole }: { userRole: UserRole }) {
 
   if (selected) {
     return (
-      <div className="animate-in fade-in duration-300">
-        <div className="mb-6">
-          <button onClick={() => setSelectedId(null)} className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-blue-600 transition-colors">
-            <ArrowLeft className="w-4 h-4" /> กลับไปหน้ารวมสัญญา
+      <div className="animate-in fade-in duration-300 space-y-4">
+        <div className="flex items-center justify-between bg-slate-50 p-4 rounded-xl border border-slate-200">
+          <button 
+            onClick={() => setSelectedId(null)} 
+            className="flex items-center gap-2 text-xs font-black text-gray-700 hover:text-blue-600 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" /> ← กลับไปหน้ารายการสัญญาแยกตามทรัพย์สิน
           </button>
+          <span className="text-xs font-bold text-gray-400">ID สัญญา: {selected.id}</span>
         </div>
         <ContractManager contract={selected} userRole={userRole} onUpdate={handleUpdate} />
       </div>
@@ -93,76 +172,165 @@ export function TabContracts({ userRole }: { userRole: UserRole }) {
   }
 
   const draftTemplates = [
-    { title: 'แบบร่างสัญญาเช่าที่พักอาศัยมาตรฐาน (Standard Residential Lease)', desc: 'เอกสารร่างสัญญาเช่า 1 ปี ครบถ้วนข้อกำหนดเงินมัดจำและการดูแลรักษา', badge: 'แนะนำ' },
-    { title: 'แบบร่างหนังสือสัญญาจองและรับเงินมัดจำ (Reservation & Deposit Receipt)', desc: 'เอกสารร่างสำหรับวางเงินมัดจำล่วงหน้าเพื่อล็อคห้องพักก่อนทำสัญญาจริง', badge: 'มัดจำ' },
-    { title: 'แบบร่างหนังสือข้อตกลงต่ออายุสัญญาเช่า (Lease Extension Draft)', desc: 'แบบร่างเอกสารยินยอมต่ออายุสัญญาเช่าปรับปรุงอัตราค่าเช่าใหม่', badge: 'ต่ออายุ' }
+    { 
+      title: 'แบบร่างสัญญาเช่าที่พักอาศัยมาตรฐาน (Standard Residential Lease)', 
+      desc: 'แม่แบบเอกสารสัญญาเช่า 1 ปี ครบถ้วนข้อกำหนดเงินมัดจำ การจ่ายค่าเช่า และเงื่อนไขการคืนห้อง', 
+      badge: 'แม่แบบมาตรฐาน',
+      category: 'เหมาะสำหรับคอนโด & อพาร์ตเมนต์'
+    },
+    { 
+      title: 'แบบร่างหนังสือสัญญาจองและรับเงินมัดจำ (Reservation & Deposit Receipt)', 
+      desc: 'แม่แบบเอกสารวางเงินมัดจำล่วงหน้าเพื่อจองสิทธิ์ห้องพัก ก่อนจัดทำสัญญาเช่าฉบับจริง', 
+      badge: 'แม่แบบมัดจำ',
+      category: 'เหมาะสำหรับล็อคสิทธิ์ล่วงหน้า'
+    },
+    { 
+      title: 'แบบร่างหนังสือข้อตกลงต่ออายุสัญญาเช่า (Lease Extension Draft)', 
+      desc: 'แม่แบบหนังสือต่ออายุสัญญาเช่าเดิม พร้อมปรับปรุงอัตราค่าเช่าและระยะเวลาใหม่', 
+      badge: 'แม่แบบต่ออายุ',
+      category: 'เหมาะสำหรับผู้เช่าเดิม'
+    }
   ];
 
+  const filteredContracts = contracts.filter(c => {
+    if (statusFilter === 'all') return true;
+    return c.status === statusFilter;
+  });
+
   return (
-    <div className="space-y-4 animate-in fade-in duration-300">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+    <div className="space-y-6 animate-in fade-in duration-300">
+      {/* Header Banner */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gradient-to-r from-slate-900 to-slate-800 text-white p-6 rounded-2xl shadow-md">
         <div>
-          <h3 className="font-black text-gray-900 text-lg">ระบบจัดการสัญญา & แบบร่างสัญญา</h3>
-          <p className="text-xs text-gray-500 font-semibold mt-0.5">สร้างและแก้ไขร่างเอกสารสัญญาแบบ Manual หรือดำเนินการลงนามอิเล็กทรอนิกส์</p>
+          <span className="text-[10px] font-black tracking-widest uppercase bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full border border-blue-400/30">
+            เอกสารสัญญาแยกตามทรัพย์สิน & โซนห้องพัก
+          </span>
+          <h3 className="font-black text-xl text-white mt-2">ระบบจัดการสัญญา & แบบร่างสัญญา (Agent Contract Portal)</h3>
+          <p className="text-xs text-gray-300 font-medium mt-1">
+            แยกเอกสารสัญญาเป็นฉบับๆ ตามแต่ละโซนและห้องพัก พร้อมแม่แบบสัญญา Manual ให้กรอกข้อมูลได้อย่างสะดวก
+          </p>
         </div>
         <div className="flex gap-2 shrink-0">
-          <button onClick={handleReset} title="[DEV TEST] ล้างข้อมูลและโหลด Mock ใหม่"
-            className="flex items-center gap-1.5 text-xs font-bold text-gray-400 hover:text-red-500 border border-gray-200 hover:border-red-200 px-3 py-2 rounded-xl transition-all">
+          <button 
+            onClick={handleReset} 
+            title="[DEV TEST] ล้างข้อมูลและโหลด Mock ใหม่"
+            className="flex items-center gap-1.5 text-xs font-bold text-gray-300 hover:text-white border border-gray-700 hover:border-gray-500 px-3 py-2.5 rounded-xl transition-all"
+          >
             <RotateCcw className="w-3.5 h-3.5" /> Reset Demo
           </button>
-          <button onClick={() => handleAddNew()}
-            className="flex items-center gap-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl transition-colors shadow-sm">
-            <Plus className="w-3.5 h-3.5" /> สร้างร่างสัญญาใหม่
+          <button 
+            onClick={() => handleAddNew()}
+            className="flex items-center gap-1.5 text-xs font-black text-white bg-blue-600 hover:bg-blue-500 px-4 py-2.5 rounded-xl transition-all shadow-md cursor-pointer"
+          >
+            <Plus className="w-4 h-4" /> + สร้างฉบับร่างสัญญาใหม่
           </button>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex bg-slate-100 p-1 rounded-xl w-fit">
+      {/* Main Mode Navigation Tabs */}
+      <div className="flex border-b border-gray-200 gap-2">
         <button 
           onClick={() => setActiveTabMode('contracts')}
-          className={`px-4 py-2 text-xs font-black rounded-lg transition-all ${activeTabMode === 'contracts' ? 'bg-white text-blue-700 shadow-xs' : 'text-gray-500 hover:text-gray-900'}`}
+          className={`pb-3 px-4 text-xs font-black transition-all border-b-2 flex items-center gap-2 ${
+            activeTabMode === 'contracts' 
+              ? 'border-blue-600 text-blue-600' 
+              : 'border-transparent text-gray-500 hover:text-gray-900'
+          }`}
         >
-          📄 สัญญาของคุณ ({contracts.length})
+          <FileSpreadsheet className="w-4 h-4" />
+          🏢 รายการเอกสารสัญญาแยกตามทรัพย์สิน ({contracts.length} ฉบับ)
         </button>
         <button 
           onClick={() => setActiveTabMode('drafts')}
-          className={`px-4 py-2 text-xs font-black rounded-lg transition-all ${activeTabMode === 'drafts' ? 'bg-white text-blue-700 shadow-xs' : 'text-gray-500 hover:text-gray-900'}`}
+          className={`pb-3 px-4 text-xs font-black transition-all border-b-2 flex items-center gap-2 ${
+            activeTabMode === 'drafts' 
+              ? 'border-blue-600 text-blue-600' 
+              : 'border-transparent text-gray-500 hover:text-gray-900'
+          }`}
         >
-          📝 แบบร่างสัญญา Manual (Templates)
+          <Edit3 className="w-4 h-4" />
+          📝 แม่แบบฉบับร่างสัญญา (Draft Templates)
         </button>
       </div>
 
-      {activeTabMode === 'contracts' ? (
-        contracts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-40 border border-dashed border-gray-200 rounded-2xl text-gray-400">
-            <p className="text-sm font-bold">ยังไม่มีสัญญา</p>
-            <p className="text-xs mt-1">กด "สร้างร่างสัญญาใหม่" เพื่อเริ่มต้น</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {contracts.map(c => <ContractCard key={c.id} c={c} onClick={() => setSelectedId(c.id)} />)}
-          </div>
-        )
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
-          {draftTemplates.map((tpl, i) => (
-            <div key={i} className="bg-white border border-gray-200 hover:border-blue-300 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 transition-all">
-              <div className="space-y-2">
-                <span className="text-[9px] font-black bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md border border-blue-100 uppercase">{tpl.badge}</span>
-                <h4 className="font-black text-gray-900 text-xs leading-snug">{tpl.title}</h4>
-                <p className="text-[11px] text-gray-500 font-medium leading-relaxed">{tpl.desc}</p>
-              </div>
-              <button 
-                onClick={() => handleAddNew(tpl.title)}
-                className="w-full text-xs font-black text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-100 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer"
+      {/* Mode 1: Contracts List by Status */}
+      {activeTabMode === 'contracts' && (
+        <div className="space-y-4">
+          {/* Status Filter Chips */}
+          <div className="flex flex-wrap gap-2 items-center bg-slate-50 p-2 rounded-xl border border-slate-100 text-xs">
+            <span className="text-[11px] font-black text-gray-400 uppercase px-2">กรองตามสถานะ:</span>
+            {[
+              { key: 'all', label: `ทั้งหมด (${contracts.length})` },
+              { key: 'completed', label: `🟢 เข้าอยู่แล้ว (${contracts.filter(c => c.status === 'completed').length})` },
+              { key: 'pending_signatures', label: `🟠 รอลายเซ็น (${contracts.filter(c => c.status === 'pending_signatures').length})` },
+              { key: 'draft', label: `🔵 ฉบับร่าง (${contracts.filter(c => c.status === 'draft').length})` },
+            ].map(f => (
+              <button
+                key={f.key}
+                onClick={() => setStatusFilter(f.key as any)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
+                  statusFilter === f.key 
+                    ? 'bg-blue-600 text-white shadow-xs' 
+                    : 'bg-white text-gray-600 border border-gray-200 hover:border-blue-300'
+                }`}
               >
-                📝 ใช้แบบร่างนี้ทำสัญญา
+                {f.label}
               </button>
+            ))}
+          </div>
+
+          {/* List of Contracts */}
+          {filteredContracts.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-48 border border-dashed border-gray-200 rounded-2xl text-gray-400 bg-white">
+              <FileText className="w-8 h-8 text-gray-300 mb-2" />
+              <p className="text-sm font-bold">ไม่พบเอกสารสัญญาในหมวดหมู่นี้</p>
+              <p className="text-xs mt-1">กด "สร้างฉบับร่างสัญญาใหม่" เพื่อเริ่มต้นทำสัญญาฉบับใหม่</p>
             </div>
-          ))}
+          ) : (
+            <div className="space-y-4">
+              {filteredContracts.map(c => (
+                <ContractCard key={c.id} c={c} onClick={() => setSelectedId(c.id)} />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Mode 2: Draft Templates (แยกเป็นแม่แบบเอกสารสำหรับกรอก) */}
+      {activeTabMode === 'drafts' && (
+        <div className="space-y-4 pt-1">
+          <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-xs text-blue-900 font-medium leading-relaxed">
+            💡 <strong>แม่แบบฉบับร่างสัญญา (Doc Templates):</strong> สามารถเลือกแม่แบบที่ต้องการ เพื่อคัดลอกสร้างเอกสารฉบับใหม่สำหรับห้องพัก/ทรัพย์สินเฉพาะรายได้ทันที
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {draftTemplates.map((tpl, i) => (
+              <div 
+                key={i} 
+                className="bg-white border border-gray-200 hover:border-blue-400 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 transition-all"
+              >
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] font-black bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md border border-blue-100 uppercase">
+                      {tpl.badge}
+                    </span>
+                    <span className="text-[10px] font-bold text-gray-400">{tpl.category}</span>
+                  </div>
+                  <h4 className="font-black text-gray-900 text-sm leading-snug">{tpl.title}</h4>
+                  <p className="text-xs text-gray-500 font-medium leading-relaxed">{tpl.desc}</p>
+                </div>
+                <button 
+                  onClick={() => handleAddNew(tpl.title)}
+                  className="w-full text-xs font-black text-white bg-blue-600 hover:bg-blue-700 py-3 rounded-xl transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  📝 ใช้แม่แบบนี้สร้างสัญญาฉบับใหม่
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
   );
 }
+
