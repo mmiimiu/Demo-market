@@ -40,7 +40,6 @@ export function useUser() {
 
     // 2. Fallback to real Firebase Auth
     if (!auth) {
-      setUser(null);
       setLoading(false);
       return () => {}; // Return empty cleanup function if no auth
     }

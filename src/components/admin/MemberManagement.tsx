@@ -24,7 +24,7 @@ export function MemberManagement() {
   useEffect(() => { loadDatabase(); }, [loadDatabase]);
 
   const filtered = users.filter(u => {
-    const matchSearch = (u.displayName || '').toLowerCase().includes(search.toLowerCase()) || (u.email || '').toLowerCase().includes(search.toLowerCase());
+    const matchSearch = u.displayName.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase());
     const matchRole = filterRole === 'all' || u.role === filterRole;
     const matchStatus = filterStatus === 'all' || u.status === filterStatus;
     return matchSearch && matchRole && matchStatus;
@@ -193,9 +193,9 @@ export function MemberManagement() {
               <div className="bg-slate-50 border rounded-xl p-4 space-y-2">
                 <p>ชื่อ: <span className="font-black text-slate-900">{selectedUser.displayName}</span></p>
                 <p>อีเมล: <span className="font-black text-slate-900">{selectedUser.email}</span></p>
-                <div className="flex items-center gap-1.5"><span>บทบาท:</span> <Badge className="bg-slate-100 border font-bold text-[9px]">{selectedUser.role.toUpperCase()}</Badge></div>
+                <p>บทบาท: <Badge className="bg-slate-100 border font-bold text-[9px]">{selectedUser.role.toUpperCase()}</Badge></p>
                 <p>สถานะ: <span className={cn('px-2 py-0.5 rounded-lg text-[10px] font-bold', statusColor(selectedUser.status))}>{selectedUser.status.toUpperCase()}</span></p>
-                <div className="flex items-center gap-1.5"><span>KYC:</span> <Badge className={`${kycColor(selectedUser.kycStatus)} border font-bold text-[9px]`}>{selectedUser.kycStatus.toUpperCase()}</Badge></div>
+                <p>KYC: <Badge className={`${kycColor(selectedUser.kycStatus)} border font-bold text-[9px]`}>{selectedUser.kycStatus.toUpperCase()}</Badge></p>
                 <p>สมัครเมื่อ: <span className="text-slate-500">{selectedUser.createdAt}</span></p>
                 <p>ใช้งานล่าสุด: <span className="text-slate-500">{selectedUser.lastActive}</span></p>
                 {selectedUser.suspendReason && <p>เหตุผลระงับ: <span className="text-amber-600">{selectedUser.suspendReason}</span></p>}

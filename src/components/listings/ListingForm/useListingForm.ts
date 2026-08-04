@@ -365,6 +365,7 @@ export const useListingForm = (
     genericMapUrl,
     handleSubmit,
     handleSaveDraft,
+    handleSaveTemplate,
     t,
     verifiedProperties,
   };

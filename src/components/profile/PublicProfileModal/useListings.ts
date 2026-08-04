@@ -11,9 +11,9 @@ export function useListings(profileData: ProfileData | null, db: any) {
   const associatedListings = useMemo(() => {
     if (!profileData || profileData.role === 'renter') return [];
     if (profileData.uid === 'mock-landlord-john') return mockProperties.slice(0, 3);
-    if ((profileData.uid || '').includes('mock-agent-1') || (profileData.displayName || '').includes('Bangkok')) return mockProperties.filter(p => p.locationEn.includes('Sukhumvit'));
-    if ((profileData.uid || '').includes('mock-agent-2')) return mockProperties.filter(p => p.price >= 25000);
-    if ((profileData.uid || '').includes('mock-agent-3') || (profileData.displayName || '').includes('Phuket')) return mockProperties.filter(p => p.locationEn.includes('Phuket'));
+    if (profileData.uid.includes('mock-agent-1') || profileData.displayName.includes('Bangkok')) return mockProperties.filter(p => p.locationEn.includes('Sukhumvit'));
+    if (profileData.uid.includes('mock-agent-2')) return mockProperties.filter(p => p.price >= 25000);
+    if (profileData.uid.includes('mock-agent-3') || profileData.displayName.includes('Phuket')) return mockProperties.filter(p => p.locationEn.includes('Phuket'));
     return mockProperties.slice(4, 7);
   }, [profileData]);
 
@@ -26,21 +26,18 @@ export function useListings(profileData: ProfileData | null, db: any) {
     ).slice(0, 4);
   }, [profileData]);
 
-  const profileUid = profileData?.uid;
-  const profileRole = profileData?.role;
-
   useEffect(() => {
-    if (!profileUid || profileRole === 'renter') return;
+    if (!profileData || profileData.role === 'renter') return;
     
     // For mock/dev test, fetch from localStorage as well
-    const stored = typeof window !== 'undefined' ? localStorage.getItem('primerent_mock_properties') : null;
+    const stored = localStorage.getItem('primerent_mock_properties');
     let localItems: Property[] = [];
     if (stored) {
       try {
         const list = JSON.parse(stored);
         // Match user uid or the fallback mock_owner_id or dev_mock_owner_id
         localItems = list.filter((p: any) => 
-          p.ownerId === profileUid || 
+          p.ownerId === profileData.uid || 
           p.ownerId === 'mock_owner_id' || 
           p.ownerId === 'dev_mock_owner_id'
         );
@@ -56,7 +53,7 @@ export function useListings(profileData: ProfileData | null, db: any) {
 
     const fetchListings = async () => {
       try {
-        const q = query(collection(db, 'properties'), where('ownerId', '==', profileUid));
+        const q = query(collection(db, 'properties'), where('ownerId', '==', profileData.uid));
         const snap = await getDocs(q);
         const items: Property[] = [];
         snap.forEach(docSnap => {
@@ -89,7 +86,7 @@ export function useListings(profileData: ProfileData | null, db: any) {
       }
     };
     fetchListings();
-  }, [profileUid, profileRole, db]);
+  }, [profileData, db]);
 
   const displayListings = useMemo(() => {
     const combined = [...associatedListings, ...realListings];

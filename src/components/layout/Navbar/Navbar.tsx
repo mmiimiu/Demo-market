@@ -35,9 +35,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   setCurrency: propSetCurrency,
   onOpenPostListing,
   onOpenAgentDashboard,
-  onOpenOwnerDashboard,
   onOpenOwnerFinder,
-  onOpenProfile,
+  onOpenOwnerDashboard,
   onOpenSupport,
   onOpenRentalJourney,
   transparent = false,
@@ -163,7 +162,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             <UserMenu
               user={user} userRole={userRole} currency={currency} setCurrency={setCurrency}
               lang={lang} toggleLang={toggleLang} t={t} handleSignOut={handleSignOut}
-              onOpenProfile={onOpenProfile}
               onOpenSupport={onOpenSupport}
               onOpenRentalJourney={onOpenRentalJourney} isSolid={isSolid}
               setAuthTab={setAuthTab} setAuthOpen={setAuthOpen} router={router}
@@ -186,7 +184,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   t={t} user={user} userRole={userRole} handleNavbarSearch={handleNavbarSearch}
                   handleLogoOrHomeClick={handleLogoOrHomeClick} handlePostListingClick={handlePostListingClick}
                   onOpenOwnerDashboard={onOpenOwnerDashboard} onOpenAgentDashboard={onOpenAgentDashboard}
-                  onOpenOwnerFinder={onOpenOwnerFinder} onOpenProfile={onOpenProfile} onOpenSupport={onOpenSupport}
+                  onOpenOwnerFinder={onOpenOwnerFinder} onOpenSupport={onOpenSupport}
                   onOpenRentalJourney={onOpenRentalJourney}
                   handleSignOut={handleSignOut} setAuthTab={setAuthTab} setAuthOpen={setAuthOpen} router={router}
                 />

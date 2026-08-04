@@ -23,7 +23,6 @@ interface MobileDrawerProps {
   onOpenOwnerDashboard?: () => void;
   onOpenAgentDashboard?: () => void;
   onOpenOwnerFinder?: () => void;
-  onOpenProfile?: () => void;
   onOpenSupport?: () => void;
   onOpenRentalJourney?: () => void;
   handleSignOut: () => void;
@@ -46,7 +45,6 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
   onOpenOwnerDashboard,
   onOpenAgentDashboard,
   onOpenOwnerFinder,
-  onOpenProfile,
   onOpenSupport,
   onOpenRentalJourney,
   handleSignOut,
@@ -167,13 +165,6 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
 
             {user && (
               <>
-                <button 
-                  onClick={() => { if (onOpenProfile) onOpenProfile(); else router.push("/profile"); setMobileMenuOpen(false); }}
-                  className="flex items-center justify-between p-4 rounded-xl bg-gray-50 hover:bg-primary/5 group transition-all text-left"
-                >
-                  <span className="font-bold text-xs text-gray-700 group-hover:text-primary">{t.profile || "โปรไฟล์ของฉัน"}</span>
-                  <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-primary transition-all" />
-                </button>
                 <Link 
                   href="/chat"
                   onClick={() => setMobileMenuOpen(false)}
