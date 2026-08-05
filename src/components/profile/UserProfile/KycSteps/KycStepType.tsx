@@ -17,19 +17,19 @@ export function KycStepType({ lang, currentRole, kycDocType, onSetDocType, onNex
     { 
       id: 'thaid', 
       title: lang === 'th' ? 'ThaID (แอปพลิเคชันจากรัฐ DOPA)' : 'ThaID (DOPA Government App)', 
-      desc: lang === 'th' ? 'ยืนยันตัวตนโดยใช้โทรศัพท์สแกน QR Code ผ่านแอป ThaID ของกระทรวงมหาดไทย พร้อมสแกนใบหน้าและบัตรประชาชน' : 'Verify by scanning a secure DOPA QR code on your mobile device, followed by ID card upload and face scan', 
+      desc: lang === 'th' ? 'ยืนยันตัวตนโดยใช้โทรศัพท์สแกน QR Code ผ่านแอป ThaID ของกระทรวงมหาดไทย พร้อมอัปโหลดบัตรประชาชน' : 'Verify by scanning a secure DOPA QR code on your mobile device, followed by ID card upload', 
       icon: QrCode 
     },
     { 
       id: 'ndid', 
       title: lang === 'th' ? 'NDID (National Digital ID ผ่านธนาคาร)' : 'NDID (Bank Digital ID)', 
-      desc: lang === 'th' ? 'ยืนยันตัวตนผ่านโมบายแบงก์กิ้งที่คุณลงทะเบียนไว้ พร้อมอัปโหลดบัตรประชาชนและสแกนใบหน้าเพื่อความปลอดภัยสูงสุด' : 'Verify identity via registered mobile banking apps, followed by ID card upload and face scan', 
+      desc: lang === 'th' ? 'ยืนยันตัวตนผ่านโมบายแบงก์กิ้งที่คุณลงทะเบียนไว้ พร้อมอัปโหลดบัตรประชาชนเพื่อความปลอดภัยสูงสุด' : 'Verify identity via registered mobile banking apps, followed by ID card upload', 
       icon: Building2 
     },
     {
       id: 'passport',
       title: lang === 'th' ? 'NFC Passport (ระบบอ่านชิปพาสปอร์ตสำหรับต่างชาติ)' : 'NFC Passport (Foreign National Identity)',
-      desc: lang === 'th' ? 'สแกนชิปพาสปอร์ตสากลผ่าน NFC บนสมาร์ทโฟน พร้อมเทคโนโลยีตรวจจับใบหน้า Liveness' : 'Read electronic passport chip via NFC on your phone with biometric liveness selfie verification',
+      desc: lang === 'th' ? 'สแกนชิปพาสปอร์ตสากลผ่าน NFC บนสมาร์ทโฟน' : 'Read electronic passport chip via NFC on your phone',
       icon: Globe
     }
   ] as { id: string; title: string; desc: string; icon: any }[];

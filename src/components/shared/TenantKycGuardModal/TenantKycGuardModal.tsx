@@ -138,8 +138,8 @@ export function TenantKycGuardModal({
       toast({ variant: 'destructive', title: isTh ? 'กรุณาอัปโหลดบัตรประชาชน' : 'Please upload your ID card' });
       return;
     }
-    setCamActive(true);
-    setStep('liveness');
+    setStep('processing');
+    setTimeout(() => setStep('done'), 1600);
   };
 
   const handleStartLiveness = () => {
@@ -166,8 +166,8 @@ export function TenantKycGuardModal({
     toast({
       title: isTh ? '🎉 ยืนยันตัวตนสำเร็จ!' : '🎉 Identity Verified!',
       description: isTh
-        ? 'บัตรประชาชนและสแกนใบหน้าผ่านแล้ว — ดำเนินการต่อได้เลย'
-        : 'ID card and liveness scan verified — proceeding now.',
+        ? 'บัตรประชาชนผ่านแล้ว — ดำเนินการต่อได้เลย'
+        : 'ID card verified — proceeding now.',
     });
     onVerified();
   };
@@ -184,7 +184,7 @@ export function TenantKycGuardModal({
   };
 
   // ── Step labels for progress indicator ───────────────────────────────────
-  const steps: KycStep[] = ['intro', 'id_upload', 'liveness', 'done'];
+  const steps: KycStep[] = ['intro', 'id_upload', 'processing', 'done'];
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center px-4">
@@ -257,13 +257,12 @@ export function TenantKycGuardModal({
                       : `🔒 ${actionLabel || 'This action'} requires identity verification to prevent defaults and protect all parties.`}
                   </p>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1">
                   {[
                     { icon: CreditCard, label: isTh ? 'บัตรประชาชน' : 'ID Card', desc: isTh ? 'ด้านหน้าบัตร' : 'Front of national ID' },
-                    { icon: Camera, label: isTh ? 'สแกนใบหน้า' : 'Liveness', desc: isTh ? 'ตรวจจับใบหน้าจริง' : 'Real-time face check' },
                   ].map(({ icon: Icon, label, desc }) => (
-                    <div key={label} className="bg-white/5 border border-white/10 rounded-2xl p-3 space-y-1">
-                      <Icon className="w-5 h-5 text-orange-400" />
+                    <div key={label} className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col items-center text-center space-y-1.5">
+                      <Icon className="w-6 h-6 text-orange-400" />
                       <p className="text-xs font-black text-white">{label}</p>
                       <p className="text-[10px] text-slate-400 font-medium">{desc}</p>
                     </div>
@@ -289,7 +288,7 @@ export function TenantKycGuardModal({
             {step === 'id_upload' && (
               <div className="space-y-4">
                 <p className="text-xs font-black text-slate-300">
-                  {isTh ? 'ขั้นตอน 1/2 — อัปโหลดรูปบัตรประชาชน' : 'Step 1/2 — Upload ID Card photo'}
+                  {isTh ? 'ขั้นตอน 1 — อัปโหลดรูปบัตรประชาชน' : 'Step 1 — Upload ID Card photo'}
                 </p>
                 <div
                   onClick={() => fileInputRef.current?.click()}
@@ -346,7 +345,7 @@ export function TenantKycGuardModal({
                   id="kyc-guard-id-next-btn"
                   className="w-full h-11 bg-orange-500 hover:bg-orange-600 disabled:bg-slate-700 disabled:text-slate-500 text-white font-black rounded-2xl text-sm transition-all active:scale-95"
                 >
-                  {isTh ? 'ถัดไป: สแกนใบหน้า →' : 'Next: Face Scan →'}
+                  {isTh ? 'ถัดไป: ตรวจสอบข้อมูล →' : 'Next: Verify Info →'}
                 </Button>
               </div>
             )}
@@ -409,12 +408,12 @@ export function TenantKycGuardModal({
                 <div className="w-14 h-14 bg-orange-500/10 rounded-3xl flex items-center justify-center mx-auto animate-pulse">
                   <Loader2 className="w-7 h-7 text-orange-400 animate-spin" />
                 </div>
-                <div>
-                  <p className="font-black text-white">{isTh ? 'กำลังตรวจสอบข้อมูล...' : 'Verifying...'}</p>
-                  <p className="text-xs text-slate-400 font-medium mt-1">
-                    {isTh ? 'วิเคราะห์บัตรและเปรียบเทียบใบหน้า' : 'Matching ID against liveness capture'}
-                  </p>
-                </div>
+                    <div>
+                      <p className="font-black text-white">{isTh ? 'กำลังตรวจสอบข้อมูล...' : 'Verifying...'}</p>
+                      <p className="text-xs text-slate-400 font-medium mt-1">
+                        {isTh ? 'ตรวจสอบความถูกต้องของบัตรประชาชน' : 'Verifying validity of the ID card'}
+                      </p>
+                    </div>
               </div>
             )}
 
@@ -427,14 +426,10 @@ export function TenantKycGuardModal({
                   </div>
                   <p className="font-black text-white">{isTh ? 'ยืนยันตัวตนสำเร็จ!' : 'Identity Verified!'}</p>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="bg-emerald-500/10 border border-emerald-400/20 rounded-xl p-3 text-center">
-                    <p className="text-xl font-black text-emerald-400">{livenessScore}%</p>
-                    <p className="text-[10px] text-slate-400 font-black">{isTh ? 'Liveness Score' : 'Liveness Score'}</p>
-                  </div>
-                  <div className="bg-emerald-500/10 border border-emerald-400/20 rounded-xl p-3 text-center flex flex-col items-center justify-center gap-1">
-                    <CheckCircle2 className="w-6 h-6 text-emerald-400" />
-                    <p className="text-[10px] text-slate-400 font-black">{isTh ? 'บัตรผ่านแล้ว' : 'ID Passed'}</p>
+                <div className="flex justify-center w-full">
+                  <div className="bg-emerald-500/10 border border-emerald-400/20 rounded-xl p-4 text-center flex flex-col items-center justify-center gap-1.5 w-full max-w-xs">
+                    <CheckCircle2 className="w-8 h-8 text-emerald-400 animate-bounce" />
+                    <p className="text-[10px] text-slate-400 font-black">{isTh ? 'บัตรประชาชนผ่านแล้ว' : 'ID Passed'}</p>
                   </div>
                 </div>
                 <Button

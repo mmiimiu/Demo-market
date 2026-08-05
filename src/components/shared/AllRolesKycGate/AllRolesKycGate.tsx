@@ -102,8 +102,10 @@ export function AllRolesKycGate({ lang, children, bypass = false }: AllRolesKycG
       toast({ variant: 'destructive', title: isTh ? 'กรุณาอัปโหลดบัตรประชาชน' : 'Please upload your ID card' });
       return;
     }
-    setCamActive(true);
-    setStep('liveness');
+    setStep('processing');
+    setTimeout(() => {
+      setStep('done');
+    }, 1800);
   };
 
   const handleStartLiveness = () => {
@@ -133,8 +135,8 @@ export function AllRolesKycGate({ lang, children, bypass = false }: AllRolesKycG
     toast({
       title: isTh ? '🎉 ยืนยันตัวตนสำเร็จ!' : '🎉 Identity Verified!',
       description: isTh
-        ? 'ระบบได้ยืนยันบัตรประชาชนและสแกนใบหน้าของคุณเรียบร้อยแล้ว'
-        : 'Your ID card and liveness scan have been verified successfully.',
+        ? 'ระบบได้ยืนยันบัตรประชาชนของคุณเรียบร้อยแล้ว'
+        : 'Your ID card has been verified successfully.',
     });
   };
 
@@ -225,13 +227,13 @@ export function AllRolesKycGate({ lang, children, bypass = false }: AllRolesKycG
 
       {/* Step indicator dots */}
       <div className="mt-8 flex gap-2 relative z-10">
-        {(['intro', 'id_upload', 'liveness', 'done'] as const).map((s, i) => (
+        {(['intro', 'id_upload', 'processing', 'done'] as const).map((s, i) => (
           <div
             key={s}
             className={cn(
               'w-2 h-2 rounded-full transition-all duration-300',
               step === s ? 'bg-orange-400 w-4' :
-              (['intro', 'id_upload', 'liveness', 'done'].indexOf(step) > i)
+              (['intro', 'id_upload', 'processing', 'done'].indexOf(step) > i)
                 ? 'bg-emerald-400' : 'bg-slate-600'
             )}
           />
@@ -255,18 +257,17 @@ function IntroStep({ isTh, onStart }: { isTh: boolean; onStart: () => void }) {
         </h2>
         <p className="text-sm text-slate-300 leading-relaxed font-medium">
           {isTh
-            ? 'เพื่อความปลอดภัยของทุกฝ่าย ทุกบทบาทต้องยืนยันตัวตนด้วยบัตรประชาชนและการสแกนใบหน้า (Liveness Check) ก่อนเข้าใช้งานแพลตฟอร์ม'
-            : 'For the safety of all parties, every user must verify their identity with an ID card and a liveness scan before accessing the platform.'}
+            ? 'เพื่อความปลอดภัยของทุกฝ่าย ทุกบทบาทต้องยืนยันตัวตนด้วยบัตรประชาชนก่อนเข้าใช้งานแพลตฟอร์ม'
+            : 'For the safety of all parties, every user must verify their identity with an ID card before accessing the platform.'}
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1">
         {[
           { icon: CreditCard, label: isTh ? 'ถ่ายบัตรประชาชน' : 'ID Card Upload', desc: isTh ? 'หน้าตรงและด้านหน้าบัตร' : 'Front of your national ID' },
-          { icon: Camera, label: isTh ? 'สแกนใบหน้า' : 'Liveness Scan', desc: isTh ? 'ระบบตรวจจับใบหน้าจริง' : 'Real-time face detection' },
         ].map(({ icon: Icon, label, desc }) => (
-          <div key={label} className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-1.5">
-            <Icon className="w-6 h-6 text-orange-400" />
+          <div key={label} className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-1.5 flex flex-col items-center text-center">
+            <Icon className="w-8 h-8 text-orange-400" />
             <p className="text-xs font-black">{label}</p>
             <p className="text-[10px] text-slate-400 font-medium">{desc}</p>
           </div>
@@ -381,7 +382,7 @@ function IdUploadStep({
         id="kyc-id-next-btn"
         className="w-full h-12 bg-orange-500 hover:bg-orange-600 disabled:bg-slate-700 disabled:text-slate-400 text-white font-black rounded-2xl text-sm shadow-lg shadow-orange-500/30 transition-all hover:scale-[1.02] active:scale-95"
       >
-        {isTh ? 'ถัดไป: สแกนใบหน้า →' : 'Next: Face Scan →'}
+        {isTh ? 'ถัดไป: ตรวจสอบข้อมูล →' : 'Next: Verify Info →'}
       </Button>
     </div>
   );
@@ -482,7 +483,7 @@ function ProcessingStep({ isTh }: { isTh: boolean }) {
       <div className="space-y-2">
         <h3 className="text-xl font-black">{isTh ? 'กำลังตรวจสอบข้อมูล...' : 'Verifying identity...'}</h3>
         <p className="text-xs text-slate-400 font-medium">
-          {isTh ? 'ระบบกำลังวิเคราะห์บัตรและเปรียบเทียบใบหน้า' : 'Matching ID card data against liveness capture'}
+          {isTh ? 'ระบบกำลังตรวจสอบความถูกต้องของบัตรประชาชน' : 'Verifying validity of the ID card'}
         </p>
       </div>
     </div>
@@ -503,14 +504,10 @@ function DoneStep({ isTh, score, onComplete }: { isTh: boolean; score: number; o
       </div>
 
       {/* Score display */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="bg-emerald-500/10 border border-emerald-400/20 rounded-2xl p-4 text-center">
-          <p className="text-2xl font-black text-emerald-400">{score}%</p>
-          <p className="text-[10px] text-slate-400 font-black mt-1">{isTh ? 'คะแนน Liveness' : 'Liveness Score'}</p>
-        </div>
-        <div className="bg-emerald-500/10 border border-emerald-400/20 rounded-2xl p-4 text-center">
-          <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
-          <p className="text-[10px] text-slate-400 font-black mt-2">{isTh ? 'บัตรประชาชนผ่านแล้ว' : 'ID Card Passed'}</p>
+      <div className="flex justify-center">
+        <div className="bg-emerald-500/10 border border-emerald-400/20 rounded-2xl p-6 text-center w-full max-w-xs flex flex-col items-center gap-2">
+          <CheckCircle2 className="w-10 h-10 text-emerald-400 animate-bounce" />
+          <p className="text-sm font-black text-white mt-1">{isTh ? 'บัตรประชาชนผ่านการตรวจสอบแล้ว' : 'ID Card Verified'}</p>
         </div>
       </div>
 

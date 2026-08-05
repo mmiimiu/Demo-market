@@ -91,6 +91,11 @@ export function ContractDocument({ contract, userRole, onChange }: Props) {
     );
   }
 
+  return (
+    <div className="text-gray-700 text-sm leading-9 space-y-4 font-sans">
+      <h2 className="text-center text-xl font-black text-gray-900 tracking-wide mb-8 pb-4 border-b border-gray-100">
+        สัญญาเช่าที่พักอาศัยดิจิทัล (Digital Residential Lease Agreement)
+      </h2>
       <p>
         สัญญานี้ทำขึ้นเมื่อวันที่{' '}
         <EditableField value={contract.startDate} field="startDate" isEditable={canEdit} onChange={handle} />

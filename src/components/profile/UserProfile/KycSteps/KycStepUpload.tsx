@@ -98,24 +98,11 @@ export function KycStepUpload({
       setNfcProgress(prev => {
         if (prev >= 100) {
           clearInterval(interval);
-          setNfcState('liveness');
-          setNfcProgress(0);
-          
-          // Face Liveness Stage
-          const faceInterval = setInterval(() => {
-            setNfcProgress(fPrev => {
-              if (fPrev >= 100) {
-                clearInterval(faceInterval);
-                setNfcState('success');
-                toast({
-                  title: isTh ? 'ยืนยันตัวตนสำเร็จ!' : 'Biometric Verification Passed!',
-                  description: isTh ? 'ใบหน้าตรงกับบัตรประชาชน 98.8% ผ่านระบบ Liveness' : 'Liveness face matching at 98.8% match with ID photo.'
-                });
-                return 100;
-              }
-              return fPrev + 25;
-            });
-          }, 400);
+          setNfcState('success');
+          toast({
+            title: isTh ? 'ยืนยันตัวตนสำเร็จ!' : 'Verification Passed!',
+            description: isTh ? 'ข้อมูลบัตรประชาชนได้รับการตรวจสอบความถูกต้องแล้ว' : 'ID card details have been verified successfully.'
+          });
           return 100;
         }
         return prev + 25;
@@ -124,7 +111,7 @@ export function KycStepUpload({
   };
 
 
-  const triggerNfcStage3 = () => {
+  const triggerNfcStage2 = () => {
     const interval = setInterval(() => {
       setNfcProgress(prev => {
         if (prev >= 100) {
@@ -132,23 +119,8 @@ export function KycStepUpload({
           setNfcState('success');
           toast({
             title: isTh ? 'ยืนยันชิป NFC สำเร็จ!' : 'NFC Verification Passed!',
-            description: isTh ? 'ตรวจสอบลายเซ็นดิจิทัลและจับคู่ใบหน้า 99.2% ผ่านแล้ว' : 'Passport signature verified. Face matching at 99.2% match.'
+            description: isTh ? 'ตรวจสอบข้อมูลหนังสือเดินทางและลายเซ็นดิจิทัลเรียบร้อยแล้ว' : 'Passport details and signature verified successfully.'
           });
-          return 100;
-        }
-        return prev + 33;
-      });
-    }, 500);
-  };
-
-  const triggerNfcStage2 = () => {
-    const interval = setInterval(() => {
-      setNfcProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setNfcState('liveness');
-          setNfcProgress(0);
-          triggerNfcStage3();
           return 100;
         }
         return prev + 25;
@@ -239,8 +211,8 @@ export function KycStepUpload({
                 <h4 className="font-black text-gray-900 text-base">{isTh ? 'ขั้นตอนที่ 1/2: สแกนผ่านแอป ThaID' : 'Step 1/2: Scan via ThaID App'}</h4>
                 <p className="text-[11px] text-gray-500 font-bold max-w-sm">
                   {isTh 
-                    ? 'กรุณาเปิดแอปพลิเคชัน ThaID บนโทรศัพท์มือถือเพื่อสแกน QR Code จากนั้นทำตามขั้นตอนถ่ายรูปบัตรประชาชนและสแกนใบหน้าถัดไป' 
-                    : 'Open your ThaID app and scan the QR code, then proceed to the ID upload and face scan.'}
+                    ? 'กรุณาเปิดแอปพลิเคชัน ThaID บนโทรศัพท์มือถือเพื่อสแกน QR Code จากนั้นทำตามขั้นตอนถ่ายรูปบัตรประชาชนถัดไป' 
+                    : 'Open your ThaID app and scan the QR code, then proceed to the ID upload.'}
                 </p>
               </div>
 
@@ -259,7 +231,7 @@ export function KycStepUpload({
                   onClick={() => setThaidSubStage('liveness')} 
                   className="bg-orange-500 hover:bg-orange-600 text-white rounded-xl h-12 flex-1 font-black shadow-md shadow-orange-200/50 hover:scale-105 transition-all"
                 >
-                  🚀 {isTh ? 'ถัดไป: อัปโหลดบัตรและสแกนหน้า →' : 'Next: Upload ID & Face Scan →'}
+                  🚀 {isTh ? 'ถัดไป: อัปโหลดบัตรประชาชน →' : 'Next: Upload ID Card →'}
                 </Button>
               </div>
             </div>
@@ -272,8 +244,8 @@ export function KycStepUpload({
                     <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
                     <p className="text-xs text-emerald-800 font-bold leading-relaxed">
                       {isTh 
-                        ? 'เชื่อมต่อแอป ThaID สำเร็จแล้ว! กรุณายืนยันข้อมูลอัตลักษณ์เพิ่มเติม (ID Card + Liveness Check) ด้านล่าง' 
-                        : 'ThaID connection authorized! Please complete ID Card & Liveness verification below.'}
+                        ? 'เชื่อมต่อแอป ThaID สำเร็จแล้ว! กรุณายืนยันข้อมูลเพิ่มเติม (ID Card) ด้านล่าง' 
+                        : 'ThaID connection authorized! Please complete ID Card verification below.'}
                     </p>
                   </div>
 
@@ -351,8 +323,8 @@ export function KycStepUpload({
                       disabled={idCardUploading}
                       className="bg-orange-500 hover:bg-orange-600 text-white rounded-xl h-11 flex-1 font-black shadow-md shadow-orange-200/50 flex items-center justify-center gap-1.5"
                     >
-                      <Camera className="w-4 h-4 animate-pulse" />
-                      {isTh ? 'เริ่มสแกนใบหน้า' : 'Start Face Scan'}
+                      <CheckCircle2 className="w-4 h-4" />
+                      {isTh ? 'ตรวจสอบข้อมูล' : 'Verify Info'}
                     </Button>
                   </div>
                 </div>
@@ -362,17 +334,14 @@ export function KycStepUpload({
                 <div className="flex flex-col items-center justify-center space-y-6 text-center p-6 bg-slate-50/50 border border-slate-100 rounded-3xl w-full">
                   <div className="relative w-20 h-20 rounded-full bg-orange-50 flex items-center justify-center border border-orange-100 shadow-inner mx-auto">
                     {nfcState === 'scanning_mrz' && <Scan className="w-10 h-10 text-orange-500 animate-pulse" />}
-                    {nfcState === 'liveness' && <Camera className="w-10 h-10 text-orange-500 animate-bounce" />}
                   </div>
 
                   <div className="space-y-2 w-full max-w-xs mx-auto">
                     <h4 className="font-black text-slate-800 text-sm">
-                      {nfcState === 'scanning_mrz' && (isTh ? 'ขั้นตอนที่ 1/2: ตรวจสอบข้อมูลบัตรประชาชน...' : 'Step 1/2: Verifying ID Card Info...')}
-                      {nfcState === 'liveness' && (isTh ? 'ขั้นตอนที่ 2/2: ตรวจจับใบหน้าจริง (Liveness Scan)...' : 'Step 2/2: Liveness Face Check...')}
+                      {nfcState === 'scanning_mrz' && (isTh ? 'ขั้นตอนที่ 1/1: ตรวจสอบข้อมูลบัตรประชาชน...' : 'Step 1/1: Verifying ID Card Info...')}
                     </h4>
                     <p className="text-[10px] text-slate-400 font-bold">
                       {nfcState === 'scanning_mrz' && (isTh ? 'กรุณารอตรวจสอบข้อมูลหน้าบัตรสักครู่' : 'Matching OCR details from card image.')}
-                      {nfcState === 'liveness' && (isTh ? 'กรุณามองกล้องและกระพริบตาเพื่อเปรียบเทียบใบหน้า' : 'Look straight and blink to verify.')}
                     </p>
                     <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden mt-3 shadow-inner">
                       <div className="bg-orange-500 h-full rounded-full transition-all duration-300 shadow" style={{ width: `${nfcProgress}%` }} />
@@ -390,14 +359,13 @@ export function KycStepUpload({
                     <h4 className="font-black text-gray-900 text-base">{isTh ? 'ยืนยันตัวตนสำเร็จ!' : 'Verification Success!'}</h4>
                     <p className="text-[11px] text-slate-500 font-bold max-w-sm leading-relaxed mx-auto">
                       {isTh 
-                        ? ` ThaID และข้อมูลชีวมาตรใบหน้าของ ${kycFullName} ได้รับการจับคู่ถูกต้อง 98.8% ตรงกัน`
-                        : `ThaID and biometric face profile for ${kycFullName} successfully matched at 98.8% match.`}
+                        ? `ThaID และข้อมูลบัตรประชาชนของ ${kycFullName} ได้รับการตรวจสอบถูกต้องเรียบร้อย`
+                        : `ThaID and ID card details for ${kycFullName} successfully verified.`}
                     </p>
                   </div>
 
                   <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 w-full text-left space-y-1 font-mono text-[10px] text-slate-500">
                     <p>• DOPA OCR AUTH: VERIFIED (ThaID)</p>
-                    <p>• LIVENESS SCORE: 98.8% MATCH</p>
                     <p>• STATUS: VERIFIED</p>
                   </div>
 
@@ -507,8 +475,8 @@ export function KycStepUpload({
                     <h4 className="font-black text-gray-900 text-base">{isTh ? 'คำขอกำลังรอการอนุมัติบนแอปธนาคาร' : 'Pending Authorization on Bank App'}</h4>
                     <p className="text-[11px] text-gray-500 font-bold max-w-sm">
                       {isTh 
-                        ? `ระบบส่งแจ้งเตือนการยืนยันตัวตนความปลอดภัยระดับชาติ (NDID) ไปยังแอปพลิเคชัน ${bankOptions.find(b => b.id === selectedBank)?.name} บนโทรศัพท์ของท่านแล้ว กรุณาเปิดแอปเพื่อกดยืนยันใบหน้า`
-                        : `We sent an NDID request to your banking app. Open the app to confirm your digital identity and face scan.`}
+                        ? `ระบบส่งแจ้งเตือนการยืนยันตัวตนความปลอดภัยระดับชาติ (NDID) ไปยังแอปพลิเคชัน ${bankOptions.find(b => b.id === selectedBank)?.name} บนโทรศัพท์ของท่านแล้ว กรุณาเปิดแอปเพื่อกดยืนยันตัวตน`
+                        : `We sent an NDID request to your banking app. Open the app to confirm your digital identity.`}
                     </p>
                   </div>
 
@@ -524,7 +492,7 @@ export function KycStepUpload({
                       onClick={() => setNdidSubStage('liveness')}
                       className="bg-green-600 hover:bg-green-700 text-white rounded-xl h-12 flex-1 font-black shadow-md shadow-green-100 hover:scale-105 transition-all flex items-center justify-center gap-1.5"
                     >
-                      <CheckCircle2 className="w-4 h-4" /> {isTh ? 'ถัดไป: อัปโหลดบัตรและสแกนหน้า →' : 'Next: Upload ID & Face Scan →'}
+                      <CheckCircle2 className="w-4 h-4" /> {isTh ? 'ถัดไป: อัปโหลดบัตรประชาชน →' : 'Next: Upload ID Card →'}
                     </Button>
                   </div>
                 </div>
@@ -539,8 +507,8 @@ export function KycStepUpload({
                     <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
                     <p className="text-xs text-emerald-800 font-bold leading-relaxed">
                       {isTh 
-                        ? 'ได้รับการอนุมัติคำขอ NDID จากธนาคารแล้ว! กรุณายืนยันเอกสารและข้อมูลใบหน้าเพิ่มเติมเพื่อเสร็จสิ้นขั้นตอน' 
-                        : 'NDID app request approved! Please confirm ID Card & Liveness verification below.'}
+                        ? 'ได้รับการอนุมัติคำขอ NDID จากธนาคารแล้ว! กรุณายืนยันเอกสารเพิ่มเติมเพื่อเสร็จสิ้นขั้นตอน' 
+                        : 'NDID app request approved! Please confirm ID Card verification below.'}
                     </p>
                   </div>
 
@@ -618,8 +586,8 @@ export function KycStepUpload({
                       disabled={idCardUploading}
                       className="bg-orange-500 hover:bg-orange-600 text-white rounded-xl h-11 flex-1 font-black shadow-md shadow-orange-200/50 flex items-center justify-center gap-1.5"
                     >
-                      <Camera className="w-4 h-4 animate-pulse" />
-                      {isTh ? 'เริ่มสแกนใบหน้า' : 'Start Face Scan'}
+                      <CheckCircle2 className="w-4 h-4" />
+                      {isTh ? 'ตรวจสอบข้อมูล' : 'Verify Info'}
                     </Button>
                   </div>
                 </div>
@@ -657,14 +625,13 @@ export function KycStepUpload({
                     <h4 className="font-black text-gray-900 text-base">{isTh ? 'ยืนยันตัวตนสำเร็จ!' : 'Verification Success!'}</h4>
                     <p className="text-[11px] text-slate-500 font-bold max-w-sm leading-relaxed mx-auto">
                       {isTh 
-                        ? ` ยืนยันผ่านธนาคาร NDID และตรวจสอบใบหน้าของ ${kycFullName} เรียบร้อยแล้ว`
-                        : `NDID profile and face biometric verify for ${kycFullName} passed successfully.`}
+                        ? `ยืนยันผ่านธนาคาร NDID ของ ${kycFullName} เรียบร้อยแล้ว`
+                        : `NDID profile verified for ${kycFullName} successfully.`}
                     </p>
                   </div>
 
                   <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 w-full text-left space-y-1 font-mono text-[10px] text-slate-500">
                     <p>• NDID STATUS: VERIFIED</p>
-                    <p>• BIOMETRIC MATCH SCORE: 98.8%</p>
                     <p>• STATUS: SUCCESS</p>
                   </div>
 
@@ -767,31 +734,28 @@ export function KycStepUpload({
             </div>
           )}
 
-          {nfcState !== 'idle' && nfcState !== 'success' && (
-            <div className="flex flex-col items-center justify-center space-y-6 text-center p-6 bg-slate-50/50 border border-slate-100 rounded-3xl">
-              <div className="relative w-20 h-20 rounded-full bg-orange-50 flex items-center justify-center border border-orange-100 shadow-inner">
-                {nfcState === 'scanning_mrz' && <Scan className="w-10 h-10 text-orange-500 animate-pulse" />}
-                {nfcState === 'connecting_nfc' && <Rss className="w-10 h-10 text-orange-600 animate-spin" />}
-                {nfcState === 'liveness' && <Fingerprint className="w-10 h-10 text-orange-500 animate-bounce" />}
-              </div>
+              {nfcState !== 'idle' && nfcState !== 'success' && (
+                <div className="flex flex-col items-center justify-center space-y-6 text-center p-6 bg-slate-50/50 border border-slate-100 rounded-3xl w-full">
+                  <div className="relative w-20 h-20 rounded-full bg-orange-50 flex items-center justify-center border border-orange-100 shadow-inner mx-auto">
+                    {nfcState === 'scanning_mrz' && <Scan className="w-10 h-10 text-orange-500 animate-pulse" />}
+                    {nfcState === 'connecting_nfc' && <Rss className="w-10 h-10 text-orange-600 animate-spin" />}
+                  </div>
 
-              <div className="space-y-2 w-full max-w-xs">
-                <h4 className="font-black text-slate-800 text-sm">
-                  {nfcState === 'scanning_mrz' && (isTh ? 'ขั้นตอนที่ 1/3: สแกน MRZ ด้วยกล้อง...' : 'Step 1/3: Scanning MRZ via Camera...')}
-                  {nfcState === 'connecting_nfc' && (isTh ? 'ขั้นตอนที่ 2/3: เชื่อมต่อชิป NFC ของพาสปอร์ต...' : 'Step 2/3: Reading Passport NFC Chip...')}
-                  {nfcState === 'liveness' && (isTh ? 'ขั้นตอนที่ 3/3: เปรียบเทียบภาพชีวมาตรใบหน้า...' : 'Step 3/3: Checking Face Liveness...')}
-                </h4>
-                <p className="text-[10px] text-slate-400 font-bold">
-                  {nfcState === 'scanning_mrz' && (isTh ? 'กรุณาวางพาสปอร์ตให้อยู่ในกรอบสแกน' : 'Please keep your passport within the camera frame.')}
-                  {nfcState === 'connecting_nfc' && (isTh ? 'กรุณาแตะพาสปอร์ตไว้ที่ด้านหลังโทรศัพท์มือถือ' : 'Place passport flat against the back of your mobile device.')}
-                  {nfcState === 'liveness' && (isTh ? 'กรุณามองตรงไปที่กล้องเซลฟี่เพื่อจับคู่ใบหน้า' : 'Please look straight into the camera to match portrait.')}
-                </p>
-                <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden mt-3 shadow-inner">
-                  <div className="bg-orange-500 h-full rounded-full transition-all duration-300 shadow" style={{ width: `${nfcProgress}%` }} />
+                  <div className="space-y-2 w-full max-w-xs mx-auto">
+                    <h4 className="font-black text-slate-800 text-sm">
+                      {nfcState === 'scanning_mrz' && (isTh ? 'ขั้นตอนที่ 1/2: สแกน MRZ ด้วยกล้อง...' : 'Step 1/2: Scanning MRZ via Camera...')}
+                      {nfcState === 'connecting_nfc' && (isTh ? 'ขั้นตอนที่ 2/2: เชื่อมต่อชิป NFC ของพาสปอร์ต...' : 'Step 2/2: Reading Passport NFC Chip...')}
+                    </h4>
+                    <p className="text-[10px] text-slate-400 font-bold">
+                      {nfcState === 'scanning_mrz' && (isTh ? 'กรุณาวางพาสปอร์ตให้อยู่ในกรอบสแกน' : 'Please keep your passport within the camera frame.')}
+                      {nfcState === 'connecting_nfc' && (isTh ? 'กรุณาแตะพาสปอร์ตไว้ที่ด้านหลังโทรศัพท์มือถือ' : 'Place passport flat against the back of your mobile device.')}
+                    </p>
+                    <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden mt-3 shadow-inner">
+                      <div className="bg-orange-500 h-full rounded-full transition-all duration-300 shadow" style={{ width: `${nfcProgress}%` }} />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          )}
+              )}
 
           {nfcState === 'success' && (
             <div className="flex flex-col items-center justify-center space-y-5 text-center p-4">
@@ -802,15 +766,14 @@ export function KycStepUpload({
                 <h4 className="font-black text-gray-900 text-base">{isTh ? 'ยืนยันตัวตนหนังสือเดินทางผ่าน NFC สำเร็จ!' : 'NFC Verification Success!'}</h4>
                 <p className="text-[11px] text-slate-500 font-bold max-w-sm leading-relaxed">
                   {isTh 
-                    ? `พาสปอร์ตหมายเลข ${passportNo.toUpperCase()} ของประเทศ ${nationality} ได้รับการเข้ารหัสความปลอดภัยและการจับคู่ใบหน้า 99.2% ถูกต้องตรงกัน`
-                    : `Passport ${passportNo.toUpperCase()} issued by ${nationality} verified. Digital credentials and selfie matching completed successfully.`}
+                    ? `พาสปอร์ตหมายเลข ${passportNo.toUpperCase()} ของประเทศ ${nationality} ได้รับการตรวจสอบและถอดรหัสความปลอดภัยเรียบร้อย`
+                    : `Passport ${passportNo.toUpperCase()} issued by ${nationality} verified successfully.`}
                 </p>
               </div>
 
               <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 w-full text-left space-y-1 font-mono text-[10px] text-slate-500">
                 <p>• ICAO 9303 SIGNATURE: VERIFIED</p>
                 <p>• CHIP CRYPTOGRAPHY: PASS (Active Auth)</p>
-                <p>• LIVENESS ASSESSMENT: 99.2% FACE MATCH</p>
               </div>
 
               <div className="w-full flex gap-3 pt-6 border-t border-gray-100">
