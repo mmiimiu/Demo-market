@@ -41,67 +41,61 @@ function ContractCard({ c, onClick }: { c: Contract; onClick: () => void }) {
   return (
     <div 
       onClick={onClick}
-      className="w-full bg-white border border-gray-200 hover:border-blue-400 rounded-2xl p-5 shadow-xs hover:shadow-md transition-all cursor-pointer group space-y-4"
+      className="w-full bg-white border border-gray-200 hover:border-blue-400 rounded-xl p-3 md:py-3 md:px-4 shadow-xs hover:shadow-md transition-all cursor-pointer group flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs"
     >
-      {/* Zone & Unit header */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 pb-3">
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] font-black text-blue-700 bg-blue-50 border border-blue-100 px-2.5 py-1 rounded-lg flex items-center gap-1">
-            <MapPin className="w-3 h-3 text-blue-600" />
+      {/* Left section: Name, Zone, Unit */}
+      <div className="flex-1 min-w-0 space-y-1">
+        <div className="flex items-center flex-wrap gap-1.5">
+          <span className="text-[10px] font-black text-blue-700 bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded-md flex items-center gap-0.5">
+            <MapPin className="w-2.5 h-2.5 text-blue-600" />
             {c.zone || 'ทุกโซน'}
           </span>
           {c.unitNo && (
-            <span className="text-[11px] font-black text-gray-700 bg-gray-100 border border-gray-200 px-2.5 py-1 rounded-lg">
+            <span className="text-[10px] font-black text-gray-700 bg-gray-100 border border-gray-200 px-1.5 py-0.5 rounded-md">
               {c.unitNo}
             </span>
           )}
-        </div>
-        <div className="flex items-center gap-2">
-          <span className={`text-[11px] font-black px-3 py-1 rounded-full border flex items-center gap-1.5 ${badge.bg} ${badge.text} ${badge.border}`}>
-            <Icon className="w-3.5 h-3.5" />
+          <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border flex items-center gap-1 ${badge.bg} ${badge.text} ${badge.border}`}>
+            <Icon className="w-3 h-3" />
             {STATUS_LABEL[c.status]}
           </span>
-          <span className="text-[11px] font-black text-gray-500 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full">
+        </div>
+        <div>
+          <h4 className="font-black text-gray-900 text-sm group-hover:text-blue-600 transition-colors truncate">
+            {c.propertyName}
+          </h4>
+          <p className="text-[10px] text-gray-400 font-medium truncate mt-0.5">
+            📍 {c.propertyAddress}
+          </p>
+        </div>
+      </div>
+
+      {/* Center section: Parties (Owner & Tenant) */}
+      <div className="flex flex-row md:flex-col md:justify-center gap-x-4 gap-y-0.5 border-t md:border-t-0 pt-2 md:pt-0 border-gray-100 min-w-[180px]">
+        <div className="flex items-center gap-1 truncate text-[11px]">
+          <span className="text-[10px] font-bold text-gray-400 uppercase">เจ้าของ:</span>
+          <span className="font-bold text-gray-700 truncate">{c.ownerName || '-'}</span>
+        </div>
+        <div className="flex items-center gap-1 truncate text-[11px]">
+          <span className="text-[10px] font-bold text-gray-400 uppercase">ผู้เช่า:</span>
+          <span className="font-bold text-gray-700 truncate">{c.tenantName || '-'}</span>
+        </div>
+      </div>
+
+      {/* Right section: Rent, Dates, Signatures */}
+      <div className="flex items-center justify-between md:justify-end gap-4 border-t md:border-t-0 pt-2 md:pt-0 border-gray-100 min-w-[220px]">
+        <div className="text-left md:text-right">
+          <div className="font-black text-blue-700 text-xs">฿{c.rentAmount.toLocaleString()} /ด.</div>
+          <div className="text-[9px] font-medium text-gray-400 mt-0.5">{c.startDate} ถึง {c.endDate}</div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-black text-gray-500 bg-gray-50 border border-gray-200 px-2 py-0.5 rounded-full whitespace-nowrap">
             ลายเซ็น {sigCount}/2
           </span>
+          <span className="text-[10px] font-black text-blue-600 group-hover:translate-x-0.5 transition-transform whitespace-nowrap">
+            เปิดดู →
+          </span>
         </div>
-      </div>
-
-      {/* Property Title & Address */}
-      <div>
-        <h4 className="font-black text-gray-900 text-base group-hover:text-blue-600 transition-colors">
-          {c.propertyName}
-        </h4>
-        <p className="text-xs text-gray-500 font-medium mt-1 truncate">
-          📍 {c.propertyAddress}
-        </p>
-      </div>
-
-      {/* Parties & Terms Info Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs">
-        <div>
-          <span className="text-[10px] font-bold text-gray-400 block uppercase">เจ้าของห้องพัก</span>
-          <span className="font-bold text-gray-800 truncate block">{c.ownerName || '-'}</span>
-        </div>
-        <div>
-          <span className="text-[10px] font-bold text-gray-400 block uppercase">ผู้เช่า</span>
-          <span className="font-bold text-gray-800 truncate block">{c.tenantName || '-'}</span>
-        </div>
-        <div>
-          <span className="text-[10px] font-bold text-gray-400 block uppercase">ค่าเช่า / เงินมัดจำ</span>
-          <span className="font-black text-blue-700 block">฿{c.rentAmount.toLocaleString()} /ด.</span>
-        </div>
-        <div>
-          <span className="text-[10px] font-bold text-gray-400 block uppercase">ระยะเวลาสัญญา</span>
-          <span className="font-bold text-gray-700 block">{c.startDate} ถึง {c.endDate}</span>
-        </div>
-      </div>
-
-      {/* Action Footer */}
-      <div className="flex justify-end pt-1">
-        <span className="text-xs font-black text-blue-600 group-hover:translate-x-1 transition-transform flex items-center gap-1">
-          👁️ เปิดดูและแก้ไขเอกสารฉบับนี้ →
-        </span>
       </div>
     </div>
   );
