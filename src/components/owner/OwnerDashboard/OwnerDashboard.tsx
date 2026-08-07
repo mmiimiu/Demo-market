@@ -37,6 +37,7 @@ import { OwnerDashboardHeader } from './OwnerDashboardHeader';
 import { OwnerDashboardContent } from './OwnerDashboardContent';
 import { OwnerDashboardModals } from './OwnerDashboardModals';
 import { useOwnerDashboard } from './hooks/useOwnerDashboard';
+import { TabContracts } from '@/components/contract/ContractSystem/TabContracts';
 
 export function OwnerDashboard({ lang }: { lang: 'th' | 'en' | 'cn' }) {
   const t = translations[lang] || translations.th;

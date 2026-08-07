@@ -91,6 +91,7 @@ export default function PostListingPage() {
   const isTh = lang === 'th';
   const storedRole = typeof window !== 'undefined' ? localStorage.getItem('primerent_user_role') : null;
   const isLandlordRole = storedRole === 'owner' || storedRole === 'landlord';
+  const isVerified = kycStatus === 'verified';
   const canPost = isVerified || isLandlordRole;
 
   return (
