@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Language, UserRole } from '@/lib/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DelegationsTab } from '../Delegations/DelegationsTab';
-import { ContractManager } from '@/components/shared/ContractManager';
+import { TabContracts } from '@/components/contract/ContractSystem/TabContracts';
 import { FileText, Briefcase } from 'lucide-react';
 
 interface ContractsTabProps {
@@ -39,7 +39,7 @@ export const ContractsTab: React.FC<ContractsTabProps> = ({ lang, currentRole, c
 
       {!isAgent ? (
         <div>
-          <ContractManager contractId="mock_ctr_A1204" lang={lang} forceRole={currentRole as any} />
+          <TabContracts userRole={currentRole} />
         </div>
       ) : (
         <Tabs value={activeSubTab} onValueChange={setActiveSubTab} className="w-full">
@@ -55,7 +55,7 @@ export const ContractsTab: React.FC<ContractsTabProps> = ({ lang, currentRole, c
           </TabsList>
           
           <TabsContent value="rental" className="mt-0">
-            <ContractManager contractId="mock_ctr_A1204" lang={lang} forceRole={currentRole as any} />
+            <TabContracts userRole={currentRole} />
           </TabsContent>
           
           <TabsContent value="delegation" className="mt-0">
