@@ -39,6 +39,42 @@ export function AgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' | 'cn'
   // State for Find Jobs (Tab 1)
   const [interestedJobs, setInterestedJobs] = useState<Record<string, boolean>>({});
   const [toastMessage, setToastMessage] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [findJobs, setFindJobs] = useState([
+    {
+      id: 'job-1',
+      project: 'คอนโด XT Phayathai',
+      details: 'ต้องการคนเปิดห้องให้ลูกค้าดู (มีกุญแจฝากที่นิติ)',
+      urgency: 'ด่วนมาก',
+      poster: 'เอเจนต์สมชาย',
+      timeAgo: '2 นาทีที่แล้ว',
+      distance: '1.2 km',
+      time: 'วันนี้ 14:00 น.',
+      comShare: '10%'
+    },
+    {
+      id: 'job-2',
+      project: 'Noble Play',
+      details: 'ต้องการคนไปช่วยตรวจเช็คสภาพห้องเช่าหลังผู้เช่าย้ายออก',
+      urgency: 'ปกติ',
+      poster: 'เอเจนต์มยุรี',
+      timeAgo: '15 นาทีที่แล้ว',
+      distance: '2.5 km',
+      time: 'พรุ่งนี้ 10:00 น.',
+      comShare: '15%'
+    },
+    {
+      id: 'job-3',
+      project: 'Life One Wireless',
+      details: 'รับเคสพาผู้เช่าต่างชาติเดินดูส่วนกลางและสิ่งอำนวยความสะดวก',
+      urgency: 'ด่วน',
+      poster: 'เอเจนต์วิชัย',
+      timeAgo: '1 ชั่วโมงที่แล้ว',
+      distance: '3.1 km',
+      time: 'วันนี้ 17:30 น.',
+      comShare: '12%'
+    }
+  ]);
 
   // State for Post Jobs (Tab 2)
   const [isPosting, setIsPosting] = useState(false);
@@ -216,47 +252,56 @@ export function AgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' | 'cn'
                 <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input 
                   type="text" 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="ค้นหาหรือปักหมุดทำเล..." 
                   className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all"
                 />
               </div>
             </div>
 
-            <div className={`p-5 border ${interestedJobs['job-1'] ? 'border-gray-200 bg-gray-50' : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-md'} transition-all rounded-xl flex flex-col sm:flex-row justify-between gap-6 group relative overflow-hidden`}>
-              {!interestedJobs['job-1'] && <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-500"></div>}
-              <div className="pl-2 opacity-100">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="bg-red-50 text-red-600 text-xs font-bold px-2 py-0.5 rounded uppercase tracking-wider border border-red-100">ด่วนมาก</span>
-                  <span className="text-sm text-gray-500">โพสต์โดย เอเจนต์สมชาย • 2 นาทีที่แล้ว</span>
+            {findJobs
+              .filter(job => 
+                job.project.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                job.details.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+              .map(job => (
+                <div key={job.id} className={`p-5 border ${interestedJobs[job.id] ? 'border-gray-200 bg-gray-50' : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-md'} transition-all rounded-xl flex flex-col sm:flex-row justify-between gap-6 group relative overflow-hidden`}>
+                  {!interestedJobs[job.id] && <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-500"></div>}
+                  <div className="pl-2 opacity-100">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="bg-red-50 text-red-600 text-xs font-bold px-2 py-0.5 rounded uppercase tracking-wider border border-red-100">{job.urgency}</span>
+                      <span className="text-sm text-gray-500">โพสต์โดย {job.poster} • {job.timeAgo}</span>
+                    </div>
+                    <h3 className={`font-bold text-lg ${interestedJobs[job.id] ? 'text-gray-600' : 'text-gray-900 group-hover:text-blue-600'} transition-colors`}>{job.project}</h3>
+                    <p className="text-gray-600 mt-1 mb-3 text-sm">{job.details}</p>
+                    <div className="flex flex-wrap gap-3 text-sm">
+                      <span className="flex items-center gap-1.5 text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded-md">
+                        <MapPin className="w-4 h-4" /> {job.distance}
+                      </span>
+                      <span className="flex items-center gap-1.5 text-gray-600 bg-gray-50 px-2 py-1 rounded-md">
+                        <Clock className="w-4 h-4" /> {job.time}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex sm:flex-col justify-end gap-3 sm:min-w-[140px] shrink-0">
+                    <div className="text-left sm:text-right flex-1 sm:flex-none">
+                      <div className="text-xs text-gray-500 font-medium">ส่วนแบ่งของคุณ (Co-Agent)</div>
+                      <div className={`text-2xl font-black ${interestedJobs[job.id] ? 'text-gray-500' : 'text-blue-600'}`}>{job.comShare}</div>
+                      <div className="text-[10px] text-gray-400 font-medium">🔒 แสดงเฉพาะส่วนของคุณ</div>
+                    </div>
+                    {interestedJobs[job.id] ? (
+                      <button disabled className="flex-1 sm:flex-none px-4 py-2.5 bg-gray-200 text-gray-500 rounded-lg text-sm font-bold shadow-inner cursor-not-allowed flex items-center justify-center gap-2">
+                        <Clock className="w-4 h-4" /> รอการตอบรับ
+                      </button>
+                    ) : (
+                      <button onClick={() => handleInterest(job.id)} className="flex-1 sm:flex-none px-4 py-2.5 bg-blue-600 text-white hover:bg-blue-700 rounded-lg text-sm font-bold transition-all shadow-sm active:scale-95">
+                        สนใจรับงานนี้
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <h3 className={`font-bold text-lg ${interestedJobs['job-1'] ? 'text-gray-600' : 'text-gray-900 group-hover:text-blue-600'} transition-colors`}>คอนโด XT Phayathai</h3>
-                <p className="text-gray-600 mt-1 mb-3 text-sm">ต้องการคนเปิดห้องให้ลูกค้าดู (มีกุญแจฝากที่นิติ)</p>
-                <div className="flex flex-wrap gap-3 text-sm">
-                  <span className="flex items-center gap-1.5 text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded-md">
-                    <MapPin className="w-4 h-4" /> 1.2 km
-                  </span>
-                  <span className="flex items-center gap-1.5 text-gray-600 bg-gray-50 px-2 py-1 rounded-md">
-                    <Clock className="w-4 h-4" /> วันนี้ 14:00 น.
-                  </span>
-                </div>
-              </div>
-              <div className="flex sm:flex-col justify-end gap-3 sm:min-w-[140px] shrink-0">
-                <div className="text-left sm:text-right flex-1 sm:flex-none">
-                  <div className="text-xs text-gray-500 font-medium">ส่วนแบ่งของคุณ (Co-Agent)</div>
-                  <div className={`text-2xl font-black ${interestedJobs['job-1'] ? 'text-gray-500' : 'text-blue-600'}`}>10%</div>
-                  <div className="text-[10px] text-gray-400 font-medium">🔒 แสดงเฉพาะส่วนของคุณ</div>
-                </div>
-                {interestedJobs['job-1'] ? (
-                  <button disabled className="flex-1 sm:flex-none px-4 py-2.5 bg-gray-200 text-gray-500 rounded-lg text-sm font-bold shadow-inner cursor-not-allowed flex items-center justify-center gap-2">
-                    <Clock className="w-4 h-4" /> รอการตอบรับ
-                  </button>
-                ) : (
-                  <button onClick={() => handleInterest('job-1')} className="flex-1 sm:flex-none px-4 py-2.5 bg-blue-600 text-white hover:bg-blue-700 rounded-lg text-sm font-bold transition-all shadow-sm active:scale-95">
-                    สนใจรับงานนี้
-                  </button>
-                )}
-              </div>
-            </div>
+              ))}
           </div>
         )}
 
