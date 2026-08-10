@@ -31,9 +31,21 @@ function loadContracts(): Contract[] {
   try {
     const r = typeof window !== 'undefined' ? localStorage.getItem(CONTRACTS_STORAGE_KEY) : null;
     const list = r ? JSON.parse(r) as Contract[] : DEFAULT_MOCK_CONTRACTS;
-    return list.map(c => c.id === 'cnt-103' ? { ...c, status: 'draft', signatures: {} } : c);
+    return list.map(c => {
+      const orig = DEFAULT_MOCK_CONTRACTS.find(o => o.id === c.id);
+      if (orig) {
+        return {
+          ...c,
+          status: orig.status,
+          signatures: { ...orig.signatures },
+          hasAgent: orig.hasAgent,
+          agentName: orig.agentName,
+        };
+      }
+      return c;
+    });
   } catch {
-    return DEFAULT_MOCK_CONTRACTS.map(c => c.id === 'cnt-103' ? { ...c, status: 'draft', signatures: {} } : c);
+    return DEFAULT_MOCK_CONTRACTS;
   }
 }
 
