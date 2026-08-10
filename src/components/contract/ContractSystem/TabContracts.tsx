@@ -23,9 +23,10 @@ const STATUS_BADGE: Record<ContractStatus, { bg: string; text: string; border: s
 function loadContracts(): Contract[] {
   try {
     const r = localStorage.getItem(CONTRACTS_STORAGE_KEY);
-    return r ? JSON.parse(r) : DEFAULT_MOCK_CONTRACTS;
+    const list = r ? JSON.parse(r) as Contract[] : DEFAULT_MOCK_CONTRACTS;
+    return list.map(c => c.id === 'cnt-103' ? { ...c, status: 'draft', signatures: {} } : c);
   } catch {
-    return DEFAULT_MOCK_CONTRACTS;
+    return DEFAULT_MOCK_CONTRACTS.map(c => c.id === 'cnt-103' ? { ...c, status: 'draft', signatures: {} } : c);
   }
 }
 
@@ -33,7 +34,8 @@ function saveContracts(c: Contract[]) {
   localStorage.setItem(CONTRACTS_STORAGE_KEY, JSON.stringify(c));
 }
 
-function ContractCard({ c, onClick }: { c: Contract; onClick: () => void }) {
+function ContractCard({ c, onClick, userRole }: { c: Contract; onClick: () => void; userRole?: UserRole }) {
+  const requiredSigs = c.hasAgent ? 3 : 2;
   const sigCount = Object.values(c.signatures).filter(Boolean).length;
   const badge = STATUS_BADGE[c.status] || STATUS_BADGE.draft;
   const Icon = badge.icon;
@@ -55,6 +57,18 @@ function ContractCard({ c, onClick }: { c: Contract; onClick: () => void }) {
               {c.unitNo}
             </span>
           )}
+          
+          {/* Agent-specific tag to distinguish listing source */}
+          {userRole === 'agent' && c.agentType && (
+            <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-md border ${
+              c.agentType === 'direct' 
+                ? 'bg-teal-50 text-teal-700 border-teal-200' 
+                : 'bg-purple-50 text-purple-700 border-purple-200'
+            }`}>
+              {c.agentType === 'direct' ? '🏷️ ปล่อยเช่าตรง' : '🤝 ปล่อยต่อจากเจ้าของ'}
+            </span>
+          )}
+
           <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border flex items-center gap-1 ${badge.bg} ${badge.text} ${badge.border}`}>
             <Icon className="w-3 h-3" />
             {STATUS_LABEL[c.status]}
@@ -90,7 +104,7 @@ function ContractCard({ c, onClick }: { c: Contract; onClick: () => void }) {
         </div>
         <div className="flex items-center gap-2">
           <span className="text-[10px] font-black text-gray-500 bg-gray-50 border border-gray-200 px-2 py-0.5 rounded-full whitespace-nowrap">
-            ลายเซ็น {sigCount}/2
+            ลายเซ็น {sigCount}/{requiredSigs}
           </span>
           <span className="text-[10px] font-black text-blue-600 group-hover:translate-x-0.5 transition-transform whitespace-nowrap">
             เปิดดู →
@@ -100,6 +114,7 @@ function ContractCard({ c, onClick }: { c: Contract; onClick: () => void }) {
     </div>
   );
 }
+
 
 export function TabContracts({ userRole }: { userRole: UserRole }) {
   const [contracts, setContracts] = useState<Contract[]>(DEFAULT_MOCK_CONTRACTS);
@@ -281,7 +296,7 @@ export function TabContracts({ userRole }: { userRole: UserRole }) {
           ) : (
             <div className="space-y-4">
               {filteredContracts.map(c => (
-                <ContractCard key={c.id} c={c} onClick={() => setSelectedId(c.id)} />
+                <ContractCard key={c.id} c={c} onClick={() => setSelectedId(c.id)} userRole={userRole} />
               ))}
             </div>
           )}

@@ -41,7 +41,7 @@ export function ProfileSidebar({
     ...(currentRole !== 'admin' ? [
       { id: 'upgrade', label: lang === 'th' ? 'อัปเกรดบัญชี (KYC)' : 'Upgrade Partner', icon: Sparkles },
     ] : []),
-    ...((currentRole === 'user' || currentRole === 'renter') ? [
+    ...(currentRole === 'renter' ? [
       { id: 'contracts', label: lang === 'th' ? 'สัญญาของฉัน' : 'My Contracts', icon: FileText },
       { id: 'tenant_screening', label: lang === 'th' ? 'สมัครการตรวจสอบผู้เช่า' : 'Tenant Screening', icon: Star }
     ] : []),

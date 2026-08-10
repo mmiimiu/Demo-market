@@ -3,6 +3,7 @@ import { Language, UserRole } from '@/lib/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DelegationsTab } from '../Delegations/DelegationsTab';
 import { TabContracts } from '@/components/contract/ContractSystem/TabContracts';
+import { RenterContractsTab } from './RenterContractsTab';
 import { FileText, Briefcase } from 'lucide-react';
 
 interface ContractsTabProps {
@@ -13,6 +14,7 @@ interface ContractsTabProps {
 
 export const ContractsTab: React.FC<ContractsTabProps> = ({ lang, currentRole, currentUser }) => {
   const isAgent = currentRole === 'agent';
+  const isRenter = currentRole === 'renter';
   const [activeSubTab, setActiveSubTab] = useState('rental');
 
   return (
@@ -37,7 +39,9 @@ export const ContractsTab: React.FC<ContractsTabProps> = ({ lang, currentRole, c
         </a>
       </div>
 
-      {!isAgent ? (
+      {isRenter ? (
+        <RenterContractsTab currentUser={currentUser} lang={lang} />
+      ) : !isAgent ? (
         <div>
           <TabContracts userRole={currentRole} />
         </div>
