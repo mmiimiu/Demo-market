@@ -98,25 +98,71 @@ export function DashboardAnalytics() {
         </Card>
       </div>
 
-      {/* Escrow Pools */}
-      <Card className="border border-slate-200 rounded-2xl bg-white p-6 shadow-sm space-y-4">
-        <CardTitle className="text-sm font-black text-slate-800">💼 สรุปการฝากเงินของส่วนกลาง (System Escrow)</CardTitle>
-        <div className="space-y-3">
-          {[
-            { name: 'Pool 1: ค่ามัดจำสัญญา (โอนตรง)', sub: 'Owner handles deposit approval directly', amount: '฿480,000', color: 'bg-emerald-50 text-emerald-700 border-emerald-100' },
-            { name: 'Pool 2: ค่าเช่าล่วงหน้า (ระบบกลาง)', sub: 'Holds Website fee, Agent, and Co-Agent payouts', amount: '฿120,000', color: 'bg-indigo-50 text-indigo-700 border-indigo-100' },
-            { name: 'Pool 3: ค่าเช่ารายเดือน', sub: 'Processed through system invoice checks monthly', amount: '฿185,000', color: 'bg-slate-100 text-slate-700' },
-          ].map((pool, i) => (
-            <div key={i} className="flex items-center justify-between border-b last:border-b-0 pb-2 last:pb-0">
-              <div>
-                <p className="font-bold text-xs text-slate-800">{pool.name}</p>
-                <p className="text-[10px] text-slate-400">{pool.sub}</p>
+      {/* Escrow Pools & Expiry Alerts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Escrow Pools */}
+        <Card className="border border-slate-200 rounded-2xl bg-white p-6 shadow-sm space-y-4">
+          <CardTitle className="text-sm font-black text-slate-800">💼 สรุปการฝากเงินของส่วนกลาง (System Escrow)</CardTitle>
+          <div className="space-y-3">
+            {[
+              { name: 'Pool 1: ค่ามัดจำสัญญา (โอนตรง)', sub: 'Owner handles deposit approval directly', amount: '฿480,000', color: 'bg-emerald-50 text-emerald-700 border-emerald-100' },
+              { name: 'Pool 2: ค่าเช่าล่วงหน้า (ระบบกลาง)', sub: 'Holds Website fee, Agent, and Co-Agent payouts', amount: '฿120,000', color: 'bg-indigo-50 text-indigo-700 border-indigo-100' },
+              { name: 'Pool 3: ค่าเช่ารายเดือน', sub: 'Processed through system invoice checks monthly', amount: '฿185,000', color: 'bg-slate-100 text-slate-700' },
+            ].map((pool, i) => (
+              <div key={i} className="flex items-center justify-between border-b last:border-b-0 pb-2 last:pb-0">
+                <div>
+                  <p className="font-bold text-xs text-slate-800">{pool.name}</p>
+                  <p className="text-[10px] text-slate-400">{pool.sub}</p>
+                </div>
+                <Badge className={`${pool.color} border font-black`}>{pool.amount}</Badge>
               </div>
-              <Badge className={`${pool.color} border font-black`}>{pool.amount}</Badge>
-            </div>
-          ))}
-        </div>
-      </Card>
+            ))}
+          </div>
+        </Card>
+
+        {/* Expiry & Maintenance Alerts */}
+        <Card className="border border-slate-200 rounded-2xl bg-white p-6 shadow-sm space-y-4">
+          <div>
+            <CardTitle className="text-sm font-black text-slate-800 flex items-center gap-2">
+              <span className="text-lg">📢</span>
+              การแจ้งเตือนห้องพักใกล้หมดอายุ & ซ่อมบำรุง (System Alerts)
+            </CardTitle>
+            <p className="text-[10px] text-slate-400 font-semibold mt-0.5">
+              รวมรายการดูแลรักษาห้องพักทั้งหมดในระบบ (เรียงลำดับใกล้หมดอายุก่อน)
+            </p>
+          </div>
+          <div className="space-y-2.5 max-h-[220px] overflow-y-auto pr-1">
+            {[
+              { name: 'Ideo Mix Sukhumvit (ห้อง 102)', tenant: 'Somchai J.', agent: 'วรรณา สุขใจ', daysLeft: 15, expireDate: '19 ส.ค. 2026', curtainDate: '15 ส.ค. 2026', acDate: '20 ส.ค. 2026', rentDueDate: 'ทุกวันที่ 1', urgent: true },
+              { name: 'Life Asoke Hype (ห้อง 889)', tenant: 'Natthapong P.', agent: 'สมพงษ์ กล้าหาญ', daysLeft: 22, expireDate: '12 ส.ค. 2026', curtainDate: '10 ส.ค. 2026', acDate: '14 ส.ค. 2026', rentDueDate: 'ทุกวันที่ 10', urgent: true },
+              { name: 'The Base Park East (ห้อง 405)', tenant: 'Sarah J.', agent: 'วรรณา สุขใจ', daysLeft: 42, expireDate: '15 ก.ย. 2026', curtainDate: '1 ก.ย. 2026', acDate: '10 ก.ย. 2026', rentDueDate: 'ทุกวันที่ 5', urgent: false },
+              { name: 'Rhythm Ratchada (ห้อง 12)', tenant: 'Kittitat C.', agent: 'วาสนา มีสุข', daysLeft: 50, expireDate: '23 ก.ย. 2026', curtainDate: '10 ก.ย. 2026', acDate: '18 ก.ย. 2026', rentDueDate: 'ทุกวันที่ 1', urgent: false },
+              { name: 'Condo Asoke Place (ห้อง 1209)', tenant: 'Kittisak P.', agent: 'สมชาย นามดี', daysLeft: 88, expireDate: '30 ต.ค. 2026', curtainDate: '15 ต.ค. 2026', acDate: '25 ต.ค. 2026', rentDueDate: 'ทุกวันที่ 1', urgent: false },
+              { name: 'Whizdom 101 (ห้อง 2304)', tenant: 'David L.', agent: 'สมชาย นามดี', daysLeft: 210, expireDate: '28 ก.พ. 2027', curtainDate: '15 ก.พ. 2027', acDate: '20 ก.พ. 2027', rentDueDate: 'ทุกวันที่ 10', urgent: false }
+            ].sort((a, b) => a.daysLeft - b.daysLeft).map((c, i) => (
+              <div key={i} className={`p-2.5 border rounded-xl flex flex-col gap-1.5 transition-all text-left ${c.urgent ? 'bg-rose-50/40 border-rose-200' : 'bg-slate-50 border-slate-100 hover:bg-slate-100/40'}`}>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="font-black text-slate-800 text-xs">{c.name}</span>
+                      {c.urgent && <Badge className="bg-rose-500 text-white font-bold text-[8px] border-none px-1.5 py-0">หมดอายุเร็วๆ นี้</Badge>}
+                    </div>
+                    <span className="text-[10px] text-slate-500 font-bold block mt-0.5">ผู้เช่า: {c.tenant} · นายหน้า: {c.agent}</span>
+                  </div>
+                  <Badge variant={c.urgent ? "destructive" : "secondary"} className="font-black text-[9px] tracking-wide shrink-0">
+                    ⏳ เหลือ {c.daysLeft} วัน
+                  </Badge>
+                </div>
+                <div className="flex flex-wrap gap-1.5 text-[9.5px] font-bold border-t border-gray-100 border-dashed pt-1.5 mt-0.5">
+                  <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-lg border border-blue-100">🧺 ซักม่าน: {c.curtainDate}</span>
+                  <span className="bg-teal-50 text-teal-700 px-2 py-0.5 rounded-lg border border-teal-100">❄️ ล้างแอร์: {c.acDate}</span>
+                  <span className="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-lg border border-emerald-100">💰 ชำระเช่า: {c.rentDueDate}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
 
       {/* Agent Performance */}
       <Card className="border border-slate-200 rounded-2xl bg-white p-6 shadow-sm space-y-4">
