@@ -11,10 +11,6 @@ app.use(cors({
 
 app.use(express.json());
 
-// Root Endpoint
-app.get('/', (req, res) => {
-  res.json({ status: 'ok', message: 'Welcome to PrimeRent Backend API.' });
-});
 
 // Basic API Endpoint
 app.get('/api/health', (req, res) => {
@@ -24,6 +20,11 @@ app.get('/api/health', (req, res) => {
 // Mock endpoint for system test
 app.get('/api/contracts/test', (req, res) => {
   res.json({ message: 'Connected to external backend successfully' });
+});
+
+// Catch-all route to handle root (/) and any other unmatched routes
+app.get('*', (req, res) => {
+  res.json({ status: 'ok', message: 'Welcome to PrimeRent Backend API.', path: req.url });
 });
 
 // Export for Vercel Serverless
