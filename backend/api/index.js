@@ -11,6 +11,11 @@ app.use(cors({
 
 app.use(express.json());
 
+// Root Endpoint
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', message: 'Welcome to PrimeRent Backend API.' });
+});
+
 // Basic API Endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'PrimeRent Backend API is running smoothly.' });
