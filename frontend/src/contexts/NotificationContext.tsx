@@ -74,6 +74,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         message: 'ประกาศ "Sukhumvit Luxury Condo 2BR" ของคุณใกล้หมดอายุในอีก 7 วัน สามารถต่ออายุได้ผ่าน Line OA หรือหน้าเว็บในคลิกเดียว',
         read: false,
         timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
+        // action url uses /owner/dashboard — NavbarNotifications will remap to /agent/dashboard for agent role
         action: { label: 'ต่ออายุ 1-Click', url: '/owner/dashboard?tab=properties' }
       },
       {
@@ -83,6 +84,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         message: 'ประกาศ "เดอะ พาร์ค ชิดลม" ของคุณจะหมดอายุใน 1 วัน กรุณาต่ออายุผ่านหน้าเว็บทันที',
         read: false,
         timestamp: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
+        // action url uses /owner/dashboard — NavbarNotifications will remap to /agent/dashboard for agent role
         action: { label: 'ต่ออายุ 1-Click', url: '/owner/dashboard?tab=properties' }
       },
       {

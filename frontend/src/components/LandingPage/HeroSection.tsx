@@ -36,7 +36,7 @@ export default function HeroSection({ lang, activeTab, setActiveTab, searchQuery
       <div className="max-w-7xl mx-auto px-4 py-20 w-full relative z-10">
         <div className="flex flex-col items-center text-center gap-16">
           <div className="space-y-8 max-w-3xl flex flex-col items-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-blue-200/60 bg-white/70 backdrop-blur-sm shadow-sm hover:shadow-md transition-all cursor-default mx-auto">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-blue-200/60 bg-white/70 backdrop-blur-sm shadow-sm hover:shadow-md transition-all cursor-default mx-auto animate-float">
               <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
               <span className="text-blue-700 text-sm font-semibold">{text.hero.badge}</span>
               <Sparkles className="w-3.5 h-3.5 text-blue-500" />
@@ -84,14 +84,14 @@ export default function HeroSection({ lang, activeTab, setActiveTab, searchQuery
                 />
               </div>
               <Link href={`/listings${searchQuery ? `?q=${encodeURIComponent(searchQuery)}` : ""}`}>
-                <Button className="bg-[#E51D53] hover:bg-[#D41B4D] text-white rounded-full px-8 font-bold shadow-lg shadow-[#E51D53]/25 h-12 transition-all hover:scale-105">
+                <Button className="bg-[#E51D53] hover:bg-[#D41B4D] text-white rounded-full px-8 font-bold shadow-lg shadow-[#E51D53]/25 h-12 transition-all hover:scale-105 btn-pulse-glow">
                   <Search className="w-5 h-5 mr-2" strokeWidth={3} />
                   {text.hero.searchBtn}
                 </Button>
               </Link>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-2">
+            <div className="flex flex-wrap justify-center gap-2 stagger-children">
               {[
                 { label: '🐶 เลี้ยงสัตว์ได้', param: 'feature=pet' },
                 { label: '🚆 ติดรถไฟฟ้า', param: 'feature=bts_mrt' },
@@ -106,7 +106,7 @@ export default function HeroSection({ lang, activeTab, setActiveTab, searchQuery
               ))}
             </div>
 
-            <div className="inline-block rounded-3xl p-6 bg-white/80 backdrop-blur-md border border-slate-200/60 shadow-xl max-w-md w-full text-left mx-auto">
+            <div className="inline-block rounded-3xl p-6 bg-white/80 backdrop-blur-md border border-slate-200/60 shadow-xl max-w-md w-full text-left mx-auto animate-scale-in card-hover">
               <div className="flex items-start gap-3 mb-4">
                 <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center flex-shrink-0">
                   <Zap className="w-5 h-5 text-white" />

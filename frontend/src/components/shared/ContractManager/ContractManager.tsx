@@ -94,7 +94,7 @@ export function ContractManager({ contractId, lang, isCompact = false, forceRole
             {signingRole && (
               <div className="border-t pt-4 bg-blue-50/50 p-4 rounded-lg">
                 <h3 className="text-xs font-black text-gray-900 mb-3">ลงนามในฐานะ {signingRole === 'tenant' ? 'ผู้เช่า' : signingRole === 'owner' ? 'เจ้าของ' : 'ตัวแทน'}</h3>
-                <SignaturePad onSigned={setSignatureDataUrl} onClear={() => { setSignatureDataUrl(''); setHasSigned(false); }} hasSigned={hasSigned} lang={lang} />
+                <SignaturePad onSigned={(dataUrl) => { setSignatureDataUrl(dataUrl); setHasSigned(true); }} onClear={() => { setSignatureDataUrl(''); setHasSigned(false); }} hasSigned={hasSigned} lang={lang} />
                 <div className="flex gap-2 mt-3">
                   <Button onClick={() => handleSignSubmit(hasSigned, signatureDataUrl, signingRole, contractId, user, db, contract, setContract, setHasSigned, setSigningRole, setAuditLog, toast, lang)} disabled={!hasSigned} className="flex-1 bg-primary font-black text-xs h-8">ยืนยันลายเซ็น</Button>
                   <Button onClick={() => setSigningRole(null)} variant="outline" className="font-black text-xs h-8">ยกเลิก</Button>

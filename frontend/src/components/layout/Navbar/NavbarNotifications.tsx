@@ -84,10 +84,18 @@ export const NavbarNotifications: React.FC<NavbarNotificationsProps> = ({ lang }
 
     const localRole = typeof window !== 'undefined' ? localStorage.getItem('primerent_user_role') : null;
     const userRole = localRole || user?.role || 'tenant';
-    const isOwnerOrAgent = userRole === 'owner' || userRole === 'landlord' || userRole === 'agent';
+    const isOwner = userRole === 'owner' || userRole === 'landlord';
+    const isAgent = userRole === 'agent';
+    const isOwnerOrAgent = isOwner || isAgent;
 
+    // ✅ FIX: ถ้า notification มี action.url แต่เป็น /owner/dashboard และ role เป็น agent
+    // ให้ remap ไปที่ /agent/dashboard แทน ไม่งั้น agent จะถูก push ไป owner page
     if (notification.action?.url) {
-      router.push(notification.action.url);
+      let targetUrl = notification.action.url;
+      if (isAgent && targetUrl.startsWith('/owner/dashboard')) {
+        targetUrl = targetUrl.replace('/owner/dashboard', '/agent/dashboard');
+      }
+      router.push(targetUrl);
       return;
     }
     if (notification.action && typeof notification.action.onClick === 'function') {
@@ -109,25 +117,35 @@ export const NavbarNotifications: React.FC<NavbarNotificationsProps> = ({ lang }
     } else if (id === 'mock_line_chat_message') {
       router.push('/chat');
     } else if (id.startsWith('mock_appointment_')) {
-      if (isOwnerOrAgent) {
+      if (isAgent) {
+        router.push('/agent/dashboard');
+      } else if (isOwner) {
         router.push('/owner/dashboard?tab=properties');
       } else {
         router.push('/tenant/dashboard');
       }
     } else if (id === 'mock_contract_expiry_30_days') {
-      if (isOwnerOrAgent) {
+      if (isAgent) {
+        router.push('/agent/dashboard');
+      } else if (isOwner) {
         router.push('/owner/dashboard?tab=contracts');
       } else {
         router.push('/tenant/contract');
       }
     } else if (id === 'mock_monthly_invoice_alert') {
-      if (isOwnerOrAgent) {
+      if (isAgent) {
+        router.push('/agent/dashboard');
+      } else if (isOwner) {
         router.push('/owner/dashboard?tab=billing');
       } else {
         router.push('/tenant/billing');
       }
     } else if (id.startsWith('mock_expiry_')) {
-      router.push('/owner/dashboard?tab=properties');
+      if (isAgent) {
+        router.push('/agent/dashboard');
+      } else {
+        router.push('/owner/dashboard?tab=properties');
+      }
     }
   };
 
@@ -160,7 +178,12 @@ export const NavbarNotifications: React.FC<NavbarNotificationsProps> = ({ lang }
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center border border-gray-200 text-gray-400 hover:border-gray-300 hover:text-gray-600 transition-all rounded-lg sm:rounded-xl"
+        className={cn(
+          "relative w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center border text-gray-400 hover:text-gray-600 transition-all rounded-lg sm:rounded-xl",
+          isOpen
+            ? "border-blue-300 text-blue-600 bg-blue-50"
+            : "border-gray-200 hover:border-gray-300"
+        )}
       >
         <Bell className="w-4 h-4" />
         {unreadCount > 0 && (
@@ -179,7 +202,7 @@ export const NavbarNotifications: React.FC<NavbarNotificationsProps> = ({ lang }
           />
 
           {/* Dropdown */}
-          <div className="absolute right-[-60px] sm:right-0 top-full mt-2 w-[280px] sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="absolute right-[-60px] sm:right-0 top-full mt-2 w-[280px] sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-scale-in">
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50">
               <h3 className="font-black text-gray-900 text-sm">
@@ -209,9 +232,9 @@ export const NavbarNotifications: React.FC<NavbarNotificationsProps> = ({ lang }
                   <div
                     key={notification.id}
                     onClick={() => handleNotificationClick(notification)}
-                    className={cn(
-                      "px-4 py-3 border-b border-gray-50 cursor-pointer transition-colors hover:bg-gray-50",
-                      !notification.read && "bg-blue-50/50"
+                  className={cn(
+                      "px-4 py-3 border-b border-gray-50 cursor-pointer transition-all duration-200 group hover:bg-blue-50/60 hover:pl-5 active:bg-blue-100/50",
+                      !notification.read && "bg-blue-50/40 border-l-2 border-l-blue-400"
                     )}
                   >
                     <div className="flex items-start gap-3">
@@ -261,7 +284,12 @@ export const NavbarNotifications: React.FC<NavbarNotificationsProps> = ({ lang }
                   variant="ghost"
                   className="w-full h-9 text-xs font-bold text-gray-600 hover:text-gray-900"
                   onClick={() => {
-                    router.push('/agent/dashboard/jobs');
+                    const localRole = typeof window !== 'undefined' ? localStorage.getItem('primerent_user_role') : null;
+                    const userRole = localRole || 'renter';
+                    if (userRole === 'admin' || userRole === 'superadmin') router.push('/admin');
+                    else if (userRole === 'landlord' || userRole === 'owner') router.push('/owner/dashboard');
+                    else if (userRole === 'agent') router.push('/agent/dashboard');
+                    else router.push('/tenant/dashboard');
                     setIsOpen(false);
                   }}
                 >

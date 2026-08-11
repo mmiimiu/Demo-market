@@ -22,10 +22,10 @@ export default function StatsSection({ lang }: StatsSectionProps) {
   return (
     <section ref={ref} className="py-5 sm:py-10 bg-slate-50 border-y border-slate-100/50">
       <div className={`max-w-6xl mx-auto px-2 sm:px-4 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-        <div className="grid grid-cols-4 gap-2 sm:gap-6 lg:gap-12">
+        <div className="grid grid-cols-4 gap-2 sm:gap-6 lg:gap-12 stagger-children">
           {statsData.map((stat, i) => (
-            <div key={i} className="text-center group" style={{ transitionDelay: `${i * 100}ms` }}>
-              <div className={`inline-flex items-center justify-center w-6 h-6 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl ${stat.color} mb-1 sm:mb-3 mx-auto shadow-md shadow-blue-500/25 group-hover:scale-110 transition-transform duration-300`}>
+            <div key={i} className="text-center group" style={{ transitionDelay: `${i * 80}ms` }}>
+              <div className={`inline-flex items-center justify-center w-6 h-6 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl ${stat.color} mb-1 sm:mb-3 mx-auto shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300`}>
                 {stat.icon}
               </div>
               <div className="text-xs sm:text-xl lg:text-3xl font-bold text-slate-900 mb-0.5 sm:mb-2 group-hover:text-blue-600 transition-colors leading-[1.2] tracking-tight">{stat.value}</div>
