@@ -78,7 +78,13 @@ export function AgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' | 'cn'
 
   // State for Post Jobs (Tab 2)
   const [isPosting, setIsPosting] = useState(false);
-  const [postForm, setPostForm] = useState({ project: '', date: '', details: '', price: '', location: '' });
+  const [postForm, setPostForm] = useState({ 
+    project: 'คอนโด XT Phayathai', 
+    date: '2026-08-15T14:00', 
+    details: 'ต้องการคนพาผู้เช่าไปดูห้องพักและสิ่งอำนวยความสะดวกโครงการ (กุญแจฝากไว้ที่นิติบุคคล)', 
+    price: '800', 
+    location: 'พิกัด: 13.75254, 100.49401' 
+  });
   
   // State for Map
   const [isMapOpen, setIsMapOpen] = useState(false);

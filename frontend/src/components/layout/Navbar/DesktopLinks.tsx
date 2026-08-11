@@ -140,7 +140,7 @@ export const DesktopLinks: React.FC<DesktopLinksProps> = ({
                 isSolid ? "text-gray-600 hover:bg-blue-50 hover:text-blue-700" : "text-white/80 hover:text-white hover:bg-white/10"
               )}
             >
-              {t.how_it_works || "3 ขั้นตอนง่ายๆ"}
+              {t.how_it_works || "4 ขั้นตอนง่ายๆ"}
             </a>
             <button onClick={handlePostListingClick} className={navLink(isSolid)}>
               <PlusCircle className={navIcon} />{t.post || "ลงประกาศฟรี"}
