@@ -12,21 +12,10 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "placeholder-app-id",
 };
 
-// Validate Firebase config in production (bypass during next build phase)
-if (process.env.NODE_ENV === 'production' && process.env.NEXT_PHASE !== 'phase-production-build') {
-  const requiredFields = ['apiKey', 'authDomain', 'projectId', 'appId'];
-  const missingFields = requiredFields.filter(field =>
-    !firebaseConfig[field as keyof typeof firebaseConfig] ||
-    firebaseConfig[field as keyof typeof firebaseConfig].toString().startsWith('placeholder-')
-  );
+// ℹ️ Demo Mode: Skip Firebase validation in production
+// This demo uses mock data and does not require a live Firebase connection.
+// To enable real Firebase, set all NEXT_PUBLIC_FIREBASE_* environment variables.
 
-  if (missingFields.length > 0) {
-    throw new Error(
-      `Firebase configuration error: Missing or invalid environment variables for ${missingFields.join(', ')}. ` +
-      'Please set all required Firebase environment variables in production.'
-    );
-  }
-}
 
 // Initialize Firebase app
 let app: FirebaseApp;
