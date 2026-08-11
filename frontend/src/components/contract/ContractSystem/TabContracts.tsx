@@ -222,7 +222,15 @@ export function TabContracts({ userRole }: { userRole: UserRole }) {
           <span className="text-[10px] font-black tracking-widest uppercase bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full border border-blue-400/30">
             เอกสารสัญญาแยกตามทรัพย์สิน & โซนห้องพัก
           </span>
-          <h3 className="font-black text-xl text-white mt-2">ระบบจัดการสัญญา & แบบร่างสัญญา (Agent Contract Portal)</h3>
+          <h3 className="font-black text-xl text-white mt-2">
+            ระบบจัดการสัญญา & แบบร่างสัญญา ({
+              userRole === 'owner' || userRole === 'landlord' 
+                ? 'Owner Contract Portal' 
+                : userRole === 'agent' 
+                  ? 'Agent Contract Portal' 
+                  : 'Contract Portal'
+            })
+          </h3>
           <p className="text-xs text-gray-300 font-medium mt-1">
             แยกเอกสารสัญญาเป็นฉบับๆ ตามแต่ละโซนและห้องพัก พร้อมแม่แบบสัญญา Manual ให้กรอกข้อมูลได้อย่างสะดวก
           </p>
