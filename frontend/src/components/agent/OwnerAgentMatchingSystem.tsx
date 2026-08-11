@@ -1,7 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { MapPin, Star, MessageSquare, ShieldCheck, Search, Loader2, CheckCircle2, Radar, ArrowRight, Building2, Key } from 'lucide-react';
+import { MapPin, Star, MessageSquare, ShieldCheck, Search, Loader2, CheckCircle2, Radar, ArrowRight, Building2, Key, X, Check } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
+import { ContractDocument } from '../contract/ContractSystem/ContractDocument';
+import { SignaturePad } from '../shared/ContractManager/SignaturePad';
+
 
 interface Applicant {
   id: string;
@@ -27,9 +31,52 @@ export function OwnerAgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' |
   const [activeTab, setActiveTab] = useState('post'); // post, myposts
   const [toastMessage, setToastMessage] = useState('');
 
-  // State for Post Form
+  // State for Post Form (Pre-filled for easy testing)
   const [isPosting, setIsPosting] = useState(false);
-  const [postForm, setPostForm] = useState({ project: '', location: '', details: '', commission: '' });
+  const [postForm, setPostForm] = useState({ 
+    project: 'คอนโด Life Asoke Hype (1 ห้องนอน 35 ตร.ม.)', 
+    location: 'พระราม 9, อโศก', 
+    details: 'กุญแจฝากไว้ที่นิติบุคคล, รหัสห้องคือ 8894, ห้ามเลี้ยงสัตว์', 
+    commission: '1 เดือน (สำหรับสัญญา 1 ปี)' 
+  });
+
+  // States for Agent Authorization Document & Signatures
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authSignatureDataUrl, setAuthSignatureDataUrl] = useState('');
+  const [authContract, setAuthContract] = useState({
+    id: 'cnt-auth-001',
+    propertyName: 'แบบร่างหนังสือแต่งตั้งและมอบอำนาจตัวแทนเอเจ้นท์ (Agent Power of Attorney Draft)',
+    propertyAddress: 'พระราม 9, อโศก',
+    zone: 'โซนทั่วไป',
+    unitNo: 'ห้องใหม่',
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    rentAmount: 0,
+    deposit: 0,
+    ownerName: 'คุณ (เจ้าของห้อง)',
+    tenantName: '-',
+    agentName: 'คุณสมชาย (นายหน้าแต่งตั้งประจำแพลตฟอร์ม)',
+    hasAgent: true,
+    status: 'pending_signatures' as const,
+    signatures: {} as Record<string, { signatureDataUrl: string; name: string; signedAt: string }>
+  });
+
+  const handleAuthSignSubmit = () => {
+    if (!authSignatureDataUrl) return;
+    setAuthContract(prev => ({
+      ...prev,
+      signatures: {
+        ...prev.signatures,
+        owner: {
+          signatureDataUrl: authSignatureDataUrl,
+          name: 'คุณ (เจ้าของห้อง)',
+          signedAt: new Date().toISOString()
+        }
+      }
+    }));
+    showToast('✍️ ลงนามมอบอำนาจตัวแทนล่วงหน้าสำเร็จแล้ว');
+    setIsAuthModalOpen(false);
+  };
 
   // State for My Posts
   const [myMockPosts, setMyMockPosts] = useState<Post[]>([
@@ -201,10 +248,23 @@ export function OwnerAgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' |
               </div>
               <div className="md:col-span-2">
                 <label className="block text-sm font-bold text-gray-700 mb-1">แนบเอกสารร่างสัญญาและเซ็นมอบหมายสิทธิ์ล่วงหน้า (เพื่อให้เอเจนต์เซ็นรับงานได้ทันที)</label>
-                <div className="border-2 border-dashed border-blue-200 rounded-xl p-6 bg-blue-50/30 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-blue-50/50 transition-colors">
-                  <Building2 className="w-10 h-10 text-blue-500 mb-2" />
-                  <p className="text-sm font-bold text-blue-900">สัญญาแต่งตั้งตัวแทนแบบเปิด_signed_template.pdf</p>
-                  <p className="text-xs text-gray-500 mt-1">อัปโหลดและลงลายมือชื่อเจ้าของล่วงหน้าเรียบร้อยแล้ว • เอเจนต์เซ็นตอบรับแล้วเริ่มงานได้ทันที</p>
+                <div 
+                  onClick={() => setIsAuthModalOpen(true)}
+                  className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-colors ${
+                    authContract.signatures.owner 
+                      ? 'border-green-300 bg-green-50/30 hover:bg-green-50/50' 
+                      : 'border-blue-200 bg-blue-50/30 hover:bg-blue-50/50'
+                  }`}
+                >
+                  <Building2 className={`w-10 h-10 mb-2 ${authContract.signatures.owner ? 'text-green-600' : 'text-blue-500'}`} />
+                  <p className={`text-sm font-bold ${authContract.signatures.owner ? 'text-green-900' : 'text-blue-900'}`}>
+                    สัญญาแต่งตั้งตัวแทนแบบเปิด_signed_template.pdf {authContract.signatures.owner && '✅'}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {authContract.signatures.owner 
+                      ? 'ลงนามมอบหมายสิทธิ์ล่วงหน้าสำเร็จแล้ว • เอเจนต์เข้าเซ็นรับงานได้ทันที' 
+                      : 'คลิกเพื่อเปิดดูเอกสารร่างและลงลายมือชื่อมอบหมายสิทธิ์ล่วงหน้า'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -318,6 +378,69 @@ export function OwnerAgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' |
           </div>
         )}
       </div>
+
+      {/* Dialog for Agent Authorization Agreement */}
+      <Dialog open={isAuthModalOpen} onOpenChange={setIsAuthModalOpen}>
+        <DialogContent className="max-w-[840px] max-h-[90vh] overflow-y-auto p-0 rounded-2xl border-none font-sans">
+          <div className="bg-white">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white z-10">
+              <span className="font-black text-gray-900 text-sm">
+                ลงนามมอบหมายสิทธิ์ล่วงหน้า (Agent Power of Attorney)
+              </span>
+              <DialogClose asChild>
+                <button className="p-1.5 hover:bg-gray-100 rounded-xl transition-colors">
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
+              </DialogClose>
+            </div>
+
+            {/* Document body */}
+            <div className="p-4 sm:p-8 bg-gray-100">
+              <div className="bg-white shadow-2xl mx-auto max-w-[794px] p-6 sm:p-12 border border-gray-200 rounded-none relative">
+                <ContractDocument
+                  contract={authContract as any}
+                  userRole="owner"
+                  onChange={(patch) => setAuthContract(prev => ({ ...prev, ...patch }))}
+                />
+
+                {authContract.signatures.owner ? (
+                  <div className="mt-8 border-t border-dashed border-gray-200 pt-6 flex flex-col items-center justify-center">
+                    <p className="text-xs font-bold text-gray-500 uppercase">ลายมือชื่อผู้มอบอำนาจ (เจ้าของห้อง)</p>
+                    <img src={authContract.signatures.owner.signatureDataUrl} alt="Owner Signature" className="max-h-16 mt-2 border border-gray-100 p-1" />
+                    <p className="text-xs text-gray-400 mt-2">ลงนามโดย {authContract.signatures.owner.name} เมื่อ {new Date(authContract.signatures.owner.signedAt).toLocaleDateString('th-TH')}</p>
+                  </div>
+                ) : (
+                  <div className="mt-8 border-t border-dashed border-gray-200 pt-6 bg-blue-50/50 p-4 rounded-xl">
+                    <p className="text-sm font-black text-gray-900 mb-3 text-center">ลงลายมือชื่อผู้มอบอำนาจ (เจ้าของห้อง) เพื่อมอบสิทธิ์ล่วงหน้า</p>
+                    <SignaturePad
+                      onSigned={(url) => setAuthSignatureDataUrl(url)}
+                      onClear={() => setAuthSignatureDataUrl('')}
+                      hasSigned={!!authSignatureDataUrl}
+                      lang="th"
+                    />
+                    <div className="flex gap-2 mt-4">
+                      <button
+                        onClick={handleAuthSignSubmit}
+                        disabled={!authSignatureDataUrl}
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-sm disabled:opacity-50 transition-colors shadow-md shadow-blue-500/10"
+                      >
+                        ยืนยันลายเซ็น
+                      </button>
+                      <button
+                        onClick={() => setIsAuthModalOpen(false)}
+                        className="px-6 py-2.5 border border-gray-300 text-gray-600 hover:bg-gray-50 rounded-xl text-sm font-bold transition-colors"
+                      >
+                        ยกเลิก
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
