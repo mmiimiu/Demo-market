@@ -20,7 +20,7 @@ import WebviewBroadcast from '@/components/line-oa/WebviewBroadcast';
 
 const WEBVIEW_LABELS: Record<string, string> = {
   billing: 'สถานะชำระเงิน', search: 'ค้นหาห้องพัก',
-  contracts: 'สัญญาดิจิทัล', appointment: 'นัดดูห้อง', agent: 'ติดต่อ Agent/Owner',
+  contracts: 'สัญญาดิจิทัล', appointment: 'นัดดูห้อง', agent: 'ช่องทางการติดต่อ',
   broadcast: 'Broadcast & Segment',
 };
 

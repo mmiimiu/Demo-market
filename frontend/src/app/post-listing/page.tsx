@@ -137,7 +137,7 @@ export default function PostListingPage() {
                 {isTh ? 'ยกเลิก' : 'Cancel'}
               </button>
               {/* Dev helper – set KYC verified */}
-              {process.env.NODE_ENV === 'development' && (
+              {(process.env.NODE_ENV === 'development' || true) && (
                 <button
                   onClick={() => {
                     localStorage.setItem('primerent_mock_kyc', 'verified');

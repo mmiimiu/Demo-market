@@ -53,7 +53,7 @@ export const RICH_MENU_TABS: {
 }[] = [
   { id: 'search',      label: 'ค้นหาห้อง',         emoji: '🔍' },
   { id: 'appointment', label: 'นัดดูห้อง',           emoji: '📅' },
-  { id: 'agent',       label: 'ติดต่อ Agent',        emoji: '✨' },
+  { id: 'agent',       label: 'ช่องทางการติดต่อ',        emoji: '✨' },
   { id: 'billing',     label: 'สถานะชำระเงิน',      emoji: '💳' },
   { id: 'contracts',   label: 'ดูสัญญา',             emoji: '📄' },
 ];

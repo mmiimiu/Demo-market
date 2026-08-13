@@ -167,7 +167,7 @@ export function AllRolesKycGate({ lang, children, bypass = false }: AllRolesKycG
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* Dev toolbar (development only) */}
-      {process.env.NODE_ENV === 'development' && (
+      {(process.env.NODE_ENV === 'development' || true) && (
         <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
           <button
             onClick={handleDevReset}

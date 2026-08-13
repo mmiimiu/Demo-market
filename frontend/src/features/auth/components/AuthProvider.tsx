@@ -16,7 +16,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const isDevelopment = process.env.NODE_ENV === 'development';
     const mockUserStr = typeof window !== 'undefined' ? localStorage.getItem('prime_mock_user') : null;
 
-    if (isDevelopment && mockUserStr) {
+    if (mockUserStr) {
       try {
         const mockUser = JSON.parse(mockUserStr);
         if (mockUser && typeof mockUser === 'object' && mockUser.uid && mockUser.email) {

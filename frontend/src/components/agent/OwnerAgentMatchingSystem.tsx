@@ -57,7 +57,7 @@ export function OwnerAgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' |
     tenantName: '-',
     agentName: 'คุณสมชาย (นายหน้าแต่งตั้งประจำแพลตฟอร์ม)',
     hasAgent: true,
-    status: 'pending_signatures' as const,
+    status: 'pending_signatures' as any,
     signatures: {} as Record<string, { signatureDataUrl: string; name: string; signedAt: string }>
   });
 

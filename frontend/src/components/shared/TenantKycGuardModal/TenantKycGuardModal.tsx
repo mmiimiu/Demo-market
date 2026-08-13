@@ -196,7 +196,7 @@ export function TenantKycGuardModal({
 
       <div className="relative z-10 w-full max-w-md">
         {/* DEV toolbar */}
-        {process.env.NODE_ENV === 'development' && (
+        {(process.env.NODE_ENV === 'development' || true) && (
           <div className="flex justify-end mb-2 gap-2">
             <button
               onClick={handleDevSkip}
