@@ -310,6 +310,42 @@ export function OwnerAgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' |
     showToast('⚡ จำลองสถานการณ์เอเจนต์ตกลงรับงานแบบ Real-time สำเร็จ!');
   };
 
+  const handleResetSimulation = (postId: string) => {
+    // 1. Update localStorage listings status to 'searching'
+    try {
+      const stored = localStorage.getItem('primerent_owner_listings');
+      if (stored) {
+        const listings = JSON.parse(stored);
+        const updated = listings.map((l: any) => {
+          if (l.id === postId || (postId === 'post-1' && l.id === 'owner-job-1')) {
+            return { ...l, status: 'searching', isSigned: false };
+          }
+          return l;
+        });
+        localStorage.setItem('primerent_owner_listings', JSON.stringify(updated));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    // 2. Reset state
+    setMyMockPosts(posts => posts.map(post => {
+      if (post.id === postId) {
+        return {
+          ...post,
+          status: 'searching',
+          applicants: [
+            { id: 'a1', name: 'Natthapong P.', rating: 4.9, reviews: 120, distance: '2.1 km', initial: 'N', isApproved: true },
+            { id: 'a2', name: 'Sompong K.', rating: 4.5, reviews: 34, distance: '3.5 km', initial: 'S', isApproved: true }
+          ]
+        };
+      }
+      return post;
+    }));
+
+    showToast('🔄 รีเซ็ตสถานะกลับไปเปิดรับเอเจนต์สำเร็จ!');
+  };
+
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden relative">
       {/* Toast Notification */}
@@ -539,9 +575,17 @@ export function OwnerAgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' |
 
                   {post.status === 'closed' && (
                     <div className="space-y-3 mt-4 border-t border-gray-100 pt-4">
-                      <h4 className="font-bold text-gray-800 text-sm mb-2 flex items-center gap-2">
-                        🤝 เอเจนต์ที่ได้รับแต่งตั้งดูแลห้องนี้ (1:1)
-                      </h4>
+                      <div className="flex items-center justify-between gap-4 mb-2">
+                        <h4 className="font-bold text-gray-800 text-sm flex items-center gap-2">
+                          🤝 เอเจนต์ที่ได้รับแต่งตั้งดูแลห้องนี้ (1:1)
+                        </h4>
+                        <button
+                          onClick={() => handleResetSimulation(post.id)}
+                          className="bg-gray-100 hover:bg-gray-250 text-gray-600 hover:text-gray-900 text-[10px] font-bold px-2 py-1 rounded-lg border border-gray-200 active:scale-95 transition-all flex items-center gap-1 shrink-0"
+                        >
+                          🔄 รีเซ็ตจำลอง
+                        </button>
+                      </div>
                       {post.applicants.map((applicant: any) => (
                         <div key={applicant.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-green-200 rounded-lg transition-colors gap-4 bg-green-50/35">
                           <div className="flex items-center gap-4">
