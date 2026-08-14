@@ -5,6 +5,7 @@ import { MapPin, Star, MessageSquare, ShieldCheck, Search, Loader2, CheckCircle2
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 import { ContractDocument } from '../contract/ContractSystem/ContractDocument';
 import { SignaturePad } from '../shared/ContractManager/SignaturePad';
+import { useNotifications } from '@/contexts/NotificationContext';
 
 
 interface Applicant {
@@ -28,6 +29,7 @@ interface Post {
 }
 
 export function OwnerAgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' | 'cn' }) {
+  const { addNotification } = useNotifications();
   const [activeTab, setActiveTab] = useState(() => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('primerent_owner_listings');
@@ -241,6 +243,72 @@ export function OwnerAgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' |
     showToast('ปิดการค้นหาเรียบร้อยแล้ว');
   };
 
+  const handleSimulateAgentMatch = (postId: string) => {
+    // 1. Update localStorage listings status to 'matched'
+    try {
+      const stored = localStorage.getItem('primerent_owner_listings');
+      if (stored) {
+        const listings = JSON.parse(stored);
+        const updated = listings.map((l: any) => {
+          if (l.id === postId || (postId === 'post-1' && l.id === 'owner-job-1')) {
+            return { ...l, status: 'matched', isSigned: true };
+          }
+          return l;
+        });
+        localStorage.setItem('primerent_owner_listings', JSON.stringify(updated));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    // 2. Add matched agent applicant to state in real-time
+    setMyMockPosts(posts => posts.map(post => {
+      if (post.id === postId) {
+        return {
+          ...post,
+          status: 'closed',
+          applicants: [
+            { id: 'a_matched_sim_' + Date.now(), name: 'คุณสมชาย ดีเลิศ (เอเจนต์ผู้รับงาน)', rating: 4.9, reviews: 120, distance: '2.1 km', initial: 'ส', isApproved: true }
+          ]
+        };
+      }
+      return post;
+    }));
+
+    // 3. Trigger In-App Notification
+    addNotification({
+      type: 'success',
+      title: '🤝 เอเจนต์รับงานร่วมดูแลห้องพักของคุณแล้ว!',
+      message: `เอเจนต์สมชาย (ตัวแทน) ได้ลงนามหนังสือแต่งตั้งมอบอำนาจเรียบร้อยแล้ว สัญญาพร้อมใช้เปิดเผยข้อมูลแล้ว`,
+      action: {
+        label: 'เปิดดูผลการจับคู่',
+        url: '/owner/dashboard#matching'
+      }
+    });
+
+    // 4. Trigger LINE OA message
+    try {
+      const storedLine = localStorage.getItem('primerent_line_oa_messages');
+      const lineMsgs = storedLine ? JSON.parse(storedLine) : [];
+      const newOaMsg = {
+        id: 'line_msg_match_' + Date.now(),
+        type: 'agent_match',
+        projectName: postId === 'post-1' ? 'คอนโด Life Asoke Hype (1 ห้องนอน 35 ตร.ม.)' : 'โครงการของคุณ',
+        agentName: 'คุณสมชาย ดีเลิศ (เอเจนต์ผู้รับงาน)',
+        commission: '1 เดือน',
+        doorCode: '8894',
+        keyLocation: 'นิติบุคคล ชั้น 1',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      lineMsgs.push(newOaMsg);
+      localStorage.setItem('primerent_line_oa_messages', JSON.stringify(lineMsgs));
+    } catch (e) {
+      console.error(e);
+    }
+
+    showToast('⚡ จำลองสถานการณ์เอเจนต์ตกลงรับงานแบบ Real-time สำเร็จ!');
+  };
+
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden relative">
       {/* Toast Notification */}
@@ -403,19 +471,27 @@ export function OwnerAgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' |
 
                   {post.status === 'searching' && (
                     <>
-                      <div className="flex items-center justify-between mb-3 bg-blue-50/60 p-3 rounded-xl border border-blue-100">
+                      <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-3 bg-blue-50/60 p-4 rounded-xl border border-blue-100 gap-4">
                         <div>
                           <h4 className="font-bold text-gray-800 text-sm flex items-center gap-2">
                             มีนายหน้านำทรัพย์นี้ไปรีโพสต์แล้ว {post.id === 'post-1' ? '55' : post.applicants.length} คน (เห็นเฉพาะคุณ)
                           </h4>
                           <p className="text-xs text-gray-500 mt-0.5">ระบบอนุมัติสิทธิ์และจับคู่ 1:1 กับลูกค้าให้โดยอัตโนมัติเมื่อเอเจนต์ลงนาม</p>
                         </div>
-                        <button 
-                          onClick={() => handleCloseListing(post.id)}
-                          className="text-xs font-bold text-red-500 hover:text-red-700 underline shrink-0"
-                        >
-                          ปิดประกาศ (ได้ผู้เช่าแล้ว)
-                        </button>
+                        <div className="flex items-center gap-3 shrink-0 w-full md:w-auto">
+                          <button 
+                            onClick={() => handleSimulateAgentMatch(post.id)}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-1 active:scale-95 transition-all"
+                          >
+                            ⚡ จำลองเอเจนต์รับงาน (Real-time)
+                          </button>
+                          <button 
+                            onClick={() => handleCloseListing(post.id)}
+                            className="text-xs font-bold text-red-500 hover:text-red-700 underline"
+                          >
+                            ปิดประกาศ
+                          </button>
+                        </div>
                       </div>
 
                       <div className="space-y-3">
