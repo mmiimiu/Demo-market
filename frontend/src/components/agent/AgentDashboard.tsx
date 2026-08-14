@@ -2,12 +2,15 @@
 
 import React, { useState } from 'react';
 import { translations } from '@/lib/translations';
-import { Home, Users, CheckCircle2, Coins, Building2, BarChart3, Activity, FileText, Bell, Trash2 } from 'lucide-react';
+import { Home, Users, CheckCircle2, Coins, Building2, BarChart3, Activity, FileText, Bell, Trash2, Radar, MessageSquare, MapPin, X, MessageCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { AgentPerformanceDashboard } from './AgentPerformanceDashboard';
 import { TabContracts } from '@/components/contract/ContractSystem/TabContracts';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
+import { ContractDocument } from '../contract/ContractSystem/ContractDocument';
+import { SignaturePad } from '../shared/ContractManager/SignaturePad';
 
 interface AgentDashboardProps {
   lang: 'th' | 'en' | 'cn';
@@ -62,6 +65,100 @@ export function AgentDashboard({ lang }: AgentDashboardProps) {
     { id: '4', name: isTh ? 'Studio BTS Onnut (ห้อง 77)' : 'Studio BTS Onnut (Room 77)', status: 'vacant', type: 'Studio Room', rent: 9500 },
     { id: '5', name: isTh ? 'Whizdom 101 (ห้อง 2304)' : 'Whizdom 101 (Room 2304)', status: 'vacant', type: 'Condo 1BR', rent: 16000 },
   ]);
+
+  // State for Owner Matching Opportunities (Owner posts seeking agents)
+  const [matchingOpportunities, setMatchingOpportunities] = useState([
+    {
+      id: 'opp-1',
+      project: 'คอนโด Life Asoke Hype (1 ห้องนอน 35 ตร.ม.)',
+      details: 'กุญแจฝากไว้ที่นิติบุคคล สามารถพาลูกค้าไปดูได้เลยค่ะ',
+      commission: '1 เดือน (สำหรับสัญญา 1 ปี)',
+      ownerName: 'คุณมยุรี (เจ้าของห้อง)',
+      location: 'พระราม 9, อโศก',
+      status: 'searching', // searching, matched
+      doorCode: '8894',
+      keyLocation: 'นิติบุคคล ชั้น 1',
+      distance: '2.1 km',
+      agentsNearbyCount: 28,
+      isSigned: false
+    },
+    {
+      id: 'opp-2',
+      project: 'Ideo Mix Sukhumvit (ห้อง 102)',
+      details: 'ห้องสตูดิโอแต่งครบพร้อมเข้าอยู่ สนใจทักแชทขอข้อมูลเพิ่มเติมได้ค่ะ',
+      commission: '1 เดือน',
+      ownerName: 'คุณสมศักดิ์ (เจ้าของห้อง)',
+      location: 'สุขุมวิท, อุดมสุข',
+      status: 'searching',
+      doorCode: '1025',
+      keyLocation: 'ตู้จดหมายรหัส 4321',
+      distance: '1.5 km',
+      agentsNearbyCount: 19,
+      isSigned: false
+    }
+  ]);
+
+  // States for Agent Authorization Document & Signatures
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [selectedOwnerListing, setSelectedOwnerListing] = useState<any>(null);
+  const [authSignatureDataUrl, setAuthSignatureDataUrl] = useState('');
+  const [authContract, setAuthContract] = useState<any>(null);
+
+  const handleStartAuthSign = (listing: any) => {
+    setSelectedOwnerListing(listing);
+    setAuthSignatureDataUrl('');
+    setAuthContract({
+      id: `cnt-auth-${listing.id}`,
+      propertyName: `แบบร่างหนังสือแต่งตั้งและมอบอำนาจตัวแทนเอเจ้นท์ - ${listing.project}`,
+      propertyAddress: listing.location,
+      zone: 'โซนทั่วไป',
+      unitNo: 'ห้องพักมอบอำนาจ',
+      startDate: new Date().toISOString().split('T')[0],
+      endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      rentAmount: 0,
+      deposit: 0,
+      ownerName: listing.ownerName,
+      tenantName: '-',
+      agentName: 'คุณ (นายหน้า)',
+      hasAgent: true,
+      status: 'pending_signatures',
+      signatures: {
+        owner: {
+          signatureDataUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="30"><path d="M 10,15 C 30,5 40,25 60,15 C 70,10 80,10 90,15" stroke="black" stroke-width="2" fill="none"/></svg>',
+          name: listing.ownerName,
+          signedAt: new Date().toISOString()
+        }
+      }
+    });
+    setIsAuthModalOpen(true);
+  };
+
+  const handleAuthSignSubmit = () => {
+    if (!authSignatureDataUrl || !selectedOwnerListing) return;
+    
+    // Update matchingOpportunities state
+    setMatchingOpportunities(prev => prev.map(item => {
+      if (item.id === selectedOwnerListing.id) {
+        return { ...item, status: 'matched', isSigned: true };
+      }
+      return item;
+    }));
+
+    // Add to interactiveRooms to show it's now managed!
+    setInteractiveRooms(prev => [
+      ...prev,
+      {
+        id: `managed-${selectedOwnerListing.id}`,
+        name: selectedOwnerListing.project,
+        status: 'vacant',
+        type: 'Condo 1BR',
+        rent: 15000
+      }
+    ]);
+    
+    setIsAuthModalOpen(false);
+    alert('✅ ลงนามสัญญามอบสิทธิ์และจับคู่สำเร็จ! ข้อมูลถูกปลดล็อกและห้องถูกเพิ่มเข้าสู่รายการห้องภายใต้การจัดการเรียบร้อยแล้วค่ะ');
+  };
 
   const toggleRoomStatus = (id: string) => {
     setInteractiveRooms(prev => prev.map(room => {
@@ -257,6 +354,90 @@ export function AgentDashboard({ lang }: AgentDashboardProps) {
               );
             })}
           </div>
+        </div>
+      </div>
+
+      {/* อสังหาริมทรัพย์ที่เปิดรับนายหน้า (Agent Matching) */}
+      <div className="bg-blue-50/50 border border-blue-200 rounded-2xl p-5 space-y-4">
+        <div className="flex justify-between items-center border-b border-blue-150 pb-2.5">
+          <div>
+            <h4 className="font-black text-blue-900 text-sm flex items-center gap-1.5">
+              <Radar className="w-4 h-4 text-blue-600" />
+              {isTh ? 'จับคู่นายหน้าหาผู้เช่า (Agent Matching)' : 'Agent Matching (Opportunities)'}
+            </h4>
+            <p className="text-[10px] text-blue-700/80 font-semibold mt-0.5">
+              {isTh ? 'รายการทรัพย์สินที่เจ้าของห้องมอบสิทธิ์ให้ทำตลาดแบบเปิด ลงนามรับงานเพื่อสแกนและจับคู่สิทธิ์ 1:1 ได้ทันที' : 'Listings open for agent representation. Sign to match immediately.'}
+            </p>
+          </div>
+          <Badge className="bg-blue-600 text-white font-bold border-none text-[8px]">AGENT MATCHING</Badge>
+        </div>
+
+        <div className="space-y-3">
+          {matchingOpportunities.map((listing) => (
+            <div key={listing.id} className={cn("p-4 border rounded-xl flex flex-col sm:flex-row justify-between gap-4 transition-all relative overflow-hidden bg-white shadow-2xs hover:shadow-sm", listing.status === 'matched' ? 'border-green-200 bg-green-50/10' : 'border-blue-100')}>
+              {listing.status === 'matched' && (
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-green-500" />
+              )}
+              <div className="flex-1 min-w-0 font-sans">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Badge className="bg-blue-50 text-blue-700 font-bold border border-blue-100 text-[9px] px-1.5 py-0">
+                    เจ้าของหาเอเจนต์
+                  </Badge>
+                  <span className="text-[10.5px] text-gray-500 font-semibold">โพสต์โดย {listing.ownerName}</span>
+                </div>
+                <h5 className="font-black text-gray-950 text-sm truncate">{listing.project}</h5>
+                <p className="text-[11px] text-gray-600 font-medium mt-1 leading-relaxed">{listing.details}</p>
+                <div className="flex flex-wrap gap-2 mt-2.5 text-[10px] font-bold">
+                  <span className="flex items-center gap-1 text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                    <MapPin className="w-3 h-3" /> {listing.location} (ห่าง {listing.distance})
+                  </span>
+                  <span className="flex items-center gap-1 text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-100">
+                    <Radar className="w-3 h-3" /> มีเอเจนต์ใกล้เคียง {listing.agentsNearbyCount} คน
+                  </span>
+                </div>
+
+                {listing.status === 'matched' && (
+                  <div className="bg-green-50 border border-green-200 rounded-xl p-3 mt-3 space-y-1.5 animate-in fade-in">
+                    <div className="flex items-center gap-2 text-xs font-black text-green-800">
+                      <CheckCircle2 className="w-4 h-4 text-green-600 animate-bounce" />
+                      <span>จับคู่สำเร็จ! ข้อมูลทรัพย์ถูกเพิ่มลงในพอร์ตจำลองปล่อยเช่าของคุณแล้ว</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-xs pt-1.5 border-t border-green-150 border-dashed">
+                      <div>
+                        <span className="text-gray-500 font-medium block">รหัสประตูดิจิทัล (Door Code):</span>
+                        <span className="font-black text-green-950 text-sm font-mono">{listing.doorCode}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500 font-medium block">จุดรับฝากกุญแจ (Key Location):</span>
+                        <span className="font-black text-green-950 text-sm">{listing.keyLocation}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="flex sm:flex-col justify-between sm:justify-end gap-3 sm:min-w-[150px] shrink-0 items-start sm:items-end">
+                <div className="text-left sm:text-right">
+                  <span className="text-[10px] text-gray-500 font-medium block">ค่าคอมมิชชันที่เสนอ</span>
+                  <span className="text-base font-black text-blue-600">{listing.commission}</span>
+                </div>
+                {listing.status === 'matched' ? (
+                  <button 
+                    onClick={() => alert(`เปิดห้องแชทจำลอง 1:1 กับ ${listing.ownerName}`)}
+                    className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg text-xs transition-colors shadow-sm flex items-center gap-1 w-full sm:w-auto justify-center"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5" /> แชทกับเจ้าของ
+                  </button>
+                ) : (
+                  <button 
+                    onClick={() => handleStartAuthSign(listing)}
+                    className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-xs transition-colors shadow-sm w-full sm:w-auto text-center"
+                  >
+                    ลงนามรับงาน (Sign & Match)
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -621,6 +802,78 @@ export function AgentDashboard({ lang }: AgentDashboardProps) {
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
         <TabContracts userRole="agent" />
       </div>
+
+      {/* Dialog for Agent Authorization Agreement */}
+      <Dialog open={isAuthModalOpen} onOpenChange={setIsAuthModalOpen}>
+        <DialogContent className="max-w-[840px] max-h-[90vh] overflow-y-auto p-0 rounded-2xl border-none font-sans">
+          <div className="bg-white">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white z-10">
+              <span className="font-black text-gray-900 text-sm">
+                ลงนามมอบหมายสิทธิ์นายหน้า (Agent Authorization Sign)
+              </span>
+              <DialogClose asChild>
+                <button className="p-1.5 hover:bg-gray-100 rounded-xl transition-colors">
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
+              </DialogClose>
+            </div>
+
+            {/* Document body */}
+            {authContract && (
+              <div className="p-4 sm:p-8 bg-gray-100">
+                <div className="bg-white shadow-2xl mx-auto max-w-[794px] p-6 sm:p-12 border border-gray-200 rounded-none relative">
+                  <ContractDocument
+                    contract={authContract as any}
+                    userRole="agent"
+                    onChange={(patch) => setAuthContract((prev: any) => ({ ...prev, ...patch }))}
+                  />
+
+                  {/* Owner Signature Details */}
+                  <div className="mt-8 border-t border-dashed border-gray-200 pt-6 flex flex-col items-center justify-center text-center">
+                    <p className="text-xs font-bold text-gray-500 uppercase">ลายมือชื่อผู้มอบอำนาจ (เจ้าของห้อง)</p>
+                    <img src={authContract.signatures.owner.signatureDataUrl} alt="Owner Signature" className="max-h-12 mt-2 border border-gray-100 p-1" />
+                    <p className="text-[10px] text-gray-400 mt-1">ลงนามโดย {authContract.signatures.owner.name} เมื่อ {new Date(authContract.signatures.owner.signedAt).toLocaleDateString('th-TH')}</p>
+                  </div>
+
+                  {/* Agent Signature Area */}
+                  {authContract.signatures.agent ? (
+                    <div className="mt-6 border-t border-dashed border-gray-200 pt-6 flex flex-col items-center justify-center text-center">
+                      <p className="text-xs font-bold text-gray-500 uppercase">ลายมือชื่อผู้รับมอบอำนาจ (นายหน้า)</p>
+                      <img src={authContract.signatures.agent.signatureDataUrl} alt="Agent Signature" className="max-h-16 mt-2 border border-gray-100 p-1" />
+                    </div>
+                  ) : (
+                    <div className="mt-8 border-t border-dashed border-gray-200 pt-6 bg-blue-50/50 p-4 rounded-xl">
+                      <p className="text-sm font-black text-gray-900 mb-3 text-center">ลงลายมือชื่อผู้รับมอบอำนาจ (นายหน้า) เพื่อยืนยันการรับสิทธิ์</p>
+                      <SignaturePad
+                        onSigned={(url) => setAuthSignatureDataUrl(url)}
+                        onClear={() => setAuthSignatureDataUrl('')}
+                        hasSigned={!!authSignatureDataUrl}
+                        lang="th"
+                      />
+                      <div className="flex gap-2 mt-4">
+                        <button
+                          onClick={handleAuthSignSubmit}
+                          disabled={!authSignatureDataUrl}
+                          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-sm disabled:opacity-50 transition-colors shadow-md shadow-blue-500/10"
+                        >
+                          ยืนยันลายเซ็นร่วมกัน
+                        </button>
+                        <button
+                          onClick={() => setIsAuthModalOpen(false)}
+                          className="px-6 py-2.5 border border-gray-300 text-gray-600 hover:bg-gray-50 rounded-xl text-sm font-bold transition-colors"
+                        >
+                          ยกเลิก
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

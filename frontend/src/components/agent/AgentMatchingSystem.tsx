@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { MapPin, Star, MessageSquare, Clock, UserCheck, ShieldCheck, Search, PlusCircle, Settings, Loader2, CheckCircle2, Radar, ArrowRight, MessageCircle } from 'lucide-react';
+import { MapPin, Star, MessageSquare, Clock, UserCheck, ShieldCheck, Search, PlusCircle, Settings, Loader2, CheckCircle2, Radar, ArrowRight, MessageCircle, Building2, Key, X, Check } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 import { WorkingZoneSettings } from './WorkingZoneSettings';
+import { ContractDocument } from '../contract/ContractSystem/ContractDocument';
+import { SignaturePad } from '../shared/ContractManager/SignaturePad';
 
 const InteractiveMap = dynamic(
   () => import('./InteractiveMap').then(m => m.InteractiveMap),
@@ -85,6 +87,117 @@ export function AgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' | 'cn'
     price: '800', 
     location: 'พิกัด: 13.75254, 100.49401' 
   });
+  
+  // State for Owner Listings (Tab 1.5)
+  const [ownerListings, setOwnerListings] = useState([
+    {
+      id: 'owner-job-1',
+      project: 'คอนโด Life Asoke Hype (1 ห้องนอน 35 ตร.ม.)',
+      details: 'กุญแจฝากไว้ที่นิติบุคคล สามารถพาลูกค้าไปดูได้เลยค่ะ',
+      commission: '1 เดือน (สำหรับสัญญา 1 ปี)',
+      ownerName: 'คุณมยุรี (เจ้าของห้อง)',
+      location: 'พระราม 9, อโศก',
+      status: 'searching', // searching, matched
+      doorCode: '8894',
+      keyLocation: 'นิติบุคคล ชั้น 1',
+      distance: '2.1 km',
+      agentsNearbyCount: 28,
+      isSigned: false
+    },
+    {
+      id: 'owner-job-2',
+      project: 'Ideo Mix Sukhumvit (ห้อง 102)',
+      details: 'ห้องสตูดิโอแต่งครบพร้อมเข้าอยู่ สนใจทักแชทขอข้อมูลเพิ่มเติมได้ค่ะ',
+      commission: '1 เดือน',
+      ownerName: 'คุณสมศักดิ์ (เจ้าของห้อง)',
+      location: 'สุขุมวิท, อุดมสุข',
+      status: 'searching',
+      doorCode: '1025',
+      keyLocation: 'ตู้จดหมายรหัส 4321',
+      distance: '1.5 km',
+      agentsNearbyCount: 19,
+      isSigned: false
+    }
+  ]);
+
+  // States for Agent Authorization Document & Signatures
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [selectedOwnerListing, setSelectedOwnerListing] = useState<any>(null);
+  const [authSignatureDataUrl, setAuthSignatureDataUrl] = useState('');
+  const [authContract, setAuthContract] = useState<any>(null);
+
+  const handleStartAuthSign = (listing: any) => {
+    setSelectedOwnerListing(listing);
+    setAuthSignatureDataUrl('');
+    setAuthContract({
+      id: `cnt-auth-${listing.id}`,
+      propertyName: `แบบร่างหนังสือแต่งตั้งและมอบอำนาจตัวแทนเอเจ้นท์ - ${listing.project}`,
+      propertyAddress: listing.location,
+      zone: 'โซนทั่วไป',
+      unitNo: 'ห้องพักมอบอำนาจ',
+      startDate: new Date().toISOString().split('T')[0],
+      endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      rentAmount: 0,
+      deposit: 0,
+      ownerName: listing.ownerName,
+      tenantName: '-',
+      agentName: 'คุณ (นายหน้า)',
+      hasAgent: true,
+      status: 'pending_signatures',
+      signatures: {
+        owner: {
+          signatureDataUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="30"><path d="M 10,15 C 30,5 40,25 60,15 C 70,10 80,10 90,15" stroke="black" stroke-width="2" fill="none"/></svg>',
+          name: listing.ownerName,
+          signedAt: new Date().toISOString()
+        }
+      }
+    });
+    setIsAuthModalOpen(true);
+  };
+
+  const handleAuthSignSubmit = () => {
+    if (!authSignatureDataUrl || !selectedOwnerListing) return;
+    
+    // Update ownerListings state
+    setOwnerListings(prev => prev.map(item => {
+      if (item.id === selectedOwnerListing.id) {
+        return { ...item, status: 'matched', isSigned: true };
+      }
+      return item;
+    }));
+    
+    showToast('✅ ลงนามสัญญามอบสิทธิ์และจับคู่สำเร็จ! ข้อมูลห้องถูกปลดล็อกแล้ว');
+    setIsAuthModalOpen(false);
+  };
+
+  const handleLoadTemplate = (type: 'xt' | 'noble' | 'life') => {
+    if (type === 'xt') {
+      setPostForm({
+        project: 'คอนโด XT Phayathai',
+        date: '2026-08-15T14:00',
+        details: 'ต้องการคนพาผู้เช่าไปดูห้องพักและสิ่งอำนวยความสะดวกโครงการ (กุญแจฝากไว้ที่นิติบุคคล)',
+        price: '800',
+        location: 'พิกัด: 13.75254, 100.49401'
+      });
+    } else if (type === 'noble') {
+      setPostForm({
+        project: 'Noble Play',
+        date: '2026-08-16T10:00',
+        details: 'ต้องการคนไปช่วยตรวจเช็คสภาพห้องเช่าหลังผู้เช่าย้ายออก (ถ่ายรูปห้องส่ง 10 รูป)',
+        price: '600',
+        location: 'พิกัด: 13.74235, 100.54012'
+      });
+    } else if (type === 'life') {
+      setPostForm({
+        project: 'Life One Wireless',
+        date: '2026-08-17T17:30',
+        details: 'รับเคสพาผู้เช่าต่างชาติเดินดูส่วนกลางและสิ่งอำนวยความสะดวกโครงการ',
+        price: '750',
+        location: 'พิกัด: 13.74712, 100.54845'
+      });
+    }
+    showToast('ดึงข้อมูลโครงการล่าสุดเรียบร้อยแล้ว');
+  };
   
   // State for Map
   const [isMapOpen, setIsMapOpen] = useState(false);
@@ -214,35 +327,41 @@ export function AgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' | 'cn'
       )}
 
       <div className="p-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-gray-100">
-          <div>
-            <h2 className="text-xl font-black text-gray-900">Agent Matching (เปิดรับ Co-Agent)</h2>
-            <p className="text-sm text-gray-500 mt-1">รับงาน Co-Agent ในพื้นที่ที่คุณสนใจ หรือหา Co-Agent ไปเปิดห้องแทนคุณ</p>
+        <div className="flex flex-col gap-4 mb-4 pb-4 border-b border-gray-100">
+          <div className="w-full">
+            <h2 className="text-base sm:text-lg font-black text-gray-900">ระบบจับคู่ทำงานร่วมกับเอเจนต์ (Co-Agent & Agent Matching)</h2>
+            <p className="text-xs text-gray-500 mt-1">รับงานเฉพาะกิจจากเอเจนต์หลัก หรือลงชื่อรับสิทธิ์ปล่อยเช่าจากเจ้าของห้องโดยตรง</p>
           </div>
-          <div className="flex bg-gray-100 p-1 rounded-xl">
+          <div className="grid grid-cols-2 sm:grid-cols-5 bg-gray-100 p-1 rounded-xl gap-1 w-full">
             <button 
               onClick={() => setActiveTab('find')}
-              className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors ${activeTab === 'find' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`px-3 py-2 text-xs font-bold rounded-lg transition-colors text-center ${activeTab === 'find' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
             >
               รับงาน Co-Agent
             </button>
             <button 
-              onClick={() => setActiveTab('post')}
-              className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors ${activeTab === 'post' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+              onClick={() => setActiveTab('owner_jobs')}
+              className={`px-3 py-2 text-xs font-bold rounded-lg transition-colors text-center ${activeTab === 'owner_jobs' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
             >
-              เปิดรับ Co-Agent
+              รับงาน Agent Matching
+            </button>
+            <button 
+              onClick={() => setActiveTab('post')}
+              className={`px-3 py-2 text-xs font-bold rounded-lg transition-colors text-center ${activeTab === 'post' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+            >
+              ส่งงาน Co-Agent
             </button>
             <button 
               onClick={() => setActiveTab('myposts')}
-              className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors ${activeTab === 'myposts' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`px-3 py-2 text-xs font-bold rounded-lg transition-colors text-center ${activeTab === 'myposts' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
             >
               งานที่ฉันโพสต์
             </button>
             <button 
               onClick={() => setActiveTab('zones')}
-              className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors flex items-center gap-1 ${activeTab === 'zones' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`px-3 py-2 text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1 text-center col-span-2 sm:col-span-1 ${activeTab === 'zones' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
             >
-              <Settings className="w-4 h-4" /> ตั้งค่าโซนทำการ
+              <Settings className="w-3.5 h-3.5" /> โซนทำการ
             </button>
           </div>
         </div>
@@ -272,36 +391,36 @@ export function AgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' | 'cn'
                 job.details.toLowerCase().includes(searchQuery.toLowerCase())
               )
               .map(job => (
-                <div key={job.id} className={`p-5 border ${interestedJobs[job.id] ? 'border-gray-200 bg-gray-50' : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-md'} transition-all rounded-xl flex flex-col sm:flex-row justify-between gap-6 group relative overflow-hidden`}>
+                <div key={job.id} className={`p-4 border ${interestedJobs[job.id] ? 'border-gray-200 bg-gray-50' : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-md'} transition-all rounded-xl flex flex-col sm:flex-row justify-between gap-4 group relative overflow-hidden`}>
                   {!interestedJobs[job.id] && <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-500"></div>}
-                  <div className="pl-2 opacity-100">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="bg-red-50 text-red-600 text-xs font-bold px-2 py-0.5 rounded uppercase tracking-wider border border-red-100">{job.urgency}</span>
-                      <span className="text-sm text-gray-500">โพสต์โดย {job.poster} • {job.timeAgo}</span>
+                  <div className="pl-1.5 opacity-100 flex-1">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className="bg-red-50 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider border border-red-100">{job.urgency}</span>
+                      <span className="text-xs text-gray-400">โพสต์โดย {job.poster} • {job.timeAgo}</span>
                     </div>
-                    <h3 className={`font-bold text-lg ${interestedJobs[job.id] ? 'text-gray-600' : 'text-gray-900 group-hover:text-blue-600'} transition-colors`}>{job.project}</h3>
-                    <p className="text-gray-600 mt-1 mb-3 text-sm">{job.details}</p>
-                    <div className="flex flex-wrap gap-3 text-sm">
-                      <span className="flex items-center gap-1.5 text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded-md">
-                        <MapPin className="w-4 h-4" /> {job.distance}
+                    <h3 className={`font-black text-base ${interestedJobs[job.id] ? 'text-gray-600' : 'text-gray-900 group-hover:text-blue-600'} transition-colors`}>{job.project}</h3>
+                    <p className="text-gray-500 mt-0.5 mb-2.5 text-xs">{job.details}</p>
+                    <div className="flex flex-wrap gap-2.5 text-[10.5px] mb-1">
+                      <span className="flex items-center gap-1.5 text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded-md">
+                        <MapPin className="w-3.5 h-3.5" /> {job.distance}
                       </span>
-                      <span className="flex items-center gap-1.5 text-gray-600 bg-gray-50 px-2 py-1 rounded-md">
-                        <Clock className="w-4 h-4" /> {job.time}
+                      <span className="flex items-center gap-1.5 text-gray-500 bg-gray-50 px-2 py-0.5 rounded-md">
+                        <Clock className="w-3.5 h-3.5" /> {job.time}
                       </span>
                     </div>
                   </div>
-                  <div className="flex sm:flex-col justify-end gap-3 sm:min-w-[140px] shrink-0">
-                    <div className="text-left sm:text-right flex-1 sm:flex-none">
-                      <div className="text-xs text-gray-500 font-medium">ส่วนแบ่งของคุณ (Co-Agent)</div>
-                      <div className={`text-2xl font-black ${interestedJobs[job.id] ? 'text-gray-500' : 'text-blue-600'}`}>{job.comShare}</div>
-                      <div className="text-[10px] text-gray-400 font-medium">🔒 แสดงเฉพาะส่วนของคุณ</div>
+                  <div className="flex sm:flex-col justify-between sm:justify-end gap-2 sm:min-w-[130px] shrink-0 items-start sm:items-end">
+                    <div className="text-left sm:text-right">
+                      <div className="text-[10px] text-gray-400 font-medium">ส่วนแบ่งของคุณ (Co-Agent)</div>
+                      <div className={`text-sm sm:text-base font-black ${interestedJobs[job.id] ? 'text-gray-500' : 'text-blue-600'}`}>{job.comShare}</div>
+                      <div className="text-[9px] text-gray-450 font-medium">🔒 แสดงเฉพาะส่วนของคุณ</div>
                     </div>
                     {interestedJobs[job.id] ? (
-                      <button disabled className="flex-1 sm:flex-none px-4 py-2.5 bg-gray-200 text-gray-500 rounded-lg text-sm font-bold shadow-inner cursor-not-allowed flex items-center justify-center gap-2">
-                        <Clock className="w-4 h-4" /> รอการตอบรับ
+                      <button disabled className="px-3 py-2 bg-gray-200 text-gray-500 rounded-lg text-xs font-bold shadow-inner cursor-not-allowed flex items-center justify-center gap-2 w-full sm:w-auto">
+                        <Clock className="w-3.5 h-3.5" /> รอการตอบรับ
                       </button>
                     ) : (
-                      <button onClick={() => handleInterest(job.id)} className="flex-1 sm:flex-none px-4 py-2.5 bg-blue-600 text-white hover:bg-blue-700 rounded-lg text-sm font-bold transition-all shadow-sm active:scale-95">
+                      <button onClick={() => handleInterest(job.id)} className="px-3 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg text-xs font-bold transition-all shadow-sm active:scale-95 w-full sm:w-auto text-center">
                         สนใจรับงานนี้
                       </button>
                     )}
@@ -311,8 +430,117 @@ export function AgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' | 'cn'
           </div>
         )}
 
+        {activeTab === 'owner_jobs' && (
+          <div className="space-y-4 font-sans">
+            <div className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 border border-blue-100 mb-4">
+              <div className="w-2 h-2 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.8)] animate-pulse"></div>
+              รายการห้องพักจากเจ้าของที่เปิดรับนายหน้าช่วยปล่อยเช่า
+            </div>
+
+            {ownerListings.map(listing => (
+              <div key={listing.id} className={`p-4 border ${listing.status === 'matched' ? 'border-green-200 bg-green-50/10' : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-md'} transition-all rounded-xl flex flex-col sm:flex-row justify-between gap-4 relative overflow-hidden`}>
+                {listing.status === 'matched' ? (
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-green-500"></div>
+                ) : (
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div>
+                )}
+                
+                <div className="pl-1.5 flex-1">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <span className="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded border border-blue-100">
+                      เจ้าของโพสต์หาเอเจนต์
+                    </span>
+                    <span className="text-xs text-gray-400">โพสต์โดย {listing.ownerName}</span>
+                  </div>
+                  <h3 className="font-black text-base text-gray-900">{listing.project}</h3>
+                  <p className="text-gray-500 mt-0.5 mb-2.5 text-xs">{listing.details}</p>
+                  
+                  <div className="flex flex-wrap gap-2.5 text-[10.5px] mb-1">
+                    <span className="flex items-center gap-1.5 text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded-md">
+                      <MapPin className="w-3 h-3" /> {listing.location} (ห่างออกไป {listing.distance})
+                    </span>
+                    <span className="flex items-center gap-1.5 text-gray-500 bg-gray-50 px-2 py-0.5 rounded-md">
+                      <Radar className="w-3 h-3" /> มีเอเจนต์ใกล้เคียง {listing.agentsNearbyCount} คน
+                    </span>
+                  </div>
+
+                  {listing.status === 'matched' && (
+                    <div className="bg-green-50 border border-green-200 rounded-xl p-3.5 mt-3 space-y-1.5 animate-in fade-in">
+                      <div className="flex items-center gap-2 text-xs font-black text-green-800">
+                        <CheckCircle2 className="w-4 h-4 text-green-600 animate-bounce" />
+                        <span>จับคู่สำเร็จแล้ว! สิทธิ์ของสัญญาแต่งตั้งตัวแทนแบบเปิดมีผลบังคับใช้</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-xs pt-1.5 border-t border-green-150 border-dashed">
+                        <div>
+                          <span className="text-gray-500 font-medium block">รหัสประตูดิจิทัล (Door Code):</span>
+                          <span className="font-black text-green-950 text-sm font-mono">{listing.doorCode}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500 font-medium block">จุดรับฝากกุญแจ (Key):</span>
+                          <span className="font-black text-green-950 text-sm">{listing.keyLocation}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex sm:flex-col justify-between sm:justify-end gap-2 sm:min-w-[130px] shrink-0 items-start sm:items-end">
+                  <div className="text-left sm:text-right">
+                    <div className="text-[10px] text-gray-400 font-medium">ค่าคอมมิชชัน</div>
+                    <div className="text-sm sm:text-base font-black text-blue-600">{listing.commission}</div>
+                  </div>
+                  
+                  {listing.status === 'matched' ? (
+                    <button 
+                      onClick={() => handleChatClick(listing.ownerName)}
+                      className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg text-xs transition-all shadow-sm flex items-center gap-1.5 w-full sm:w-auto justify-center"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5" /> แชทกับเจ้าของห้อง
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => handleStartAuthSign(listing)}
+                      className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-xs transition-all shadow-sm w-full sm:w-auto text-center"
+                    >
+                      ลงนามรับงาน (Sign & Match)
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {activeTab === 'post' && (
-          <div className="space-y-4">
+          <div className="space-y-4 font-sans">
+            {/* Load Recent Jobs Template Buttons */}
+            <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 mb-2">
+              <span className="text-xs font-bold text-blue-900 block mb-2">งานล่าสุดที่เคยโพสต์ (คลิกเพื่อดึงข้อมูลเก่า):</span>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleLoadTemplate('xt')}
+                  className="px-3 py-1.5 bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 text-xs font-bold rounded-lg transition-all shadow-xs"
+                >
+                  🏢 XT Phayathai
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleLoadTemplate('noble')}
+                  className="px-3 py-1.5 bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 text-xs font-bold rounded-lg transition-all shadow-xs"
+                >
+                  🏢 Noble Play
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleLoadTemplate('life')}
+                  className="px-3 py-1.5 bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 text-xs font-bold rounded-lg transition-all shadow-xs"
+                >
+                  🏢 Life One Wireless
+                </button>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1">โครงการ / สถานที่</label>
@@ -567,6 +795,78 @@ export function AgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' | 'cn'
             >
               ยืนยันตำแหน่งนี้
             </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog for Agent Authorization Agreement */}
+      <Dialog open={isAuthModalOpen} onOpenChange={setIsAuthModalOpen}>
+        <DialogContent className="max-w-[840px] max-h-[90vh] overflow-y-auto p-0 rounded-2xl border-none font-sans">
+          <div className="bg-white">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white z-10">
+              <span className="font-black text-gray-900 text-sm">
+                ลงนามมอบหมายสิทธิ์นายหน้า (Agent Authorization Sign)
+              </span>
+              <DialogClose asChild>
+                <button className="p-1.5 hover:bg-gray-100 rounded-xl transition-colors">
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
+              </DialogClose>
+            </div>
+
+            {/* Document body */}
+            {authContract && (
+              <div className="p-4 sm:p-8 bg-gray-100">
+                <div className="bg-white shadow-2xl mx-auto max-w-[794px] p-6 sm:p-12 border border-gray-200 rounded-none relative">
+                  <ContractDocument
+                    contract={authContract as any}
+                    userRole="agent"
+                    onChange={(patch) => setAuthContract((prev: any) => ({ ...prev, ...patch }))}
+                  />
+
+                  {/* Owner Signature Details */}
+                  <div className="mt-8 border-t border-dashed border-gray-200 pt-6 flex flex-col items-center justify-center text-center">
+                    <p className="text-xs font-bold text-gray-500 uppercase">ลายมือชื่อผู้มอบอำนาจ (เจ้าของห้อง)</p>
+                    <img src={authContract.signatures.owner.signatureDataUrl} alt="Owner Signature" className="max-h-12 mt-2 border border-gray-100 p-1" />
+                    <p className="text-[10px] text-gray-400 mt-1">ลงนามโดย {authContract.signatures.owner.name} เมื่อ {new Date(authContract.signatures.owner.signedAt).toLocaleDateString('th-TH')}</p>
+                  </div>
+
+                  {/* Agent Signature Area */}
+                  {authContract.signatures.agent ? (
+                    <div className="mt-6 border-t border-dashed border-gray-200 pt-6 flex flex-col items-center justify-center text-center">
+                      <p className="text-xs font-bold text-gray-500 uppercase">ลายมือชื่อผู้รับมอบอำนาจ (นายหน้า)</p>
+                      <img src={authContract.signatures.agent.signatureDataUrl} alt="Agent Signature" className="max-h-16 mt-2 border border-gray-100 p-1" />
+                    </div>
+                  ) : (
+                    <div className="mt-8 border-t border-dashed border-gray-200 pt-6 bg-blue-50/50 p-4 rounded-xl">
+                      <p className="text-sm font-black text-gray-900 mb-3 text-center">ลงลายมือชื่อผู้รับมอบอำนาจ (นายหน้า) เพื่อยืนยันการรับสิทธิ์</p>
+                      <SignaturePad
+                        onSigned={(url) => setAuthSignatureDataUrl(url)}
+                        onClear={() => setAuthSignatureDataUrl('')}
+                        hasSigned={!!authSignatureDataUrl}
+                        lang="th"
+                      />
+                      <div className="flex gap-2 mt-4">
+                        <button
+                          onClick={handleAuthSignSubmit}
+                          disabled={!authSignatureDataUrl}
+                          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-sm disabled:opacity-50 transition-colors shadow-md shadow-blue-500/10"
+                        >
+                          ยืนยันลายเซ็นร่วมกัน
+                        </button>
+                        <button
+                          onClick={() => setIsAuthModalOpen(false)}
+                          className="px-6 py-2.5 border border-gray-300 text-gray-600 hover:bg-gray-50 rounded-xl text-sm font-bold transition-colors"
+                        >
+                          ยกเลิก
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
