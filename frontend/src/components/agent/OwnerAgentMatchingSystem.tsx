@@ -443,6 +443,41 @@ export function OwnerAgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' |
                       </div>
                     </>
                   )}
+
+                  {post.status === 'closed' && (
+                    <div className="space-y-3 mt-4 border-t border-gray-100 pt-4">
+                      <h4 className="font-bold text-gray-800 text-sm mb-2 flex items-center gap-2">
+                        🤝 เอเจนต์ที่ได้รับแต่งตั้งดูแลห้องนี้ (1:1)
+                      </h4>
+                      {post.applicants.map((applicant: any) => (
+                        <div key={applicant.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-green-200 rounded-lg transition-colors gap-4 bg-green-50/35">
+                          <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold shrink-0 bg-green-100 text-green-700">
+                              {applicant.initial}
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <h5 className="font-bold text-gray-900">{applicant.name}</h5>
+                                <ShieldCheck className="w-4 h-4 text-green-500" />
+                                <span className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded font-bold">ยืนยันสิทธิ์และเซ็นสัญญาแล้ว</span>
+                              </div>
+                              <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500 mt-1 font-medium">
+                                <span className="flex items-center gap-1 text-amber-500 font-bold"><Star className="w-3 h-3 fill-amber-500" /> {applicant.rating} ({applicant.reviews} รีวิว)</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex gap-2 w-full sm:w-auto">
+                            <button 
+                              onClick={() => handleChatClick(applicant.name)}
+                              className="flex-1 sm:flex-none px-6 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-bold rounded-lg transition-colors shadow-sm flex items-center justify-center gap-2"
+                            >
+                              <MessageSquare className="w-4 h-4" /> แชทคุยกับนายหน้า (1:1)
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))
             )}
