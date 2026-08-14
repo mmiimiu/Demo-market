@@ -28,7 +28,18 @@ interface Post {
 }
 
 export function OwnerAgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' | 'cn' }) {
-  const [activeTab, setActiveTab] = useState('post'); // post, myposts
+  const [activeTab, setActiveTab] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('primerent_owner_listings');
+      if (stored) {
+        try {
+          const listings = JSON.parse(stored);
+          if (listings.length > 0) return 'myposts';
+        } catch (e) {}
+      }
+    }
+    return 'post';
+  });
   const [toastMessage, setToastMessage] = useState('');
 
   // State for Post Form (Pre-filled for easy testing)
@@ -260,9 +271,14 @@ export function OwnerAgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' |
             </button>
             <button 
               onClick={() => setActiveTab('myposts')}
-              className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors ${activeTab === 'myposts' ? 'bg-white text-blue-700 shadow-sm' : 'text-blue-600 hover:text-blue-800 hover:bg-blue-100/50'}`}
+              className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors flex items-center gap-1.5 ${activeTab === 'myposts' ? 'bg-white text-blue-700 shadow-sm' : 'text-blue-600 hover:text-blue-800 hover:bg-blue-100/50'}`}
             >
-              ประกาศของฉัน
+              <span>ประกาศของฉัน</span>
+              {myMockPosts.length > 0 && (
+                <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold animate-pulse">
+                  {myMockPosts.reduce((sum: number, p: Post) => sum + (p.status === 'searching' ? p.applicants.length : 1), 0)}
+                </span>
+              )}
             </button>
           </div>
         </div>
