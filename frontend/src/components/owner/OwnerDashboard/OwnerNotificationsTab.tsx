@@ -46,7 +46,7 @@ export function OwnerNotificationsTab({ isThai, isChinese }: OwnerNotificationsT
         timestamp: n.timestamp,
         read: n.read,
         actionLabel: n.action?.label || (destUrl ? (isThai ? 'เปิดดู' : 'View') : undefined),
-        actionUrl: destUrl || (n.action ? '#' : undefined),
+        actionUrl: destUrl || n.action?.url || (n.action ? '#' : undefined),
         _original: n
       };
     });

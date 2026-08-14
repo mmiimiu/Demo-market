@@ -60,7 +60,7 @@ export function TenantDashboard({ lang }: TenantDashboardProps) {
         timestamp: n.timestamp,
         read: n.read,
         actionLabel: n.action?.label || (destUrl ? (isTh ? 'เปิดดู' : 'View') : undefined),
-        actionUrl: destUrl || (n.action ? '#' : undefined),
+        actionUrl: destUrl || n.action?.url || (n.action ? '#' : undefined),
         _original: n
       };
     });
