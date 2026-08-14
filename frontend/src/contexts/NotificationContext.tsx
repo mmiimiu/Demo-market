@@ -22,7 +22,7 @@ export interface Notification {
 
 interface NotificationContextType {
   notifications: Notification[];
-  addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => void;
+  addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'read'> & { id?: string }) => void;
   removeNotification: (id: string) => void;
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
@@ -196,10 +196,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
   // ⚠️ [TEST MODE] No localStorage persistence — notifications reset on every page refresh
 
-  const addNotification = (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
+  const addNotification = (notification: Omit<Notification, 'id' | 'timestamp' | 'read'> & { id?: string }) => {
     const newNotification: Notification = {
       ...notification,
-      id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+      id: notification.id || (Date.now().toString() + Math.random().toString(36).substr(2, 9)),
       timestamp: new Date(),
       read: false
     };

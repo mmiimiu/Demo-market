@@ -1,5 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
+import { useNotifications } from '@/contexts/NotificationContext';
 
 interface OwnerDashboardTabsProps {
   activeTab: 'properties' | 'ownership' | 'matching' | 'tenants' | 'billing' | 'contracts' | 'analytics' | 'screening' | 'notifications';
@@ -9,6 +10,7 @@ interface OwnerDashboardTabsProps {
 }
 
 export function OwnerDashboardTabs({ activeTab, setActiveTab, isThai, isChinese }: OwnerDashboardTabsProps) {
+  const { unreadCount } = useNotifications();
   const tabs = [
     { key: 'properties' as const, label: isThai ? 'อสังหาริมทรัพย์และประกาศ' : isChinese ? '房产与房源' : 'Properties & Listings' },
     { key: 'ownership' as const, label: isThai ? 'จัดการกรรมสิทธิ์' : isChinese ? '所有权管理' : 'Manage Ownership' },
@@ -28,11 +30,16 @@ export function OwnerDashboardTabs({ activeTab, setActiveTab, isThai, isChinese 
           key={tab.key}
           onClick={() => setActiveTab(tab.key)}
           className={cn(
-            "w-full text-left px-4 py-3 text-xs font-bold transition-all rounded-xl",
+            "w-full flex items-center justify-between px-4 py-3 text-xs font-bold transition-all rounded-xl",
             activeTab === tab.key ? "bg-[#EEF2FF] text-[#4F46E5]" : "bg-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-800"
           )}
         >
-          {tab.label}
+          <span>{tab.label}</span>
+          {tab.key === 'notifications' && unreadCount > 0 && (
+            <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold animate-pulse">
+              {unreadCount}
+            </span>
+          )}
         </button>
       ))}
     </div>

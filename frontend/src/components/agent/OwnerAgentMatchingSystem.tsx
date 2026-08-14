@@ -277,6 +277,7 @@ export function OwnerAgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' |
 
     // 3. Trigger In-App Notification
     addNotification({
+      id: 'mock_contract_sim_' + Date.now(),
       type: 'success',
       title: '🤝 เอเจนต์รับงานร่วมดูแลห้องพักของคุณแล้ว!',
       message: `เอเจนต์สมชาย (ตัวแทน) ได้ลงนามหนังสือแต่งตั้งมอบอำนาจเรียบร้อยแล้ว สัญญาพร้อมใช้เปิดเผยข้อมูลแล้ว`,

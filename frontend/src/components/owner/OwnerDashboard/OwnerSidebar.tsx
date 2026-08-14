@@ -3,6 +3,7 @@
 import React from 'react';
 import { Home, Users, Search, Receipt, FileSignature, BarChart, ShieldCheck, Bell, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useNotifications } from '@/contexts/NotificationContext';
 export type ActiveTab = 'properties' | 'ownership' | 'matching' | 'tenants' | 'billing' | 'contracts' | 'analytics' | 'screening' | 'notifications';
 
 interface OwnerSidebarProps {
@@ -13,6 +14,7 @@ interface OwnerSidebarProps {
 }
 
 export const OwnerSidebar: React.FC<OwnerSidebarProps> = ({ activeTab, setActiveTab, isThai, isChinese }) => {
+  const { unreadCount } = useNotifications();
   const navItems: { id: ActiveTab; labelEn: string; labelTh: string; labelCn: string; icon: React.ElementType }[] = [
     { id: 'properties', labelEn: 'Properties & Listings', labelTh: 'อสังหาริมทรัพย์และประกาศ', labelCn: '房产与房源', icon: Home },
     { id: 'ownership', labelEn: 'Manage Ownership', labelTh: 'จัดการกรรมสิทธิ์', labelCn: '所有权管理', icon: FileSignature },
@@ -46,15 +48,22 @@ export const OwnerSidebar: React.FC<OwnerSidebarProps> = ({ activeTab, setActive
               key={item.id}
               onClick={() => setActiveTab(item.id)}
               className={cn(
-                "w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all",
+                "w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all",
                 isActive 
                   ? "bg-[#E51D53] text-white" 
                   : "hover:bg-gray-100"
               )}
               aria-current={isActive ? 'page' : undefined}
             >
-              <item.icon className={cn("w-4 h-4", isActive ? "text-white" : "text-gray-500")} />
-              {getLabel(item)}
+              <div className="flex items-center gap-3">
+                <item.icon className={cn("w-4 h-4", isActive ? "text-white" : "text-gray-500")} />
+                <span>{getLabel(item)}</span>
+              </div>
+              {item.id === 'notifications' && unreadCount > 0 && (
+                <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 animate-pulse">
+                  {unreadCount}
+                </span>
+              )}
             </button>
           );
         })}
