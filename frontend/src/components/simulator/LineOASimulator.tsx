@@ -370,6 +370,56 @@ export function LineOASimulator() {
                           </div>
                         ))
                       }
+
+                      {/* Dynamic Agent Match Messages for Owner */}
+                      {dynamicMessages
+                        .filter(m => m.type === 'agent_match')
+                        .slice(0, 3)
+                        .map((msg) => (
+                          <div key={msg.id} className="flex gap-3 max-w-[85%] animate-in fade-in slide-in-from-bottom-2 duration-300">
+                            <Avatar className="w-10 h-10 border-none shadow-sm shrink-0">
+                              <AvatarImage src="https://ui-avatars.com/api/?name=RentFlow&background=00B900&color=fff" />
+                              <AvatarFallback>RF</AvatarFallback>
+                            </Avatar>
+                            <div className="bg-white rounded-2xl rounded-tl-sm shadow-sm overflow-hidden text-slate-800 border border-green-200">
+                              <div className="p-4 space-y-2">
+                                <p className="font-bold text-green-600 flex items-center gap-1.5">🤝 เอเจนต์รับงานสำเร็จ!</p>
+                                <div className="space-y-1.5 text-xs">
+                                  <div>
+                                    <span className="text-slate-500 font-medium">โครงการ: </span>
+                                    <span className="font-bold text-slate-900">{msg.projectName}</span>
+                                  </div>
+                                  <div>
+                                    <span className="text-slate-500 font-medium">เอเจนต์ที่รับงาน: </span>
+                                    <span className="font-bold text-slate-900">{msg.agentName}</span>
+                                  </div>
+                                  <div>
+                                    <span className="text-slate-500 font-medium">ค่าคอมมิชชัน: </span>
+                                    <span className="font-bold text-blue-600">{msg.commission}</span>
+                                  </div>
+                                  <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100 mt-2 space-y-1 text-[11px]">
+                                    <div className="flex justify-between">
+                                      <span className="text-slate-400">รหัสประตู:</span>
+                                      <span className="font-bold font-mono text-slate-700">{msg.doorCode}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span className="text-slate-400">จุดรับกุญแจ:</span>
+                                      <span className="font-bold text-slate-700">{msg.keyLocation}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <p className="text-[10px] text-slate-400 mt-1">{new Date(msg.timestamp).toLocaleString('th-TH')}</p>
+                              </div>
+                              <button
+                                onClick={() => setActiveUrl('/liff/owner/dashboard')}
+                                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 text-xs transition-colors border-t border-black/5"
+                              >
+                                ไปยังแดชบอร์ดเจ้าของห้อง
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      }
                     </>
                   )}
 

@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@
 import { WorkingZoneSettings } from './WorkingZoneSettings';
 import { ContractDocument } from '../contract/ContractSystem/ContractDocument';
 import { SignaturePad } from '../shared/ContractManager/SignaturePad';
+import { useNotifications } from '@/contexts/NotificationContext';
 
 const InteractiveMap = dynamic(
   () => import('./InteractiveMap').then(m => m.InteractiveMap),
@@ -36,6 +37,7 @@ interface Post {
 }
 
 export function AgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' | 'cn' }) {
+  const { addNotification } = useNotifications();
   const [activeTab, setActiveTab] = useState('find'); // find, post, myposts, zones
 
   // State for Find Jobs (Tab 1)
@@ -166,6 +168,36 @@ export function AgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' | 'cn'
       return item;
     }));
     
+    // 1. Add in-app notification for the User (Owner)
+    addNotification({
+      type: 'success',
+      title: '🤝 เอเจนต์รับงานร่วมดูแลห้องพักของคุณแล้ว!',
+      message: `เอเจนต์สมชาย (ตัวแทน) ได้ลงนามหนังสือแต่งตั้งมอบอำนาจเรียบร้อยแล้วสำหรับโครงการ ${selectedOwnerListing.project} สัญญาพร้อมใช้เปิดเผยข้อมูลแล้ว`,
+      action: {
+        label: 'เปิดดูสัญญา',
+        url: '/liff/sign?role=owner'
+      }
+    });
+
+    // 2. Add LINE OA notification for the Owner/User
+    try {
+      const storedLine = localStorage.getItem('primerent_line_oa_messages');
+      const lineMsgs = storedLine ? JSON.parse(storedLine) : [];
+      const newOaMsg = {
+        id: 'line_msg_match_' + Date.now(),
+        type: 'agent_match',
+        projectName: selectedOwnerListing.project,
+        agentName: 'คุณสมชาย ดีเลิศ (เอเจนต์ผู้รับงาน)',
+        commission: selectedOwnerListing.commission,
+        doorCode: selectedOwnerListing.doorCode,
+        keyLocation: selectedOwnerListing.keyLocation,
+        timestamp: new Date().toISOString()
+      };
+      localStorage.setItem('primerent_line_oa_messages', JSON.stringify([newOaMsg, ...lineMsgs]));
+    } catch (error) {
+      console.error('Error saving LINE OA message:', error);
+    }
+    
     showToast('✅ ลงนามสัญญามอบสิทธิ์และจับคู่สำเร็จ! ข้อมูลห้องถูกปลดล็อกแล้ว');
     setIsAuthModalOpen(false);
   };
@@ -256,6 +288,19 @@ export function AgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' | 'cn'
 
   const handleInterest = (jobId: string) => {
     setInterestedJobs(prev => ({ ...prev, [jobId]: true }));
+    const job = findJobs.find(j => j.id === jobId);
+    
+    // Add in-app notification
+    addNotification({
+      type: 'info',
+      title: '🔔 มีเอเจนต์ใหม่สนใจรับงานของคุณ',
+      message: `เอเจนต์ สมชาย ดีใจ ได้ส่งความสนใจที่จะร่วมดีลสำหรับโครงการ ${job?.project || ''} กรุณาตรวจสอบและกดอนุมัติ`,
+      action: {
+        label: 'ดูผู้สมัคร',
+        url: '/liff/agent/dashboard?tab=myposts'
+      }
+    });
+    
     showToast('ส่งคำขอรับงานสำเร็จ ระบบกำลังรอผู้โพสต์อนุมัติ');
   };
 
@@ -301,12 +346,32 @@ export function AgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' | 'cn'
   };
 
   const handleApproveAgent = (postId: string, agentId: string) => {
+    let postProject = '';
+    let applicantName = '';
+    
     setMyMockPosts(posts => posts.map(post => {
       if (post.id === postId) {
+        postProject = post.project;
+        const applicant = post.applicants.find(a => a.id === agentId);
+        if (applicant) {
+          applicantName = applicant.name;
+        }
         return { ...post, status: 'matched', selectedAgentId: agentId };
       }
       return post;
     }));
+
+    // Add in-app notification
+    addNotification({
+      type: 'success',
+      title: '✅ จับคู่ดีล Co-Agent สำเร็จ!',
+      message: `คุณได้อนุมัติให้ ${applicantName || 'เอเจนต์'} รับงานร่วมดีล ${postProject || 'โครงการ'} เรียบร้อยแล้ว ขณะนี้สามารถเปิดห้องแชทได้แล้ว`,
+      action: {
+        label: 'เปิดดูดีล',
+        url: '/liff/agent/deals'
+      }
+    });
+
     showToast('✅ จับคู่สำเร็จ! สร้างห้องแชทสำหรับติดต่อเรียบร้อยแล้ว');
   };
 
