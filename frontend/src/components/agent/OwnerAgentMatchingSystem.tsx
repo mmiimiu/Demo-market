@@ -388,6 +388,32 @@ export function OwnerAgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' |
           </div>
         </div>
 
+        {/* Simulation Control Panel */}
+        <div className="mb-6 p-4 bg-amber-50/60 border border-amber-100 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div>
+            <span className="bg-amber-100 text-amber-850 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+              โหมดทดสอบ (Demo Simulator)
+            </span>
+            <p className="text-xs text-gray-600 mt-1 font-medium">
+              คลิกเพื่อจำลองกรณีเอเจนต์ตกลงรับงานแบบ Real-time และเปิดห้องแชทของโครงการ คอนโด Life Asoke Hype
+            </p>
+          </div>
+          <div className="flex gap-2 shrink-0">
+            <button 
+              onClick={() => handleSimulateAgentMatch('post-1')}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-sm flex items-center gap-1 active:scale-95 transition-all"
+            >
+              ⚡ จำลองเอเจนต์รับงาน (Real-time)
+            </button>
+            <button 
+              onClick={() => handleResetSimulation('post-1')}
+              className="bg-gray-200 hover:bg-gray-300 text-gray-705 text-xs font-bold px-4 py-2 rounded-xl border border-gray-300 active:scale-95 transition-all flex items-center gap-1"
+            >
+              🔄 รีเซ็ตสถานะทั้งหมด
+            </button>
+          </div>
+        </div>
+
         {activeTab === 'post' && (
           <div className="space-y-4">
             <div className="bg-blue-50/50 border border-blue-100 p-4 rounded-xl mb-4">
@@ -481,7 +507,7 @@ export function OwnerAgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' |
               </div>
             ) : (
               myMockPosts.map(post => (
-                <div key={post.id} className={`bg-white rounded-xl shadow-sm border ${post.status === 'closed' ? 'border-gray-200 opacity-60' : 'border-blue-100'} p-5 transition-all`}>
+                <div key={post.id} className={`bg-white rounded-xl shadow-sm border ${post.status === 'closed' ? 'border-gray-200' : 'border-blue-100'} p-5 transition-all`}>
                   <div className="flex flex-col sm:flex-row justify-between mb-4 pb-4 border-b border-gray-100 gap-4">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
