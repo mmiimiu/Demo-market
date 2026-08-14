@@ -38,6 +38,7 @@ import { OwnerDashboardContent } from './OwnerDashboardContent';
 import { OwnerDashboardModals } from './OwnerDashboardModals';
 import { useOwnerDashboard } from './hooks/useOwnerDashboard';
 import { TabContracts } from '@/components/contract/ContractSystem/TabContracts';
+import { OwnerAgentMatchingSystem } from '@/components/agent/OwnerAgentMatchingSystem';
 
 export function OwnerDashboard({ lang }: { lang: 'th' | 'en' | 'cn' }) {
   const t = translations[lang] || translations.th;
@@ -102,6 +103,14 @@ export function OwnerDashboard({ lang }: { lang: 'th' | 'en' | 'cn' }) {
             <RecentInquiries lang={lang} />
             <AgentMatching lang={lang} />
           </div>
+        </div>
+
+        {/* Owner Agent Matching System */}
+        <div id="matching" className="mt-8 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <h3 className="text-lg font-black text-gray-900 mb-4 flex items-center gap-2">
+            🤝 {isThai ? 'เปิดรับนายหน้า & ตัวแทน (Owner Agent Matching)' : 'Agent Matching (Open Listings)'}
+          </h3>
+          <OwnerAgentMatchingSystem lang={lang} />
         </div>
 
         <div className="mt-8 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">

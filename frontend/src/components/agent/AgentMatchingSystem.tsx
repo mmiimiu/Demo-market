@@ -91,36 +91,54 @@ export function AgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' | 'cn'
   });
   
   // State for Owner Listings (Tab 1.5)
-  const [ownerListings, setOwnerListings] = useState([
-    {
-      id: 'owner-job-1',
-      project: 'คอนโด Life Asoke Hype (1 ห้องนอน 35 ตร.ม.)',
-      details: 'กุญแจฝากไว้ที่นิติบุคคล สามารถพาลูกค้าไปดูได้เลยค่ะ',
-      commission: '1 เดือน (สำหรับสัญญา 1 ปี)',
-      ownerName: 'คุณมยุรี (เจ้าของห้อง)',
-      location: 'พระราม 9, อโศก',
-      status: 'searching', // searching, matched
-      doorCode: '8894',
-      keyLocation: 'นิติบุคคล ชั้น 1',
-      distance: '2.1 km',
-      agentsNearbyCount: 28,
-      isSigned: false
-    },
-    {
-      id: 'owner-job-2',
-      project: 'Ideo Mix Sukhumvit (ห้อง 102)',
-      details: 'ห้องสตูดิโอแต่งครบพร้อมเข้าอยู่ สนใจทักแชทขอข้อมูลเพิ่มเติมได้ค่ะ',
-      commission: '1 เดือน',
-      ownerName: 'คุณสมศักดิ์ (เจ้าของห้อง)',
-      location: 'สุขุมวิท, อุดมสุข',
-      status: 'searching',
-      doorCode: '1025',
-      keyLocation: 'ตู้จดหมายรหัส 4321',
-      distance: '1.5 km',
-      agentsNearbyCount: 19,
-      isSigned: false
+  const [ownerListings, setOwnerListings] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('primerent_owner_listings');
+      if (stored) {
+        try {
+          return JSON.parse(stored);
+        } catch (e) {
+          console.error(e);
+        }
+      }
     }
-  ]);
+    return [
+      {
+        id: 'owner-job-1',
+        project: 'คอนโด Life Asoke Hype (1 ห้องนอน 35 ตร.ม.)',
+        details: 'กุญแจฝากไว้ที่นิติบุคคล สามารถพาลูกค้าไปดูได้เลยค่ะ',
+        commission: '1 เดือน (สำหรับสัญญา 1 ปี)',
+        ownerName: 'คุณมยุรี (เจ้าของห้อง)',
+        location: 'พระราม 9, อโศก',
+        status: 'searching', // searching, matched
+        doorCode: '8894',
+        keyLocation: 'นิติบุคคล ชั้น 1',
+        distance: '2.1 km',
+        agentsNearbyCount: 28,
+        isSigned: false
+      },
+      {
+        id: 'owner-job-2',
+        project: 'Ideo Mix Sukhumvit (ห้อง 102)',
+        details: 'ห้องสตูดิโอแต่งครบพร้อมเข้าอยู่ สนใจทักแชทขอข้อมูลเพิ่มเติมได้ค่ะ',
+        commission: '1 เดือน',
+        ownerName: 'คุณสมศักดิ์ (เจ้าของห้อง)',
+        location: 'สุขุมวิท, อุดมสุข',
+        status: 'searching',
+        doorCode: '1025',
+        keyLocation: 'ตู้จดหมายรหัส 4321',
+        distance: '1.5 km',
+        agentsNearbyCount: 19,
+        isSigned: false
+      }
+    ];
+  });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('primerent_owner_listings', JSON.stringify(ownerListings));
+    }
+  }, [ownerListings]);
 
   // States for Agent Authorization Document & Signatures
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -161,7 +179,7 @@ export function AgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' | 'cn'
     if (!authSignatureDataUrl || !selectedOwnerListing) return;
     
     // Update ownerListings state
-    setOwnerListings(prev => prev.map(item => {
+    setOwnerListings((prev: any[]) => prev.map((item: any) => {
       if (item.id === selectedOwnerListing.id) {
         return { ...item, status: 'matched', isSigned: true };
       }
@@ -174,8 +192,8 @@ export function AgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' | 'cn'
       title: '🤝 เอเจนต์รับงานร่วมดูแลห้องพักของคุณแล้ว!',
       message: `เอเจนต์สมชาย (ตัวแทน) ได้ลงนามหนังสือแต่งตั้งมอบอำนาจเรียบร้อยแล้วสำหรับโครงการ ${selectedOwnerListing.project} สัญญาพร้อมใช้เปิดเผยข้อมูลแล้ว`,
       action: {
-        label: 'เปิดดูสัญญา',
-        url: '/liff/sign?role=owner'
+        label: 'เปิดดูผลการจับคู่',
+        url: '/owner/dashboard#matching'
       }
     });
 
@@ -507,7 +525,7 @@ export function AgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' | 'cn'
               รายการห้องพักจากเจ้าของที่เปิดรับนายหน้าช่วยปล่อยเช่า
             </div>
 
-            {ownerListings.map(listing => (
+            {ownerListings.map((listing: any) => (
               <div key={listing.id} className={`p-4 border ${listing.status === 'matched' ? 'border-green-200 bg-green-50/10' : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-md'} transition-all rounded-xl flex flex-col sm:flex-row justify-between gap-4 relative overflow-hidden`}>
                 {listing.status === 'matched' ? (
                   <div className="absolute left-0 top-0 bottom-0 w-1 bg-green-500"></div>

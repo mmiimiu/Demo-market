@@ -9,6 +9,7 @@ import { PropertyValuationTool } from '@/components/shared/PropertyValuationTool
 import { OwnerNotificationsTab } from './OwnerNotificationsTab';
 import { OwnerPropertiesTab } from './OwnerPropertiesTab';
 import { TabContracts } from '@/components/contract/ContractSystem/TabContracts';
+import { OwnerAgentMatchingSystem } from '@/components/agent/OwnerAgentMatchingSystem';
 
 interface OwnerDashboardContentProps {
   activeTab: string;
@@ -88,6 +89,10 @@ export function OwnerDashboardContent({
 
   if (activeTab === 'ownership') {
     return <OwnerPropertiesTab lang={lang} />;
+  }
+
+  if (activeTab === 'matching') {
+    return <OwnerAgentMatchingSystem lang={lang} />;
   }
 
   if (activeTab === 'notifications') {

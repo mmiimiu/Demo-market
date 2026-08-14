@@ -94,6 +94,35 @@ export function OwnerAgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' |
     }
   ]);
 
+  // Sync posts from localStorage when tab changes to 'myposts' or on mount
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('primerent_owner_listings');
+      if (stored) {
+        try {
+          const listings = JSON.parse(stored);
+          const mapped = listings.map((l: any) => ({
+            id: l.id === 'owner-job-1' ? 'post-1' : l.id,
+            project: l.project,
+            details: l.details,
+            commission: l.commission,
+            status: l.status === 'matched' ? 'closed' : l.status === 'closed' ? 'closed' : 'searching',
+            applicants: l.status === 'matched' ? [
+              { id: 'a_matched', name: 'คุณสมชาย ดีเลิศ (เอเจนต์ผู้รับงาน)', rating: 4.9, reviews: 120, distance: l.distance || '2.1 km', initial: 'ส', isApproved: true }
+            ] : [
+              { id: 'a1', name: 'Natthapong P.', rating: 4.9, reviews: 120, distance: '2.1 km', initial: 'N', isApproved: true },
+              { id: 'a2', name: 'Sompong K.', rating: 4.5, reviews: 34, distance: '3.5 km', initial: 'S', isApproved: true }
+            ],
+            agentsNearbyCount: l.agentsNearbyCount || 28
+          }));
+          setMyMockPosts(mapped);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+  }, [activeTab]);
+
   const showToast = (message: string) => {
     setToastMessage(message);
     setTimeout(() => setToastMessage(''), 4000);
@@ -128,6 +157,30 @@ export function OwnerAgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' |
       };
       
       setMyMockPosts(prev => [newPost, ...prev]);
+
+      // Save to localStorage so that the Agent portal is aware of the new listing
+      try {
+        const stored = localStorage.getItem('primerent_owner_listings');
+        const listings = stored ? JSON.parse(stored) : [];
+        listings.unshift({
+          id: newPostId === 'post-1' ? 'owner-job-1' : newPostId,
+          project: postForm.project,
+          details: postForm.details,
+          commission: postForm.commission,
+          ownerName: 'คุณ (เจ้าของห้อง)',
+          location: postForm.location || 'กรุงเทพฯ',
+          status: 'searching',
+          doorCode: '1234',
+          keyLocation: 'นิติบุคคล',
+          distance: '0.0 km',
+          agentsNearbyCount: 45,
+          isSigned: false
+        });
+        localStorage.setItem('primerent_owner_listings', JSON.stringify(listings));
+      } catch (e) {
+        console.error(e);
+      }
+
       setPostForm({ project: '', location: '', details: '', commission: '' });
       setActiveTab('myposts'); 
 
@@ -156,6 +209,24 @@ export function OwnerAgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' |
       }
       return post;
     }));
+    
+    // Sync with localStorage
+    try {
+      const stored = localStorage.getItem('primerent_owner_listings');
+      if (stored) {
+        const listings = JSON.parse(stored);
+        const updated = listings.map((l: any) => {
+          if (l.id === postId || (postId === 'post-1' && l.id === 'owner-job-1')) {
+            return { ...l, status: 'closed' };
+          }
+          return l;
+        });
+        localStorage.setItem('primerent_owner_listings', JSON.stringify(updated));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
     showToast('ปิดการค้นหาเรียบร้อยแล้ว');
   };
 
