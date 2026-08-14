@@ -256,29 +256,36 @@ export function AgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' | 'cn'
 
   // Expand logic and mock application logic
   const handleExpandRadius = (postId: string) => {
-    // Set to expanding loading state
-    setMyMockPosts(posts => posts.map(post => 
-      post.id === postId ? { ...post, expanded: true, radius: 'กำลังค้นหา...' } : post
-    ));
+    // Set to expanding loading state and check if post qualifies
+    setMyMockPosts(posts => {
+      const post = posts.find(p => p.id === postId);
+      if (!post || post.status !== 'searching' || post.applicants.length > 0) {
+        return posts;
+      }
+      
+      // Simulate expanding and finding new agents
+      setTimeout(() => {
+        setMyMockPosts(latestPosts => latestPosts.map(p => {
+          if (p.id === postId && p.status === 'searching' && p.applicants.length === 0) {
+            return {
+              ...p,
+              radius: '10km',
+              agentsNearbyCount: p.agentsNearbyCount + 24,
+              applicants: [
+                { id: `new-a1-${Date.now()}`, name: 'Wichai T.', rating: 4.8, reviews: 56, distance: '6.2 km', initial: 'W' },
+                { id: `new-a2-${Date.now()}`, name: 'Kanya R.', rating: 5.0, reviews: 12, distance: '8.5 km', initial: 'K' }
+              ]
+            };
+          }
+          return p;
+        }));
+        showToast('🔊 ขยายรัศมีเป็น 10km อัตโนมัติสำเร็จ! พบเอเจนต์รอบนอกเพิ่มแล้ว');
+      }, 2000);
 
-    // Simulate expanding and finding new agents
-    setTimeout(() => {
-      setMyMockPosts(posts => posts.map(post => {
-        if (post.id === postId) {
-          return {
-            ...post,
-            radius: '10km',
-            agentsNearbyCount: post.agentsNearbyCount + 24,
-            applicants: [
-              { id: `new-a1-${Date.now()}`, name: 'Wichai T.', rating: 4.8, reviews: 56, distance: '6.2 km', initial: 'W' },
-              { id: `new-a2-${Date.now()}`, name: 'Kanya R.', rating: 5.0, reviews: 12, distance: '8.5 km', initial: 'K' }
-            ]
-          };
-        }
-        return post;
-      }));
-      showToast('ขยายรัศมีเป็น 10km สำเร็จ! พบเอเจนต์ที่สนใจแล้ว');
-    }, 1500);
+      return posts.map(p => 
+        p.id === postId ? { ...p, expanded: true, radius: 'กำลังขยายค้นหา...' } : p
+      );
+    });
   };
 
   const showToast = (message: string) => {
@@ -335,11 +342,9 @@ export function AgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' | 'cn'
       setPostForm({ project: '', date: '', details: '', price: '', location: '' });
       setActiveTab('myposts'); 
 
-      // Simulate waiting 5 seconds before allowing to expand radius
+      // Automatically expand search radius to 10km after 5 seconds if still searching and no applicants
       setTimeout(() => {
-        setMyMockPosts(posts => posts.map(post => 
-          post.id === newPostId ? { ...post, canExpand: true } : post
-        ));
+        handleExpandRadius(newPostId);
       }, 5000);
 
     }, 1500);
@@ -773,21 +778,15 @@ export function AgentMatchingSystem({ lang = 'th' }: { lang?: 'th' | 'en' | 'cn'
                       <p className="text-gray-600 font-bold mb-1">ระบบกำลังกระจายงานและรอเอเจนต์ตอบรับ...</p>
                       <p className="text-gray-400 text-sm font-medium mb-4">แจ้งเตือนไปยังเอเจนต์ {post.agentsNearbyCount} คนในรัศมี {post.radius}</p>
                       
-                      {post.canExpand && !post.expanded && (
-                         <div className="mt-4 pt-4 border-t border-gray-200 animate-in fade-in slide-in-from-bottom-2">
-                           <p className="text-sm text-gray-500 mb-2 font-medium">รอนานแล้วยังไม่มีคนรับงาน?</p>
-                           <button 
-                             onClick={() => handleExpandRadius(post.id)}
-                             className="inline-flex items-center gap-2 px-5 py-2 bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 rounded-full font-bold text-sm transition-colors"
-                           >
-                             <PlusCircle className="w-4 h-4" />
-                             ขยายระยะค้นหาเป็น 10km อัตโนมัติ
-                           </button>
-                         </div>
+                      {!post.expanded && (
+                        <div className="mt-4 flex items-center justify-center gap-2 text-xs text-amber-600 bg-amber-50/50 py-2 px-4 rounded-xl border border-amber-100/50">
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          <span>ระบบกำลังเตรียมขยายรัศมีค้นหาเป็น 10km อัตโนมัติใน 5 วินาที</span>
+                        </div>
                       )}
-                      {post.expanded && post.radius === 'กำลังค้นหา...' && (
-                        <div className="mt-4 flex justify-center text-blue-600 text-sm font-bold items-center gap-2">
-                          <Loader2 className="w-4 h-4 animate-spin" /> กำลังประมวลผลค้นหาและแจ้งเตือนเอเจนต์รอบนอก...
+                      {post.expanded && post.radius === 'กำลังขยายค้นหา...' && (
+                        <div className="mt-4 flex justify-center text-blue-600 text-xs font-bold items-center gap-2 bg-blue-50/50 py-2 px-4 rounded-xl border border-blue-100/50">
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" /> กำลังประมวลผลค้นหาและแจ้งเตือนเอเจนต์รอบนอก...
                         </div>
                       )}
                     </div>
